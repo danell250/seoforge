@@ -22,6 +22,8 @@ import type {
   AgencySettings,
   AgencySettingsInput,
   CompetitorScan,
+  ContentGapRequest,
+  ContentGapResult,
   CrawlSiteRequest,
   CrawlSiteResponseBody,
   DashboardSummaryResult,
@@ -1284,6 +1286,92 @@ export const useApplyHreflang = <
   TContext
 > => {
   return useMutation(getApplyHreflangMutationOptions(options));
+};
+
+/**
+ * @summary Detect missing content topics and inject new sections
+ */
+export const getDetectContentGapsUrl = () => {
+  return `/api/content-gaps`;
+};
+
+export const detectContentGaps = async (
+  contentGapRequest: ContentGapRequest,
+  options?: RequestInit,
+): Promise<ContentGapResult> => {
+  return customFetch<ContentGapResult>(getDetectContentGapsUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(contentGapRequest),
+  });
+};
+
+export const getDetectContentGapsMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof detectContentGaps>>,
+    TError,
+    { data: BodyType<ContentGapRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof detectContentGaps>>,
+  TError,
+  { data: BodyType<ContentGapRequest> },
+  TContext
+> => {
+  const mutationKey = ["detectContentGaps"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof detectContentGaps>>,
+    { data: BodyType<ContentGapRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return detectContentGaps(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DetectContentGapsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof detectContentGaps>>
+>;
+export type DetectContentGapsMutationBody = BodyType<ContentGapRequest>;
+export type DetectContentGapsMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Detect missing content topics and inject new sections
+ */
+export const useDetectContentGaps = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof detectContentGaps>>,
+    TError,
+    { data: BodyType<ContentGapRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof detectContentGaps>>,
+  TError,
+  { data: BodyType<ContentGapRequest> },
+  TContext
+> => {
+  return useMutation(getDetectContentGapsMutationOptions(options));
 };
 
 /**

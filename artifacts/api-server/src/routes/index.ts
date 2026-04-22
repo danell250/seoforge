@@ -9,6 +9,7 @@ import optimizationsRouter from "./optimizations";
 import agencyRouter from "./agency";
 import sitemapRouter from "./sitemap";
 import hreflangRouter from "./hreflang";
+import contentGapsRouter from "./content-gaps";
 
 const router: IRouter = Router();
 
@@ -22,5 +23,6 @@ router.use(optimizationsRouter);
 router.use(agencyRouter);
 router.use(sitemapRouter);
 router.use(hreflangRouter);
+router.use(contentGapsRouter);
 
 export default router;

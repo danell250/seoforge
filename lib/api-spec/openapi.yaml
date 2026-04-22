@@ -341,6 +341,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /content-gaps:
+    post:
+      operationId: detectContentGaps
+      tags: [seo]
+      summary: Detect missing content topics and inject new sections
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContentGapRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContentGapResult"
+        "400":
+          description: Invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /scan-competitor:
     post:
       operationId: scanCompetitor
@@ -785,6 +815,56 @@ components:
         - html
         - detectedLanguage
         - injectedTags
+    ContentGapRequest:
+      type: object
+      properties:
+        html:
+          type: string
+        topic:
+          type: string
+        audience:
+          type: string
+      required:
+        - html
+        - topic
+    ContentGapItem:
+      type: object
+      properties:
+        question:
+          type: string
+        why:
+          type: string
+        impact:
+          type: string
+          enum: [high, medium, low]
+        sectionTitle:
+          type: string
+        sectionHtml:
+          type: string
+      required:
+        - question
+        - why
+        - impact
+        - sectionTitle
+        - sectionHtml
+    ContentGapResult:
+      type: object
+      properties:
+        gaps:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContentGapItem"
+        augmentedHtml:
+          type: string
+        coverageScoreBefore:
+          type: integer
+        coverageScoreAfter:
+          type: integer
+      required:
+        - gaps
+        - augmentedHtml
+        - coverageScoreBefore
+        - coverageScoreAfter
     CompetitorScan:
       type: object
       properties:

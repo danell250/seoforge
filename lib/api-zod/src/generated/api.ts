@@ -356,6 +356,30 @@ export const ApplyHreflangResponse = zod.object({
 });
 
 /**
+ * @summary Detect missing content topics and inject new sections
+ */
+export const DetectContentGapsBody = zod.object({
+  html: zod.string(),
+  topic: zod.string(),
+  audience: zod.string().optional(),
+});
+
+export const DetectContentGapsResponse = zod.object({
+  gaps: zod.array(
+    zod.object({
+      question: zod.string(),
+      why: zod.string(),
+      impact: zod.enum(["high", "medium", "low"]),
+      sectionTitle: zod.string(),
+      sectionHtml: zod.string(),
+    }),
+  ),
+  augmentedHtml: zod.string(),
+  coverageScoreBefore: zod.number(),
+  coverageScoreAfter: zod.number(),
+});
+
+/**
  * @summary Scan a competitor URL for SEO strategy
  */
 export const ScanCompetitorBody = zod.object({

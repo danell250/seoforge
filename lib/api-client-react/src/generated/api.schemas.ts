@@ -232,6 +232,36 @@ export interface HreflangResult {
   injectedTags: string[];
 }
 
+export interface ContentGapRequest {
+  html: string;
+  topic: string;
+  audience?: string;
+}
+
+export type ContentGapItemImpact =
+  (typeof ContentGapItemImpact)[keyof typeof ContentGapItemImpact];
+
+export const ContentGapItemImpact = {
+  high: "high",
+  medium: "medium",
+  low: "low",
+} as const;
+
+export interface ContentGapItem {
+  question: string;
+  why: string;
+  impact: ContentGapItemImpact;
+  sectionTitle: string;
+  sectionHtml: string;
+}
+
+export interface ContentGapResult {
+  gaps: ContentGapItem[];
+  augmentedHtml: string;
+  coverageScoreBefore: number;
+  coverageScoreAfter: number;
+}
+
 export type CompetitorScanStrategy = {
   metaStrategy: string;
   targetKeywords: string[];

@@ -9,6 +9,7 @@ import { AeoAnswerBlock } from "@/components/app/aeo-answer-block";
 import { DeployPanel } from "@/components/app/deploy-panel";
 import { SitemapGenerator } from "@/components/app/sitemap-generator";
 import { HreflangTool } from "@/components/app/hreflang-tool";
+import { ContentGapDetector } from "@/components/app/content-gap-detector";
 
 export default function AppWorkspace() {
   return (
@@ -28,6 +29,7 @@ export default function AppWorkspace() {
             <TabsList className="mb-8 w-full md:w-auto inline-flex overflow-x-auto">
               <TabsTrigger value="single-page" className="flex-1 md:flex-none">Single Page</TabsTrigger>
               <TabsTrigger value="aeo-block" className="flex-1 md:flex-none">AEO Answer Blocks</TabsTrigger>
+              <TabsTrigger value="content-gaps" className="flex-1 md:flex-none">Content Gaps</TabsTrigger>
               <TabsTrigger value="site-crawler" className="flex-1 md:flex-none">Full Site Crawler</TabsTrigger>
               <TabsTrigger value="zip-upload" className="flex-1 md:flex-none">Bulk ZIP Upload</TabsTrigger>
               <TabsTrigger value="competitor" className="flex-1 md:flex-none">Competitor Scanner</TabsTrigger>
@@ -50,6 +52,10 @@ export default function AppWorkspace() {
 
             <TabsContent value="aeo-block" className="m-0">
               <AeoAnswerBlock />
+            </TabsContent>
+
+            <TabsContent value="content-gaps" className="m-0">
+              <ContentGapDetector />
             </TabsContent>
 
             <TabsContent value="competitor" className="m-0">
