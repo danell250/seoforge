@@ -85,6 +85,144 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /aeo-block:
+    post:
+      operationId: generateAeoBlock
+      tags: [seo]
+      summary: Generate AEO answer blocks and FAQPage schema
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AeoBlockRequest"
+      responses:
+        "200":
+          description: HTML augmented with answer blocks
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AeoBlockResult"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Generation failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /optimizations:
+    get:
+      operationId: listOptimizations
+      tags: [seo]
+      summary: List recent optimizations
+      responses:
+        "200":
+          description: List
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OptimizationListResult"
+  /optimizations/{id}:
+    delete:
+      operationId: deleteOptimization
+      tags: [seo]
+      summary: Delete an optimization record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResult"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /dashboard-summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [seo]
+      summary: Aggregate dashboard stats
+      responses:
+        "200":
+          description: Summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummaryResult"
+  /deploy/wordpress:
+    post:
+      operationId: deployToWordpress
+      tags: [seo]
+      summary: Push optimized HTML to a WordPress page or post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WordpressDeployRequest"
+      responses:
+        "200":
+          description: Deployed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeployResult"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Deploy failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /deploy/shopify:
+    post:
+      operationId: deployToShopify
+      tags: [seo]
+      summary: Push optimized HTML to a Shopify page
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShopifyDeployRequest"
+      responses:
+        "200":
+          description: Deployed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeployResult"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Deploy failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /scan-competitor:
     post:
       operationId: scanCompetitor
@@ -229,6 +367,168 @@ components:
       required:
         - domain
         - pages
+    AeoBlockRequest:
+      type: object
+      properties:
+        html:
+          type: string
+        topic:
+          type: string
+      required:
+        - html
+    AeoQuestion:
+      type: object
+      properties:
+        question:
+          type: string
+        answer:
+          type: string
+      required:
+        - question
+        - answer
+    AeoBlockResult:
+      type: object
+      properties:
+        html:
+          type: string
+        questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/AeoQuestion"
+        schemaJsonLd:
+          type: string
+      required:
+        - html
+        - questions
+        - schemaJsonLd
+    OptimizationRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+        filename:
+          type: string
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        sourceUrl:
+          type: string
+          nullable: true
+        score:
+          $ref: "#/components/schemas/SeoScore"
+        changesCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - score
+        - changesCount
+        - createdAt
+    OptimizationListResult:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OptimizationRecord"
+      required:
+        - items
+    DashboardSummaryResult:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+        avgOverall:
+          type: integer
+        avgTechnical:
+          type: integer
+        avgContent:
+          type: integer
+        avgAeo:
+          type: integer
+        greenCount:
+          type: integer
+        orangeCount:
+          type: integer
+        redCount:
+          type: integer
+        recent:
+          type: array
+          items:
+            $ref: "#/components/schemas/OptimizationRecord"
+      required:
+        - totalPages
+        - avgOverall
+        - avgTechnical
+        - avgContent
+        - avgAeo
+        - greenCount
+        - orangeCount
+        - redCount
+        - recent
+    DeleteResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+      required:
+        - success
+    WordpressDeployRequest:
+      type: object
+      properties:
+        siteUrl:
+          type: string
+          format: uri
+        username:
+          type: string
+        appPassword:
+          type: string
+        postType:
+          type: string
+          enum: [pages, posts]
+        postId:
+          type: integer
+        html:
+          type: string
+      required:
+        - siteUrl
+        - username
+        - appPassword
+        - postType
+        - postId
+        - html
+    ShopifyDeployRequest:
+      type: object
+      properties:
+        shop:
+          type: string
+        accessToken:
+          type: string
+        pageId:
+          type: integer
+        html:
+          type: string
+      required:
+        - shop
+        - accessToken
+        - pageId
+        - html
+    DeployResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        url:
+          type: string
+          nullable: true
+      required:
+        - success
+        - message
     CompetitorScan:
       type: object
       properties:

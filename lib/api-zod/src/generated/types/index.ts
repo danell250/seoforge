@@ -6,14 +6,25 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./aeoBlockRequest";
+export * from "./aeoBlockResult";
+export * from "./aeoQuestion";
 export * from "./competitorScan";
 export * from "./competitorScanStrategy";
 export * from "./crawledPage";
 export * from "./crawlSiteRequest";
 export * from "./crawlSiteResponseBody";
+export * from "./dashboardSummaryResult";
+export * from "./deleteResult";
+export * from "./deployResult";
 export * from "./errorResponse";
 export * from "./healthStatus";
+export * from "./optimizationListResult";
+export * from "./optimizationRecord";
 export * from "./optimizeRequest";
 export * from "./optimizeResponse";
 export * from "./scanCompetitorRequest";
 export * from "./seoScore";
+export * from "./shopifyDeployRequest";
+export * from "./wordpressDeployRequest";
+export * from "./wordpressDeployRequestPostType";

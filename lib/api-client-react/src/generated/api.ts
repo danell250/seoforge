@@ -17,14 +17,22 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  AeoBlockRequest,
+  AeoBlockResult,
   CompetitorScan,
   CrawlSiteRequest,
   CrawlSiteResponseBody,
+  DashboardSummaryResult,
+  DeleteResult,
+  DeployResult,
   ErrorResponse,
   HealthStatus,
+  OptimizationListResult,
   OptimizeRequest,
   OptimizeResponse,
   ScanCompetitorRequest,
+  ShopifyDeployRequest,
+  WordpressDeployRequest,
 } from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
@@ -281,6 +289,498 @@ export const useCrawlSite = <
   TContext
 > => {
   return useMutation(getCrawlSiteMutationOptions(options));
+};
+
+/**
+ * @summary Generate AEO answer blocks and FAQPage schema
+ */
+export const getGenerateAeoBlockUrl = () => {
+  return `/api/aeo-block`;
+};
+
+export const generateAeoBlock = async (
+  aeoBlockRequest: AeoBlockRequest,
+  options?: RequestInit,
+): Promise<AeoBlockResult> => {
+  return customFetch<AeoBlockResult>(getGenerateAeoBlockUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(aeoBlockRequest),
+  });
+};
+
+export const getGenerateAeoBlockMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof generateAeoBlock>>,
+    TError,
+    { data: BodyType<AeoBlockRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof generateAeoBlock>>,
+  TError,
+  { data: BodyType<AeoBlockRequest> },
+  TContext
+> => {
+  const mutationKey = ["generateAeoBlock"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof generateAeoBlock>>,
+    { data: BodyType<AeoBlockRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return generateAeoBlock(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type GenerateAeoBlockMutationResult = NonNullable<
+  Awaited<ReturnType<typeof generateAeoBlock>>
+>;
+export type GenerateAeoBlockMutationBody = BodyType<AeoBlockRequest>;
+export type GenerateAeoBlockMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Generate AEO answer blocks and FAQPage schema
+ */
+export const useGenerateAeoBlock = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof generateAeoBlock>>,
+    TError,
+    { data: BodyType<AeoBlockRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof generateAeoBlock>>,
+  TError,
+  { data: BodyType<AeoBlockRequest> },
+  TContext
+> => {
+  return useMutation(getGenerateAeoBlockMutationOptions(options));
+};
+
+/**
+ * @summary List recent optimizations
+ */
+export const getListOptimizationsUrl = () => {
+  return `/api/optimizations`;
+};
+
+export const listOptimizations = async (
+  options?: RequestInit,
+): Promise<OptimizationListResult> => {
+  return customFetch<OptimizationListResult>(getListOptimizationsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListOptimizationsQueryKey = () => {
+  return [`/api/optimizations`] as const;
+};
+
+export const getListOptimizationsQueryOptions = <
+  TData = Awaited<ReturnType<typeof listOptimizations>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listOptimizations>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListOptimizationsQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listOptimizations>>
+  > = ({ signal }) => listOptimizations({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listOptimizations>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListOptimizationsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listOptimizations>>
+>;
+export type ListOptimizationsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List recent optimizations
+ */
+
+export function useListOptimizations<
+  TData = Awaited<ReturnType<typeof listOptimizations>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listOptimizations>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListOptimizationsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Delete an optimization record
+ */
+export const getDeleteOptimizationUrl = (id: number) => {
+  return `/api/optimizations/${id}`;
+};
+
+export const deleteOptimization = async (
+  id: number,
+  options?: RequestInit,
+): Promise<DeleteResult> => {
+  return customFetch<DeleteResult>(getDeleteOptimizationUrl(id), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDeleteOptimizationMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteOptimization>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteOptimization>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["deleteOptimization"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteOptimization>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteOptimization(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteOptimizationMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteOptimization>>
+>;
+
+export type DeleteOptimizationMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Delete an optimization record
+ */
+export const useDeleteOptimization = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteOptimization>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteOptimization>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getDeleteOptimizationMutationOptions(options));
+};
+
+/**
+ * @summary Aggregate dashboard stats
+ */
+export const getGetDashboardSummaryUrl = () => {
+  return `/api/dashboard-summary`;
+};
+
+export const getDashboardSummary = async (
+  options?: RequestInit,
+): Promise<DashboardSummaryResult> => {
+  return customFetch<DashboardSummaryResult>(getGetDashboardSummaryUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetDashboardSummaryQueryKey = () => {
+  return [`/api/dashboard-summary`] as const;
+};
+
+export const getGetDashboardSummaryQueryOptions = <
+  TData = Awaited<ReturnType<typeof getDashboardSummary>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getDashboardSummary>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetDashboardSummaryQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getDashboardSummary>>
+  > = ({ signal }) => getDashboardSummary({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getDashboardSummary>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetDashboardSummaryQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getDashboardSummary>>
+>;
+export type GetDashboardSummaryQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Aggregate dashboard stats
+ */
+
+export function useGetDashboardSummary<
+  TData = Awaited<ReturnType<typeof getDashboardSummary>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getDashboardSummary>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetDashboardSummaryQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Push optimized HTML to a WordPress page or post
+ */
+export const getDeployToWordpressUrl = () => {
+  return `/api/deploy/wordpress`;
+};
+
+export const deployToWordpress = async (
+  wordpressDeployRequest: WordpressDeployRequest,
+  options?: RequestInit,
+): Promise<DeployResult> => {
+  return customFetch<DeployResult>(getDeployToWordpressUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(wordpressDeployRequest),
+  });
+};
+
+export const getDeployToWordpressMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deployToWordpress>>,
+    TError,
+    { data: BodyType<WordpressDeployRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deployToWordpress>>,
+  TError,
+  { data: BodyType<WordpressDeployRequest> },
+  TContext
+> => {
+  const mutationKey = ["deployToWordpress"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deployToWordpress>>,
+    { data: BodyType<WordpressDeployRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return deployToWordpress(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeployToWordpressMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deployToWordpress>>
+>;
+export type DeployToWordpressMutationBody = BodyType<WordpressDeployRequest>;
+export type DeployToWordpressMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Push optimized HTML to a WordPress page or post
+ */
+export const useDeployToWordpress = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deployToWordpress>>,
+    TError,
+    { data: BodyType<WordpressDeployRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deployToWordpress>>,
+  TError,
+  { data: BodyType<WordpressDeployRequest> },
+  TContext
+> => {
+  return useMutation(getDeployToWordpressMutationOptions(options));
+};
+
+/**
+ * @summary Push optimized HTML to a Shopify page
+ */
+export const getDeployToShopifyUrl = () => {
+  return `/api/deploy/shopify`;
+};
+
+export const deployToShopify = async (
+  shopifyDeployRequest: ShopifyDeployRequest,
+  options?: RequestInit,
+): Promise<DeployResult> => {
+  return customFetch<DeployResult>(getDeployToShopifyUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(shopifyDeployRequest),
+  });
+};
+
+export const getDeployToShopifyMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deployToShopify>>,
+    TError,
+    { data: BodyType<ShopifyDeployRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deployToShopify>>,
+  TError,
+  { data: BodyType<ShopifyDeployRequest> },
+  TContext
+> => {
+  const mutationKey = ["deployToShopify"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deployToShopify>>,
+    { data: BodyType<ShopifyDeployRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return deployToShopify(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeployToShopifyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deployToShopify>>
+>;
+export type DeployToShopifyMutationBody = BodyType<ShopifyDeployRequest>;
+export type DeployToShopifyMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Push optimized HTML to a Shopify page
+ */
+export const useDeployToShopify = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deployToShopify>>,
+    TError,
+    { data: BodyType<ShopifyDeployRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deployToShopify>>,
+  TError,
+  { data: BodyType<ShopifyDeployRequest> },
+  TContext
+> => {
+  return useMutation(getDeployToShopifyMutationOptions(options));
 };
 
 /**

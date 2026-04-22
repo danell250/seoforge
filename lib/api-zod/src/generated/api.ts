@@ -80,6 +80,170 @@ export const CrawlSiteResponse = zod.object({
 });
 
 /**
+ * @summary Generate AEO answer blocks and FAQPage schema
+ */
+export const GenerateAeoBlockBody = zod.object({
+  html: zod.string(),
+  topic: zod.string().optional(),
+});
+
+export const GenerateAeoBlockResponse = zod.object({
+  html: zod.string(),
+  questions: zod.array(
+    zod.object({
+      question: zod.string(),
+      answer: zod.string(),
+    }),
+  ),
+  schemaJsonLd: zod.string(),
+});
+
+/**
+ * @summary List recent optimizations
+ */
+export const listOptimizationsResponseItemsItemScoreTechnicalMin = 0;
+export const listOptimizationsResponseItemsItemScoreTechnicalMax = 100;
+
+export const listOptimizationsResponseItemsItemScoreContentMin = 0;
+export const listOptimizationsResponseItemsItemScoreContentMax = 100;
+
+export const listOptimizationsResponseItemsItemScoreAeoMin = 0;
+export const listOptimizationsResponseItemsItemScoreAeoMax = 100;
+
+export const listOptimizationsResponseItemsItemScoreOverallMin = 0;
+export const listOptimizationsResponseItemsItemScoreOverallMax = 100;
+
+export const ListOptimizationsResponse = zod.object({
+  items: zod.array(
+    zod.object({
+      id: zod.number(),
+      filename: zod.string().nullish(),
+      title: zod.string().nullish(),
+      sourceUrl: zod.string().nullish(),
+      score: zod.object({
+        technical: zod
+          .number()
+          .min(listOptimizationsResponseItemsItemScoreTechnicalMin)
+          .max(listOptimizationsResponseItemsItemScoreTechnicalMax),
+        content: zod
+          .number()
+          .min(listOptimizationsResponseItemsItemScoreContentMin)
+          .max(listOptimizationsResponseItemsItemScoreContentMax),
+        aeo: zod
+          .number()
+          .min(listOptimizationsResponseItemsItemScoreAeoMin)
+          .max(listOptimizationsResponseItemsItemScoreAeoMax),
+        overall: zod
+          .number()
+          .min(listOptimizationsResponseItemsItemScoreOverallMin)
+          .max(listOptimizationsResponseItemsItemScoreOverallMax),
+      }),
+      changesCount: zod.number(),
+      createdAt: zod.coerce.date(),
+    }),
+  ),
+});
+
+/**
+ * @summary Delete an optimization record
+ */
+export const DeleteOptimizationParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const DeleteOptimizationResponse = zod.object({
+  success: zod.boolean(),
+});
+
+/**
+ * @summary Aggregate dashboard stats
+ */
+export const getDashboardSummaryResponseRecentItemScoreTechnicalMin = 0;
+export const getDashboardSummaryResponseRecentItemScoreTechnicalMax = 100;
+
+export const getDashboardSummaryResponseRecentItemScoreContentMin = 0;
+export const getDashboardSummaryResponseRecentItemScoreContentMax = 100;
+
+export const getDashboardSummaryResponseRecentItemScoreAeoMin = 0;
+export const getDashboardSummaryResponseRecentItemScoreAeoMax = 100;
+
+export const getDashboardSummaryResponseRecentItemScoreOverallMin = 0;
+export const getDashboardSummaryResponseRecentItemScoreOverallMax = 100;
+
+export const GetDashboardSummaryResponse = zod.object({
+  totalPages: zod.number(),
+  avgOverall: zod.number(),
+  avgTechnical: zod.number(),
+  avgContent: zod.number(),
+  avgAeo: zod.number(),
+  greenCount: zod.number(),
+  orangeCount: zod.number(),
+  redCount: zod.number(),
+  recent: zod.array(
+    zod.object({
+      id: zod.number(),
+      filename: zod.string().nullish(),
+      title: zod.string().nullish(),
+      sourceUrl: zod.string().nullish(),
+      score: zod.object({
+        technical: zod
+          .number()
+          .min(getDashboardSummaryResponseRecentItemScoreTechnicalMin)
+          .max(getDashboardSummaryResponseRecentItemScoreTechnicalMax),
+        content: zod
+          .number()
+          .min(getDashboardSummaryResponseRecentItemScoreContentMin)
+          .max(getDashboardSummaryResponseRecentItemScoreContentMax),
+        aeo: zod
+          .number()
+          .min(getDashboardSummaryResponseRecentItemScoreAeoMin)
+          .max(getDashboardSummaryResponseRecentItemScoreAeoMax),
+        overall: zod
+          .number()
+          .min(getDashboardSummaryResponseRecentItemScoreOverallMin)
+          .max(getDashboardSummaryResponseRecentItemScoreOverallMax),
+      }),
+      changesCount: zod.number(),
+      createdAt: zod.coerce.date(),
+    }),
+  ),
+});
+
+/**
+ * @summary Push optimized HTML to a WordPress page or post
+ */
+export const DeployToWordpressBody = zod.object({
+  siteUrl: zod.string().url(),
+  username: zod.string(),
+  appPassword: zod.string(),
+  postType: zod.enum(["pages", "posts"]),
+  postId: zod.number(),
+  html: zod.string(),
+});
+
+export const DeployToWordpressResponse = zod.object({
+  success: zod.boolean(),
+  message: zod.string(),
+  url: zod.string().nullish(),
+});
+
+/**
+ * @summary Push optimized HTML to a Shopify page
+ */
+export const DeployToShopifyBody = zod.object({
+  shop: zod.string(),
+  accessToken: zod.string(),
+  pageId: zod.number(),
+  html: zod.string(),
+});
+
+export const DeployToShopifyResponse = zod.object({
+  success: zod.boolean(),
+  message: zod.string(),
+  url: zod.string().nullish(),
+});
+
+/**
  * @summary Scan a competitor URL for SEO strategy
  */
 export const ScanCompetitorBody = zod.object({

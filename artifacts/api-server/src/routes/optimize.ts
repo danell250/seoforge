@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { OptimizeHtmlBody, OptimizeHtmlResponse } from "@workspace/api-zod";
+import { db, optimizationsTable } from "@workspace/db";
 import { getModel, extractJson } from "../lib/gemini";
 
 const router: IRouter = Router();
@@ -59,16 +60,35 @@ router.post("/optimize", async (req, res) => {
       return res.status(500).json({ message: "Optimization failed, please try again." });
     }
 
+    const score = {
+      technical: clamp(data.score.technical),
+      content: clamp(data.score.content),
+      aeo: clamp(data.score.aeo),
+      overall: clamp(data.score.overall),
+    };
+
     const safe = OptimizeHtmlResponse.parse({
       optimizedHtml: data.optimizedHtml,
       changes: data.changes,
-      score: {
-        technical: clamp(data.score.technical),
-        content: clamp(data.score.content),
-        aeo: clamp(data.score.aeo),
-        overall: clamp(data.score.overall),
-      },
+      score,
     });
+
+    try {
+      const titleMatch = data.optimizedHtml.match(/<title[^>]*>([^<]*)<\/title>/i);
+      await db.insert(optimizationsTable).values({
+        filename: filename ?? null,
+        title: titleMatch?.[1]?.trim() || null,
+        sourceUrl: null,
+        scoreTechnical: score.technical,
+        scoreContent: score.content,
+        scoreAeo: score.aeo,
+        scoreOverall: score.overall,
+        changesCount: data.changes.length,
+      });
+    } catch (persistErr) {
+      req.log.error({ err: persistErr }, "Failed to persist optimization");
+    }
+
     return res.json(safe);
   } catch (err) {
     req.log.error({ err }, "Gemini optimize call failed");

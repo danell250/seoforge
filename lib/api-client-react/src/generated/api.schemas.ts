@@ -74,6 +74,82 @@ export interface CrawlSiteResponseBody {
   pages: CrawledPage[];
 }
 
+export interface AeoBlockRequest {
+  html: string;
+  topic?: string;
+}
+
+export interface AeoQuestion {
+  question: string;
+  answer: string;
+}
+
+export interface AeoBlockResult {
+  html: string;
+  questions: AeoQuestion[];
+  schemaJsonLd: string;
+}
+
+export interface OptimizationRecord {
+  id: number;
+  filename?: string | null;
+  title?: string | null;
+  sourceUrl?: string | null;
+  score: SeoScore;
+  changesCount: number;
+  createdAt: string;
+}
+
+export interface OptimizationListResult {
+  items: OptimizationRecord[];
+}
+
+export interface DashboardSummaryResult {
+  totalPages: number;
+  avgOverall: number;
+  avgTechnical: number;
+  avgContent: number;
+  avgAeo: number;
+  greenCount: number;
+  orangeCount: number;
+  redCount: number;
+  recent: OptimizationRecord[];
+}
+
+export interface DeleteResult {
+  success: boolean;
+}
+
+export type WordpressDeployRequestPostType =
+  (typeof WordpressDeployRequestPostType)[keyof typeof WordpressDeployRequestPostType];
+
+export const WordpressDeployRequestPostType = {
+  pages: "pages",
+  posts: "posts",
+} as const;
+
+export interface WordpressDeployRequest {
+  siteUrl: string;
+  username: string;
+  appPassword: string;
+  postType: WordpressDeployRequestPostType;
+  postId: number;
+  html: string;
+}
+
+export interface ShopifyDeployRequest {
+  shop: string;
+  accessToken: string;
+  pageId: number;
+  html: string;
+}
+
+export interface DeployResult {
+  success: boolean;
+  message: string;
+  url?: string | null;
+}
+
 export type CompetitorScanStrategy = {
   metaStrategy: string;
   targetKeywords: string[];

@@ -11,6 +11,7 @@ export function Navbar() {
         <nav className="hidden md:flex items-center space-x-6 text-sm font-medium text-muted-foreground">
           <Link href="/#features" className="hover:text-foreground transition-colors">Features</Link>
           <Link href="/pricing" className="hover:text-foreground transition-colors">Pricing</Link>
+          <Link href="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
         </nav>
         <div className="flex items-center space-x-4">
           <Link href="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
