@@ -18,6 +18,8 @@ import type {
 
 import type {
   CompetitorScan,
+  CrawlSiteRequest,
+  CrawlSiteResponseBody,
   ErrorResponse,
   HealthStatus,
   OptimizeRequest,
@@ -193,6 +195,92 @@ export const useOptimizeHtml = <
   TContext
 > => {
   return useMutation(getOptimizeHtmlMutationOptions(options));
+};
+
+/**
+ * @summary Crawl a website and return discovered HTML pages
+ */
+export const getCrawlSiteUrl = () => {
+  return `/api/crawl-site`;
+};
+
+export const crawlSite = async (
+  crawlSiteRequest: CrawlSiteRequest,
+  options?: RequestInit,
+): Promise<CrawlSiteResponseBody> => {
+  return customFetch<CrawlSiteResponseBody>(getCrawlSiteUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(crawlSiteRequest),
+  });
+};
+
+export const getCrawlSiteMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof crawlSite>>,
+    TError,
+    { data: BodyType<CrawlSiteRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof crawlSite>>,
+  TError,
+  { data: BodyType<CrawlSiteRequest> },
+  TContext
+> => {
+  const mutationKey = ["crawlSite"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof crawlSite>>,
+    { data: BodyType<CrawlSiteRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return crawlSite(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CrawlSiteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof crawlSite>>
+>;
+export type CrawlSiteMutationBody = BodyType<CrawlSiteRequest>;
+export type CrawlSiteMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Crawl a website and return discovered HTML pages
+ */
+export const useCrawlSite = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof crawlSite>>,
+    TError,
+    { data: BodyType<CrawlSiteRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof crawlSite>>,
+  TError,
+  { data: BodyType<CrawlSiteRequest> },
+  TContext
+> => {
+  return useMutation(getCrawlSiteMutationOptions(options));
 };
 
 /**

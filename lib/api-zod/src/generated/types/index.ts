@@ -8,6 +8,9 @@
 
 export * from "./competitorScan";
 export * from "./competitorScanStrategy";
+export * from "./crawledPage";
+export * from "./crawlSiteRequest";
+export * from "./crawlSiteResponseBody";
 export * from "./errorResponse";
 export * from "./healthStatus";
 export * from "./optimizeRequest";

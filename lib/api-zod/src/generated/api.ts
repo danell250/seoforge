@@ -58,6 +58,28 @@ export const OptimizeHtmlResponse = zod.object({
 });
 
 /**
+ * @summary Crawl a website and return discovered HTML pages
+ */
+export const crawlSiteBodyMaxPagesMax = 50;
+
+export const CrawlSiteBody = zod.object({
+  url: zod.string().url(),
+  maxPages: zod.number().min(1).max(crawlSiteBodyMaxPagesMax).optional(),
+});
+
+export const CrawlSiteResponse = zod.object({
+  domain: zod.string(),
+  pages: zod.array(
+    zod.object({
+      url: zod.string(),
+      filename: zod.string(),
+      html: zod.string(),
+      title: zod.string(),
+    }),
+  ),
+});
+
+/**
  * @summary Scan a competitor URL for SEO strategy
  */
 export const ScanCompetitorBody = zod.object({

@@ -53,6 +53,27 @@ export interface ScanCompetitorRequest {
   url: string;
 }
 
+export interface CrawlSiteRequest {
+  url: string;
+  /**
+   * @minimum 1
+   * @maximum 50
+   */
+  maxPages?: number;
+}
+
+export interface CrawledPage {
+  url: string;
+  filename: string;
+  html: string;
+  title: string;
+}
+
+export interface CrawlSiteResponseBody {
+  domain: string;
+  pages: CrawledPage[];
+}
+
 export type CompetitorScanStrategy = {
   metaStrategy: string;
   targetKeywords: string[];

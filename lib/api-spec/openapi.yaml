@@ -55,6 +55,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /crawl-site:
+    post:
+      operationId: crawlSite
+      tags: [seo]
+      summary: Crawl a website and return discovered HTML pages
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CrawlSiteRequest"
+      responses:
+        "200":
+          description: Pages discovered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrawlSiteResponseBody"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Crawl failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /scan-competitor:
     post:
       operationId: scanCompetitor
@@ -159,6 +189,46 @@ components:
           format: uri
       required:
         - url
+    CrawlSiteRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+        maxPages:
+          type: integer
+          minimum: 1
+          maximum: 50
+      required:
+        - url
+    CrawledPage:
+      type: object
+      properties:
+        url:
+          type: string
+        filename:
+          type: string
+        html:
+          type: string
+        title:
+          type: string
+      required:
+        - url
+        - filename
+        - html
+        - title
+    CrawlSiteResponseBody:
+      type: object
+      properties:
+        domain:
+          type: string
+        pages:
+          type: array
+          items:
+            $ref: "#/components/schemas/CrawledPage"
+      required:
+        - domain
+        - pages
     CompetitorScan:
       type: object
       properties:
