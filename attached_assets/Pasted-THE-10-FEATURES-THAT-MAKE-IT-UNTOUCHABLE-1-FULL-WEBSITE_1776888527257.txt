@@ -1,0 +1,31 @@
+THE 10 FEATURES THAT MAKE IT UNTOUCHABLE
+
+1. FULL WEBSITE CRAWLER — Not Just One Page
+Paste your domain URL. It crawls every single page automatically and optimizes them all in one run. Competitors make you do page by page. You do the whole site in one click.
+
+2. BEFORE/AFTER GOOGLE PREVIEW
+Show exactly how the page will look in Google search results before and after — the blue title link, the green URL, the description snippet. Visual proof of improvement. Nobody does this well.
+
+3. COMPETITOR SEO SCANNER
+Paste a competitor's URL. The tool reverse-engineers exactly what SEO and schema they're using. You steal their strategy in 10 seconds.
+
+4. AEO ANSWER BLOCK GENERATOR
+Automatically detects what questions your page should be answering based on the content, writes those Q&As, and injects FAQPage schema. Built specifically to win Google AI Overviews and Perplexity results. This alone is worth paying for.
+
+5. ONE-CLICK WORDPRESS/SHOPIFY DEPLOY
+Stop copying and pasting code. Connect your WordPress or Shopify store and it pushes the optimized code directly to your site. Done. No developer needed.
+
+6. SEO HEALTH SCORE DASHBOARD
+Every page gets a score out of 100. Broken down by Technical SEO, Content SEO, and AEO readiness. Clients love seeing numbers go up. Agencies will pay for this to show clients progress.
+
+7. AUTOMATIC SITEMAP + ROBOTS.TXT GENERATOR
+Generates and updates your sitemap.xml and robots.txt automatically every time you optimize a new page. Submits to Google Search Console via API.
+
+8. MULTILINGUAL SCHEMA SUPPORT
+Automatically detects language and adds hreflang tags. Huge for African businesses targeting multiple countries. Nobody is building SEO tools for the African multilingual market.
+
+9. WHITE LABEL FOR AGENCIES
+Agencies buy your tool, rebrand it as their own, and charge their clients for it. You make R999/month per agency. 100 agencies = R99,900/month doing nothing.
+
+10. AI CONTENT GAP DETECTOR
+Reads your page, checks what questions people are asking in your niche, tells you exactly what content is missing that's costing you rankings. Then writes it and adds it to your page automatically.
