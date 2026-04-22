@@ -3,20 +3,21 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: SEOForge API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: seo
+    description: SEO optimization operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +25,66 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /optimize:
+    post:
+      operationId: optimizeHtml
+      tags: [seo]
+      summary: Optimize HTML for SEO and AEO
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptimizeRequest"
+      responses:
+        "200":
+          description: Optimized HTML with changes and score
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OptimizeResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Optimization failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /scan-competitor:
+    post:
+      operationId: scanCompetitor
+      tags: [seo]
+      summary: Scan a competitor URL for SEO strategy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScanCompetitorRequest"
+      responses:
+        "200":
+          description: Competitor analysis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompetitorScan"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Scan failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +94,104 @@ components:
           type: string
       required:
         - status
-
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+    OptimizeRequest:
+      type: object
+      properties:
+        html:
+          type: string
+          description: The HTML source code to optimize
+        filename:
+          type: string
+          description: Optional filename for context
+      required:
+        - html
+    SeoScore:
+      type: object
+      properties:
+        technical:
+          type: integer
+          minimum: 0
+          maximum: 100
+        content:
+          type: integer
+          minimum: 0
+          maximum: 100
+        aeo:
+          type: integer
+          minimum: 0
+          maximum: 100
+        overall:
+          type: integer
+          minimum: 0
+          maximum: 100
+      required:
+        - technical
+        - content
+        - aeo
+        - overall
+    OptimizeResponse:
+      type: object
+      properties:
+        optimizedHtml:
+          type: string
+        changes:
+          type: array
+          items:
+            type: string
+        score:
+          $ref: "#/components/schemas/SeoScore"
+      required:
+        - optimizedHtml
+        - changes
+        - score
+    ScanCompetitorRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+      required:
+        - url
+    CompetitorScan:
+      type: object
+      properties:
+        url:
+          type: string
+        title:
+          type: string
+        strategy:
+          type: object
+          properties:
+            metaStrategy:
+              type: string
+            targetKeywords:
+              type: array
+              items:
+                type: string
+            schemaUsage:
+              type: array
+              items:
+                type: string
+            contentStructure:
+              type: string
+          required:
+            - metaStrategy
+            - targetKeywords
+            - schemaUsage
+            - contentStructure
+        beatThem:
+          type: array
+          items:
+            type: string
+      required:
+        - url
+        - title
+        - strategy
+        - beatThem
