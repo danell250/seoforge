@@ -150,6 +150,88 @@ export interface DeployResult {
   url?: string | null;
 }
 
+export interface AgencySettings {
+  brandName: string;
+  tagline: string;
+  logoUrl?: string | null;
+  primaryColor: string;
+  supportEmail?: string | null;
+  websiteUrl?: string | null;
+}
+
+export interface AgencySettingsInput {
+  /**
+   * @minLength 1
+   * @maxLength 60
+   */
+  brandName: string;
+  /**
+   * @minLength 1
+   * @maxLength 200
+   */
+  tagline: string;
+  logoUrl?: string | null;
+  /** @pattern ^#[0-9a-fA-F]{6}$ */
+  primaryColor: string;
+  supportEmail?: string | null;
+  websiteUrl?: string | null;
+}
+
+export interface SitemapUrlRecord {
+  id: number;
+  url: string;
+  priority: number;
+  changefreq: string;
+  createdAt: string;
+}
+
+export type SitemapUrlInputChangefreq =
+  (typeof SitemapUrlInputChangefreq)[keyof typeof SitemapUrlInputChangefreq];
+
+export const SitemapUrlInputChangefreq = {
+  always: "always",
+  hourly: "hourly",
+  daily: "daily",
+  weekly: "weekly",
+  monthly: "monthly",
+  yearly: "yearly",
+  never: "never",
+} as const;
+
+export interface SitemapUrlInput {
+  url: string;
+  /**
+   * @minimum 0
+   * @maximum 100
+   */
+  priority?: number;
+  changefreq?: SitemapUrlInputChangefreq;
+}
+
+export interface SitemapUrlListResult {
+  items: SitemapUrlRecord[];
+}
+
+export interface DeleteOptimizationResponseAlias {
+  success: boolean;
+}
+
+export interface HreflangAlternate {
+  hreflang: string;
+  href: string;
+}
+
+export interface HreflangRequest {
+  html: string;
+  alternates: HreflangAlternate[];
+}
+
+export interface HreflangResult {
+  html: string;
+  detectedLanguage: string;
+  injectedTags: string[];
+}
+
 export type CompetitorScanStrategy = {
   metaStrategy: string;
   targetKeywords: string[];

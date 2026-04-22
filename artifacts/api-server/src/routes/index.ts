@@ -6,6 +6,9 @@ import crawlRouter from "./crawl";
 import aeoRouter from "./aeo";
 import deployRouter from "./deploy";
 import optimizationsRouter from "./optimizations";
+import agencyRouter from "./agency";
+import sitemapRouter from "./sitemap";
+import hreflangRouter from "./hreflang";
 
 const router: IRouter = Router();
 
@@ -16,5 +19,8 @@ router.use(crawlRouter);
 router.use(aeoRouter);
 router.use(deployRouter);
 router.use(optimizationsRouter);
+router.use(agencyRouter);
+router.use(sitemapRouter);
+router.use(hreflangRouter);
 
 export default router;

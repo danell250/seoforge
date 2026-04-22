@@ -8,6 +8,7 @@ import Pricing from "@/pages/pricing";
 import Login from "@/pages/login";
 import AppWorkspace from "@/pages/app";
 import Dashboard from "@/pages/dashboard";
+import Settings from "@/pages/settings";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/app" component={AppWorkspace} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>
   );

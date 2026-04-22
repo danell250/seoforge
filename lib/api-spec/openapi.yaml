@@ -223,6 +223,124 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /agency-settings:
+    get:
+      operationId: getAgencySettings
+      tags: [seo]
+      summary: Get current agency white-label settings
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgencySettings"
+    put:
+      operationId: updateAgencySettings
+      tags: [seo]
+      summary: Update agency white-label settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgencySettingsInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgencySettings"
+        "400":
+          description: Invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /sitemap-urls:
+    get:
+      operationId: listSitemapUrls
+      tags: [seo]
+      summary: List sitemap entries
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SitemapUrlListResult"
+    post:
+      operationId: addSitemapUrl
+      tags: [seo]
+      summary: Add a URL to the sitemap
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SitemapUrlInput"
+      responses:
+        "200":
+          description: Added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SitemapUrlRecord"
+        "400":
+          description: Invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /sitemap-urls/{id}:
+    delete:
+      operationId: deleteSitemapUrl
+      tags: [seo]
+      summary: Remove a URL from the sitemap
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteOptimizationResponseAlias"
+  /hreflang:
+    post:
+      operationId: applyHreflang
+      tags: [seo]
+      summary: Detect language and inject hreflang alternates into HTML
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HreflangRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HreflangResult"
+        "400":
+          description: Invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /scan-competitor:
     post:
       operationId: scanCompetitor
@@ -529,6 +647,144 @@ components:
       required:
         - success
         - message
+    AgencySettings:
+      type: object
+      properties:
+        brandName:
+          type: string
+        tagline:
+          type: string
+        logoUrl:
+          type: string
+          nullable: true
+        primaryColor:
+          type: string
+        supportEmail:
+          type: string
+          nullable: true
+        websiteUrl:
+          type: string
+          nullable: true
+      required:
+        - brandName
+        - tagline
+        - primaryColor
+    AgencySettingsInput:
+      type: object
+      properties:
+        brandName:
+          type: string
+          minLength: 1
+          maxLength: 60
+        tagline:
+          type: string
+          minLength: 1
+          maxLength: 200
+        logoUrl:
+          type: string
+          nullable: true
+        primaryColor:
+          type: string
+          pattern: "^#[0-9a-fA-F]{6}$"
+        supportEmail:
+          type: string
+          nullable: true
+        websiteUrl:
+          type: string
+          nullable: true
+      required:
+        - brandName
+        - tagline
+        - primaryColor
+    SitemapUrlRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+        url:
+          type: string
+        priority:
+          type: integer
+        changefreq:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - url
+        - priority
+        - changefreq
+        - createdAt
+    SitemapUrlInput:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+        priority:
+          type: integer
+          minimum: 0
+          maximum: 100
+        changefreq:
+          type: string
+          enum: [always, hourly, daily, weekly, monthly, yearly, never]
+      required:
+        - url
+    SitemapUrlListResult:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SitemapUrlRecord"
+      required:
+        - items
+    DeleteOptimizationResponseAlias:
+      type: object
+      properties:
+        success:
+          type: boolean
+      required:
+        - success
+    HreflangAlternate:
+      type: object
+      properties:
+        hreflang:
+          type: string
+        href:
+          type: string
+          format: uri
+      required:
+        - hreflang
+        - href
+    HreflangRequest:
+      type: object
+      properties:
+        html:
+          type: string
+        alternates:
+          type: array
+          items:
+            $ref: "#/components/schemas/HreflangAlternate"
+      required:
+        - html
+        - alternates
+    HreflangResult:
+      type: object
+      properties:
+        html:
+          type: string
+        detectedLanguage:
+          type: string
+        injectedTags:
+          type: array
+          items:
+            type: string
+      required:
+        - html
+        - detectedLanguage
+        - injectedTags
     CompetitorScan:
       type: object
       properties:

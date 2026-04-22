@@ -7,6 +7,8 @@ import { CompetitorScanner } from "@/components/app/competitor-scanner";
 import { SiteCrawler } from "@/components/app/site-crawler";
 import { AeoAnswerBlock } from "@/components/app/aeo-answer-block";
 import { DeployPanel } from "@/components/app/deploy-panel";
+import { SitemapGenerator } from "@/components/app/sitemap-generator";
+import { HreflangTool } from "@/components/app/hreflang-tool";
 
 export default function AppWorkspace() {
   return (
@@ -29,6 +31,8 @@ export default function AppWorkspace() {
               <TabsTrigger value="site-crawler" className="flex-1 md:flex-none">Full Site Crawler</TabsTrigger>
               <TabsTrigger value="zip-upload" className="flex-1 md:flex-none">Bulk ZIP Upload</TabsTrigger>
               <TabsTrigger value="competitor" className="flex-1 md:flex-none">Competitor Scanner</TabsTrigger>
+              <TabsTrigger value="hreflang" className="flex-1 md:flex-none">Hreflang</TabsTrigger>
+              <TabsTrigger value="sitemap" className="flex-1 md:flex-none">Sitemap &amp; Robots</TabsTrigger>
               <TabsTrigger value="deploy" className="flex-1 md:flex-none">Deploy</TabsTrigger>
             </TabsList>
 
@@ -50,6 +54,14 @@ export default function AppWorkspace() {
 
             <TabsContent value="competitor" className="m-0">
               <CompetitorScanner />
+            </TabsContent>
+
+            <TabsContent value="hreflang" className="m-0">
+              <HreflangTool />
+            </TabsContent>
+
+            <TabsContent value="sitemap" className="m-0">
+              <SitemapGenerator />
             </TabsContent>
 
             <TabsContent value="deploy" className="m-0">

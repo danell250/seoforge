@@ -244,6 +244,118 @@ export const DeployToShopifyResponse = zod.object({
 });
 
 /**
+ * @summary Get current agency white-label settings
+ */
+export const GetAgencySettingsResponse = zod.object({
+  brandName: zod.string(),
+  tagline: zod.string(),
+  logoUrl: zod.string().nullish(),
+  primaryColor: zod.string(),
+  supportEmail: zod.string().nullish(),
+  websiteUrl: zod.string().nullish(),
+});
+
+/**
+ * @summary Update agency white-label settings
+ */
+export const updateAgencySettingsBodyBrandNameMax = 60;
+
+export const updateAgencySettingsBodyTaglineMax = 200;
+
+export const updateAgencySettingsBodyPrimaryColorRegExp = new RegExp(
+  "^#[0-9a-fA-F]{6}$",
+);
+
+export const UpdateAgencySettingsBody = zod.object({
+  brandName: zod.string().min(1).max(updateAgencySettingsBodyBrandNameMax),
+  tagline: zod.string().min(1).max(updateAgencySettingsBodyTaglineMax),
+  logoUrl: zod.string().nullish(),
+  primaryColor: zod.string().regex(updateAgencySettingsBodyPrimaryColorRegExp),
+  supportEmail: zod.string().nullish(),
+  websiteUrl: zod.string().nullish(),
+});
+
+export const UpdateAgencySettingsResponse = zod.object({
+  brandName: zod.string(),
+  tagline: zod.string(),
+  logoUrl: zod.string().nullish(),
+  primaryColor: zod.string(),
+  supportEmail: zod.string().nullish(),
+  websiteUrl: zod.string().nullish(),
+});
+
+/**
+ * @summary List sitemap entries
+ */
+export const ListSitemapUrlsResponse = zod.object({
+  items: zod.array(
+    zod.object({
+      id: zod.number(),
+      url: zod.string(),
+      priority: zod.number(),
+      changefreq: zod.string(),
+      createdAt: zod.coerce.date(),
+    }),
+  ),
+});
+
+/**
+ * @summary Add a URL to the sitemap
+ */
+export const addSitemapUrlBodyPriorityMin = 0;
+export const addSitemapUrlBodyPriorityMax = 100;
+
+export const AddSitemapUrlBody = zod.object({
+  url: zod.string().url(),
+  priority: zod
+    .number()
+    .min(addSitemapUrlBodyPriorityMin)
+    .max(addSitemapUrlBodyPriorityMax)
+    .optional(),
+  changefreq: zod
+    .enum(["always", "hourly", "daily", "weekly", "monthly", "yearly", "never"])
+    .optional(),
+});
+
+export const AddSitemapUrlResponse = zod.object({
+  id: zod.number(),
+  url: zod.string(),
+  priority: zod.number(),
+  changefreq: zod.string(),
+  createdAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Remove a URL from the sitemap
+ */
+export const DeleteSitemapUrlParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const DeleteSitemapUrlResponse = zod.object({
+  success: zod.boolean(),
+});
+
+/**
+ * @summary Detect language and inject hreflang alternates into HTML
+ */
+export const ApplyHreflangBody = zod.object({
+  html: zod.string(),
+  alternates: zod.array(
+    zod.object({
+      hreflang: zod.string(),
+      href: zod.string().url(),
+    }),
+  ),
+});
+
+export const ApplyHreflangResponse = zod.object({
+  html: zod.string(),
+  detectedLanguage: zod.string(),
+  injectedTags: zod.array(zod.string()),
+});
+
+/**
  * @summary Scan a competitor URL for SEO strategy
  */
 export const ScanCompetitorBody = zod.object({

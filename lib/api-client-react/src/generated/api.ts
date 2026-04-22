@@ -19,19 +19,27 @@ import type {
 import type {
   AeoBlockRequest,
   AeoBlockResult,
+  AgencySettings,
+  AgencySettingsInput,
   CompetitorScan,
   CrawlSiteRequest,
   CrawlSiteResponseBody,
   DashboardSummaryResult,
+  DeleteOptimizationResponseAlias,
   DeleteResult,
   DeployResult,
   ErrorResponse,
   HealthStatus,
+  HreflangRequest,
+  HreflangResult,
   OptimizationListResult,
   OptimizeRequest,
   OptimizeResponse,
   ScanCompetitorRequest,
   ShopifyDeployRequest,
+  SitemapUrlInput,
+  SitemapUrlListResult,
+  SitemapUrlRecord,
   WordpressDeployRequest,
 } from "./api.schemas";
 
@@ -781,6 +789,501 @@ export const useDeployToShopify = <
   TContext
 > => {
   return useMutation(getDeployToShopifyMutationOptions(options));
+};
+
+/**
+ * @summary Get current agency white-label settings
+ */
+export const getGetAgencySettingsUrl = () => {
+  return `/api/agency-settings`;
+};
+
+export const getAgencySettings = async (
+  options?: RequestInit,
+): Promise<AgencySettings> => {
+  return customFetch<AgencySettings>(getGetAgencySettingsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetAgencySettingsQueryKey = () => {
+  return [`/api/agency-settings`] as const;
+};
+
+export const getGetAgencySettingsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAgencySettings>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getAgencySettings>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetAgencySettingsQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getAgencySettings>>
+  > = ({ signal }) => getAgencySettings({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAgencySettings>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetAgencySettingsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAgencySettings>>
+>;
+export type GetAgencySettingsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get current agency white-label settings
+ */
+
+export function useGetAgencySettings<
+  TData = Awaited<ReturnType<typeof getAgencySettings>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getAgencySettings>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetAgencySettingsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Update agency white-label settings
+ */
+export const getUpdateAgencySettingsUrl = () => {
+  return `/api/agency-settings`;
+};
+
+export const updateAgencySettings = async (
+  agencySettingsInput: AgencySettingsInput,
+  options?: RequestInit,
+): Promise<AgencySettings> => {
+  return customFetch<AgencySettings>(getUpdateAgencySettingsUrl(), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(agencySettingsInput),
+  });
+};
+
+export const getUpdateAgencySettingsMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateAgencySettings>>,
+    TError,
+    { data: BodyType<AgencySettingsInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateAgencySettings>>,
+  TError,
+  { data: BodyType<AgencySettingsInput> },
+  TContext
+> => {
+  const mutationKey = ["updateAgencySettings"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateAgencySettings>>,
+    { data: BodyType<AgencySettingsInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return updateAgencySettings(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateAgencySettingsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateAgencySettings>>
+>;
+export type UpdateAgencySettingsMutationBody = BodyType<AgencySettingsInput>;
+export type UpdateAgencySettingsMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Update agency white-label settings
+ */
+export const useUpdateAgencySettings = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateAgencySettings>>,
+    TError,
+    { data: BodyType<AgencySettingsInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updateAgencySettings>>,
+  TError,
+  { data: BodyType<AgencySettingsInput> },
+  TContext
+> => {
+  return useMutation(getUpdateAgencySettingsMutationOptions(options));
+};
+
+/**
+ * @summary List sitemap entries
+ */
+export const getListSitemapUrlsUrl = () => {
+  return `/api/sitemap-urls`;
+};
+
+export const listSitemapUrls = async (
+  options?: RequestInit,
+): Promise<SitemapUrlListResult> => {
+  return customFetch<SitemapUrlListResult>(getListSitemapUrlsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListSitemapUrlsQueryKey = () => {
+  return [`/api/sitemap-urls`] as const;
+};
+
+export const getListSitemapUrlsQueryOptions = <
+  TData = Awaited<ReturnType<typeof listSitemapUrls>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listSitemapUrls>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListSitemapUrlsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listSitemapUrls>>> = ({
+    signal,
+  }) => listSitemapUrls({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listSitemapUrls>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListSitemapUrlsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listSitemapUrls>>
+>;
+export type ListSitemapUrlsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List sitemap entries
+ */
+
+export function useListSitemapUrls<
+  TData = Awaited<ReturnType<typeof listSitemapUrls>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listSitemapUrls>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListSitemapUrlsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Add a URL to the sitemap
+ */
+export const getAddSitemapUrlUrl = () => {
+  return `/api/sitemap-urls`;
+};
+
+export const addSitemapUrl = async (
+  sitemapUrlInput: SitemapUrlInput,
+  options?: RequestInit,
+): Promise<SitemapUrlRecord> => {
+  return customFetch<SitemapUrlRecord>(getAddSitemapUrlUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(sitemapUrlInput),
+  });
+};
+
+export const getAddSitemapUrlMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof addSitemapUrl>>,
+    TError,
+    { data: BodyType<SitemapUrlInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof addSitemapUrl>>,
+  TError,
+  { data: BodyType<SitemapUrlInput> },
+  TContext
+> => {
+  const mutationKey = ["addSitemapUrl"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof addSitemapUrl>>,
+    { data: BodyType<SitemapUrlInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return addSitemapUrl(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AddSitemapUrlMutationResult = NonNullable<
+  Awaited<ReturnType<typeof addSitemapUrl>>
+>;
+export type AddSitemapUrlMutationBody = BodyType<SitemapUrlInput>;
+export type AddSitemapUrlMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Add a URL to the sitemap
+ */
+export const useAddSitemapUrl = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof addSitemapUrl>>,
+    TError,
+    { data: BodyType<SitemapUrlInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof addSitemapUrl>>,
+  TError,
+  { data: BodyType<SitemapUrlInput> },
+  TContext
+> => {
+  return useMutation(getAddSitemapUrlMutationOptions(options));
+};
+
+/**
+ * @summary Remove a URL from the sitemap
+ */
+export const getDeleteSitemapUrlUrl = (id: number) => {
+  return `/api/sitemap-urls/${id}`;
+};
+
+export const deleteSitemapUrl = async (
+  id: number,
+  options?: RequestInit,
+): Promise<DeleteOptimizationResponseAlias> => {
+  return customFetch<DeleteOptimizationResponseAlias>(
+    getDeleteSitemapUrlUrl(id),
+    {
+      ...options,
+      method: "DELETE",
+    },
+  );
+};
+
+export const getDeleteSitemapUrlMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteSitemapUrl>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteSitemapUrl>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["deleteSitemapUrl"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteSitemapUrl>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteSitemapUrl(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteSitemapUrlMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteSitemapUrl>>
+>;
+
+export type DeleteSitemapUrlMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Remove a URL from the sitemap
+ */
+export const useDeleteSitemapUrl = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteSitemapUrl>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteSitemapUrl>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getDeleteSitemapUrlMutationOptions(options));
+};
+
+/**
+ * @summary Detect language and inject hreflang alternates into HTML
+ */
+export const getApplyHreflangUrl = () => {
+  return `/api/hreflang`;
+};
+
+export const applyHreflang = async (
+  hreflangRequest: HreflangRequest,
+  options?: RequestInit,
+): Promise<HreflangResult> => {
+  return customFetch<HreflangResult>(getApplyHreflangUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(hreflangRequest),
+  });
+};
+
+export const getApplyHreflangMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof applyHreflang>>,
+    TError,
+    { data: BodyType<HreflangRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof applyHreflang>>,
+  TError,
+  { data: BodyType<HreflangRequest> },
+  TContext
+> => {
+  const mutationKey = ["applyHreflang"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof applyHreflang>>,
+    { data: BodyType<HreflangRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return applyHreflang(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ApplyHreflangMutationResult = NonNullable<
+  Awaited<ReturnType<typeof applyHreflang>>
+>;
+export type ApplyHreflangMutationBody = BodyType<HreflangRequest>;
+export type ApplyHreflangMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Detect language and inject hreflang alternates into HTML
+ */
+export const useApplyHreflang = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof applyHreflang>>,
+    TError,
+    { data: BodyType<HreflangRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof applyHreflang>>,
+  TError,
+  { data: BodyType<HreflangRequest> },
+  TContext
+> => {
+  return useMutation(getApplyHreflangMutationOptions(options));
 };
 
 /**
