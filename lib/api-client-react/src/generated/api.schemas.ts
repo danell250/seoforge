@@ -275,3 +275,93 @@ export interface CompetitorScan {
   strategy: CompetitorScanStrategy;
   beatThem: string[];
 }
+
+export interface SimpleOk {
+  ok: boolean;
+  message?: string;
+}
+
+export type CreateMonitoredSiteRequestFrequency =
+  (typeof CreateMonitoredSiteRequestFrequency)[keyof typeof CreateMonitoredSiteRequestFrequency];
+
+export const CreateMonitoredSiteRequestFrequency = {
+  daily: "daily",
+  weekly: "weekly",
+  monthly: "monthly",
+} as const;
+
+export interface CreateMonitoredSiteRequest {
+  /** @minLength 3 */
+  url: string;
+  email: string;
+  /** @maxLength 200 */
+  topic?: string;
+  /** @maxLength 200 */
+  audience?: string;
+  /**
+   * @minimum 1
+   * @maximum 50
+   */
+  maxPages?: number;
+  frequency?: CreateMonitoredSiteRequestFrequency;
+}
+
+export interface MonitoredSite {
+  id: number;
+  url: string;
+  domain: string;
+  email: string;
+  topic?: string | null;
+  audience?: string | null;
+  frequency: string;
+  maxPages: number;
+  enabled: boolean;
+  nextRunAt: string;
+  lastRunAt?: string | null;
+  createdAt: string;
+}
+
+export interface MonitoredSiteList {
+  sites: MonitoredSite[];
+}
+
+export type MonitorPageDiffStatus =
+  (typeof MonitorPageDiffStatus)[keyof typeof MonitorPageDiffStatus];
+
+export const MonitorPageDiffStatus = {
+  new: "new",
+  removed: "removed",
+  regressed: "regressed",
+  improved: "improved",
+  unchanged: "unchanged",
+  error: "error",
+} as const;
+
+export interface MonitorPageDiff {
+  url: string;
+  title: string;
+  status: MonitorPageDiffStatus;
+  previousScore?: number | null;
+  currentScore?: number | null;
+  scoreDelta: number;
+  previousGaps?: number | null;
+  currentGaps: number;
+  newGapQuestions: string[];
+}
+
+export interface MonitorReport {
+  id: number;
+  siteId: number;
+  summary: string;
+  pagesScanned: number;
+  regressionsCount: number;
+  newGapsCount: number;
+  emailedTo?: string | null;
+  emailedAt?: string | null;
+  createdAt: string;
+  diffs: MonitorPageDiff[];
+}
+
+export interface MonitorReportList {
+  reports: MonitorReport[];
+}

@@ -10,6 +10,7 @@ import { DeployPanel } from "@/components/app/deploy-panel";
 import { SitemapGenerator } from "@/components/app/sitemap-generator";
 import { HreflangTool } from "@/components/app/hreflang-tool";
 import { ContentGapDetector } from "@/components/app/content-gap-detector";
+import { SiteMonitor } from "@/components/app/site-monitor";
 import { useEffect, useState } from "react";
 
 export default function AppWorkspace() {
@@ -57,6 +58,7 @@ export default function AppWorkspace() {
               <TabsTrigger value="competitor" className="flex-1 md:flex-none">Competitor Scanner</TabsTrigger>
               <TabsTrigger value="hreflang" className="flex-1 md:flex-none">Hreflang</TabsTrigger>
               <TabsTrigger value="sitemap" className="flex-1 md:flex-none">Sitemap &amp; Robots</TabsTrigger>
+              <TabsTrigger value="monitor" className="flex-1 md:flex-none">Monitor</TabsTrigger>
               <TabsTrigger value="deploy" className="flex-1 md:flex-none">Deploy</TabsTrigger>
             </TabsList>
 
@@ -90,6 +92,10 @@ export default function AppWorkspace() {
 
             <TabsContent value="sitemap" className="m-0">
               <SitemapGenerator />
+            </TabsContent>
+
+            <TabsContent value="monitor" className="m-0">
+              <SiteMonitor />
             </TabsContent>
 
             <TabsContent value="deploy" className="m-0">

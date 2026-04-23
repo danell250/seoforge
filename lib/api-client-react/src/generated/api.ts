@@ -26,6 +26,7 @@ import type {
   ContentGapResult,
   CrawlSiteRequest,
   CrawlSiteResponseBody,
+  CreateMonitoredSiteRequest,
   DashboardSummaryResult,
   DeleteOptimizationResponseAlias,
   DeleteResult,
@@ -34,11 +35,16 @@ import type {
   HealthStatus,
   HreflangRequest,
   HreflangResult,
+  MonitorReport,
+  MonitorReportList,
+  MonitoredSite,
+  MonitoredSiteList,
   OptimizationListResult,
   OptimizeRequest,
   OptimizeResponse,
   ScanCompetitorRequest,
   ShopifyDeployRequest,
+  SimpleOk,
   SitemapUrlInput,
   SitemapUrlListResult,
   SitemapUrlRecord,
@@ -1373,6 +1379,423 @@ export const useDetectContentGaps = <
 > => {
   return useMutation(getDetectContentGapsMutationOptions(options));
 };
+
+/**
+ * @summary List monitored sites
+ */
+export const getListMonitoredSitesUrl = () => {
+  return `/api/monitor/sites`;
+};
+
+export const listMonitoredSites = async (
+  options?: RequestInit,
+): Promise<MonitoredSiteList> => {
+  return customFetch<MonitoredSiteList>(getListMonitoredSitesUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListMonitoredSitesQueryKey = () => {
+  return [`/api/monitor/sites`] as const;
+};
+
+export const getListMonitoredSitesQueryOptions = <
+  TData = Awaited<ReturnType<typeof listMonitoredSites>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listMonitoredSites>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListMonitoredSitesQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listMonitoredSites>>
+  > = ({ signal }) => listMonitoredSites({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listMonitoredSites>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListMonitoredSitesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listMonitoredSites>>
+>;
+export type ListMonitoredSitesQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List monitored sites
+ */
+
+export function useListMonitoredSites<
+  TData = Awaited<ReturnType<typeof listMonitoredSites>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listMonitoredSites>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListMonitoredSitesQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Add a site to weekly monitoring
+ */
+export const getCreateMonitoredSiteUrl = () => {
+  return `/api/monitor/sites`;
+};
+
+export const createMonitoredSite = async (
+  createMonitoredSiteRequest: CreateMonitoredSiteRequest,
+  options?: RequestInit,
+): Promise<MonitoredSite> => {
+  return customFetch<MonitoredSite>(getCreateMonitoredSiteUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(createMonitoredSiteRequest),
+  });
+};
+
+export const getCreateMonitoredSiteMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createMonitoredSite>>,
+    TError,
+    { data: BodyType<CreateMonitoredSiteRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createMonitoredSite>>,
+  TError,
+  { data: BodyType<CreateMonitoredSiteRequest> },
+  TContext
+> => {
+  const mutationKey = ["createMonitoredSite"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createMonitoredSite>>,
+    { data: BodyType<CreateMonitoredSiteRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createMonitoredSite(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateMonitoredSiteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createMonitoredSite>>
+>;
+export type CreateMonitoredSiteMutationBody =
+  BodyType<CreateMonitoredSiteRequest>;
+export type CreateMonitoredSiteMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Add a site to weekly monitoring
+ */
+export const useCreateMonitoredSite = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createMonitoredSite>>,
+    TError,
+    { data: BodyType<CreateMonitoredSiteRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createMonitoredSite>>,
+  TError,
+  { data: BodyType<CreateMonitoredSiteRequest> },
+  TContext
+> => {
+  return useMutation(getCreateMonitoredSiteMutationOptions(options));
+};
+
+/**
+ * @summary Remove a monitored site
+ */
+export const getDeleteMonitoredSiteUrl = (id: number) => {
+  return `/api/monitor/sites/${id}`;
+};
+
+export const deleteMonitoredSite = async (
+  id: number,
+  options?: RequestInit,
+): Promise<SimpleOk> => {
+  return customFetch<SimpleOk>(getDeleteMonitoredSiteUrl(id), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDeleteMonitoredSiteMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMonitoredSite>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteMonitoredSite>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["deleteMonitoredSite"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteMonitoredSite>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteMonitoredSite(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteMonitoredSiteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteMonitoredSite>>
+>;
+
+export type DeleteMonitoredSiteMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Remove a monitored site
+ */
+export const useDeleteMonitoredSite = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMonitoredSite>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteMonitoredSite>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getDeleteMonitoredSiteMutationOptions(options));
+};
+
+/**
+ * @summary Trigger an immediate re-crawl and diff for a monitored site
+ */
+export const getRunMonitoredSiteUrl = (id: number) => {
+  return `/api/monitor/sites/${id}/run`;
+};
+
+export const runMonitoredSite = async (
+  id: number,
+  options?: RequestInit,
+): Promise<MonitorReport> => {
+  return customFetch<MonitorReport>(getRunMonitoredSiteUrl(id), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getRunMonitoredSiteMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof runMonitoredSite>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof runMonitoredSite>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["runMonitoredSite"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof runMonitoredSite>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return runMonitoredSite(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RunMonitoredSiteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof runMonitoredSite>>
+>;
+
+export type RunMonitoredSiteMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Trigger an immediate re-crawl and diff for a monitored site
+ */
+export const useRunMonitoredSite = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof runMonitoredSite>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof runMonitoredSite>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getRunMonitoredSiteMutationOptions(options));
+};
+
+/**
+ * @summary List historical reports for a monitored site
+ */
+export const getListMonitorReportsUrl = (id: number) => {
+  return `/api/monitor/sites/${id}/reports`;
+};
+
+export const listMonitorReports = async (
+  id: number,
+  options?: RequestInit,
+): Promise<MonitorReportList> => {
+  return customFetch<MonitorReportList>(getListMonitorReportsUrl(id), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListMonitorReportsQueryKey = (id: number) => {
+  return [`/api/monitor/sites/${id}/reports`] as const;
+};
+
+export const getListMonitorReportsQueryOptions = <
+  TData = Awaited<ReturnType<typeof listMonitorReports>>,
+  TError = ErrorType<unknown>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listMonitorReports>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListMonitorReportsQueryKey(id);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listMonitorReports>>
+  > = ({ signal }) => listMonitorReports(id, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof listMonitorReports>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListMonitorReportsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listMonitorReports>>
+>;
+export type ListMonitorReportsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List historical reports for a monitored site
+ */
+
+export function useListMonitorReports<
+  TData = Awaited<ReturnType<typeof listMonitorReports>>,
+  TError = ErrorType<unknown>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listMonitorReports>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListMonitorReportsQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
 
 /**
  * @summary Scan a competitor URL for SEO strategy

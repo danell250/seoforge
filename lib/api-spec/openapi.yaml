@@ -371,6 +371,104 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /monitor/sites:
+    get:
+      operationId: listMonitoredSites
+      tags: [seo]
+      summary: List monitored sites
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonitoredSiteList"
+    post:
+      operationId: createMonitoredSite
+      tags: [seo]
+      summary: Add a site to weekly monitoring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMonitoredSiteRequest"
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonitoredSite"
+        "400":
+          description: Invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /monitor/sites/{id}:
+    delete:
+      operationId: deleteMonitoredSite
+      tags: [seo]
+      summary: Remove a monitored site
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SimpleOk"
+  /monitor/sites/{id}/run:
+    post:
+      operationId: runMonitoredSite
+      tags: [seo]
+      summary: Trigger an immediate re-crawl and diff for a monitored site
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Report created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonitorReport"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Run failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /monitor/sites/{id}/reports:
+    get:
+      operationId: listMonitorReports
+      tags: [seo]
+      summary: List historical reports for a monitored site
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonitorReportList"
   /scan-competitor:
     post:
       operationId: scanCompetitor
@@ -901,3 +999,80 @@ components:
         - title
         - strategy
         - beatThem
+    SimpleOk:
+      type: object
+      properties:
+        ok: { type: boolean }
+        message: { type: string }
+      required: [ok]
+    CreateMonitoredSiteRequest:
+      type: object
+      properties:
+        url: { type: string, minLength: 3 }
+        email: { type: string, format: email }
+        topic: { type: string, maxLength: 200 }
+        audience: { type: string, maxLength: 200 }
+        maxPages: { type: integer, minimum: 1, maximum: 50 }
+        frequency: { type: string, enum: [daily, weekly, monthly] }
+      required: [url, email]
+    MonitoredSite:
+      type: object
+      properties:
+        id: { type: integer }
+        url: { type: string }
+        domain: { type: string }
+        email: { type: string }
+        topic: { type: string, nullable: true }
+        audience: { type: string, nullable: true }
+        frequency: { type: string }
+        maxPages: { type: integer }
+        enabled: { type: boolean }
+        nextRunAt: { type: string }
+        lastRunAt: { type: string, nullable: true }
+        createdAt: { type: string }
+      required: [id, url, domain, email, frequency, maxPages, enabled, nextRunAt, createdAt]
+    MonitoredSiteList:
+      type: object
+      properties:
+        sites:
+          type: array
+          items: { $ref: "#/components/schemas/MonitoredSite" }
+      required: [sites]
+    MonitorPageDiff:
+      type: object
+      properties:
+        url: { type: string }
+        title: { type: string }
+        status: { type: string, enum: [new, removed, regressed, improved, unchanged, error] }
+        previousScore: { type: integer, nullable: true }
+        currentScore: { type: integer, nullable: true }
+        scoreDelta: { type: integer }
+        previousGaps: { type: integer, nullable: true }
+        currentGaps: { type: integer }
+        newGapQuestions:
+          type: array
+          items: { type: string }
+      required: [url, title, status, scoreDelta, currentGaps, newGapQuestions]
+    MonitorReport:
+      type: object
+      properties:
+        id: { type: integer }
+        siteId: { type: integer }
+        summary: { type: string }
+        pagesScanned: { type: integer }
+        regressionsCount: { type: integer }
+        newGapsCount: { type: integer }
+        emailedTo: { type: string, nullable: true }
+        emailedAt: { type: string, nullable: true }
+        createdAt: { type: string }
+        diffs:
+          type: array
+          items: { $ref: "#/components/schemas/MonitorPageDiff" }
+      required: [id, siteId, summary, pagesScanned, regressionsCount, newGapsCount, createdAt, diffs]
+    MonitorReportList:
+      type: object
+      properties:
+        reports:
+          type: array
+          items: { $ref: "#/components/schemas/MonitorReport" }
+      required: [reports]

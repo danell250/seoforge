@@ -380,6 +380,161 @@ export const DetectContentGapsResponse = zod.object({
 });
 
 /**
+ * @summary List monitored sites
+ */
+export const ListMonitoredSitesResponse = zod.object({
+  sites: zod.array(
+    zod.object({
+      id: zod.number(),
+      url: zod.string(),
+      domain: zod.string(),
+      email: zod.string(),
+      topic: zod.string().nullish(),
+      audience: zod.string().nullish(),
+      frequency: zod.string(),
+      maxPages: zod.number(),
+      enabled: zod.boolean(),
+      nextRunAt: zod.string(),
+      lastRunAt: zod.string().nullish(),
+      createdAt: zod.string(),
+    }),
+  ),
+});
+
+/**
+ * @summary Add a site to weekly monitoring
+ */
+export const createMonitoredSiteBodyUrlMin = 3;
+
+export const createMonitoredSiteBodyTopicMax = 200;
+
+export const createMonitoredSiteBodyAudienceMax = 200;
+
+export const createMonitoredSiteBodyMaxPagesMax = 50;
+
+export const CreateMonitoredSiteBody = zod.object({
+  url: zod.string().min(createMonitoredSiteBodyUrlMin),
+  email: zod.string().email(),
+  topic: zod.string().max(createMonitoredSiteBodyTopicMax).optional(),
+  audience: zod.string().max(createMonitoredSiteBodyAudienceMax).optional(),
+  maxPages: zod
+    .number()
+    .min(1)
+    .max(createMonitoredSiteBodyMaxPagesMax)
+    .optional(),
+  frequency: zod.enum(["daily", "weekly", "monthly"]).optional(),
+});
+
+export const CreateMonitoredSiteResponse = zod.object({
+  id: zod.number(),
+  url: zod.string(),
+  domain: zod.string(),
+  email: zod.string(),
+  topic: zod.string().nullish(),
+  audience: zod.string().nullish(),
+  frequency: zod.string(),
+  maxPages: zod.number(),
+  enabled: zod.boolean(),
+  nextRunAt: zod.string(),
+  lastRunAt: zod.string().nullish(),
+  createdAt: zod.string(),
+});
+
+/**
+ * @summary Remove a monitored site
+ */
+export const DeleteMonitoredSiteParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const DeleteMonitoredSiteResponse = zod.object({
+  ok: zod.boolean(),
+  message: zod.string().optional(),
+});
+
+/**
+ * @summary Trigger an immediate re-crawl and diff for a monitored site
+ */
+export const RunMonitoredSiteParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const RunMonitoredSiteResponse = zod.object({
+  id: zod.number(),
+  siteId: zod.number(),
+  summary: zod.string(),
+  pagesScanned: zod.number(),
+  regressionsCount: zod.number(),
+  newGapsCount: zod.number(),
+  emailedTo: zod.string().nullish(),
+  emailedAt: zod.string().nullish(),
+  createdAt: zod.string(),
+  diffs: zod.array(
+    zod.object({
+      url: zod.string(),
+      title: zod.string(),
+      status: zod.enum([
+        "new",
+        "removed",
+        "regressed",
+        "improved",
+        "unchanged",
+        "error",
+      ]),
+      previousScore: zod.number().nullish(),
+      currentScore: zod.number().nullish(),
+      scoreDelta: zod.number(),
+      previousGaps: zod.number().nullish(),
+      currentGaps: zod.number(),
+      newGapQuestions: zod.array(zod.string()),
+    }),
+  ),
+});
+
+/**
+ * @summary List historical reports for a monitored site
+ */
+export const ListMonitorReportsParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const ListMonitorReportsResponse = zod.object({
+  reports: zod.array(
+    zod.object({
+      id: zod.number(),
+      siteId: zod.number(),
+      summary: zod.string(),
+      pagesScanned: zod.number(),
+      regressionsCount: zod.number(),
+      newGapsCount: zod.number(),
+      emailedTo: zod.string().nullish(),
+      emailedAt: zod.string().nullish(),
+      createdAt: zod.string(),
+      diffs: zod.array(
+        zod.object({
+          url: zod.string(),
+          title: zod.string(),
+          status: zod.enum([
+            "new",
+            "removed",
+            "regressed",
+            "improved",
+            "unchanged",
+            "error",
+          ]),
+          previousScore: zod.number().nullish(),
+          currentScore: zod.number().nullish(),
+          scoreDelta: zod.number(),
+          previousGaps: zod.number().nullish(),
+          currentGaps: zod.number(),
+          newGapQuestions: zod.array(zod.string()),
+        }),
+      ),
+    }),
+  ),
+});
+
+/**
  * @summary Scan a competitor URL for SEO strategy
  */
 export const ScanCompetitorBody = zod.object({
