@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useCrawlSite, useOptimizeHtml } from "@workspace/api-client-react";
+import { useCrawlSite, useOptimizeHtml, useDetectContentGaps } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Globe,
@@ -26,7 +26,9 @@ import {
   AlertCircle,
   RefreshCw,
   Download,
+  Rocket,
   Search,
+  Sparkles,
 } from "lucide-react";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
@@ -40,6 +42,11 @@ interface CrawlPage {
   changes?: string[];
   score?: { overall: number; technical: number; content: number; aeo: number };
   status: "pending" | "processing" | "success" | "error";
+  gapStatus?: "pending" | "processing" | "success" | "error";
+  gapHtml?: string;
+  gapsCount?: number;
+  coverageBefore?: number;
+  coverageAfter?: number;
 }
 
 export function SiteCrawler() {
@@ -51,10 +58,17 @@ export function SiteCrawler() {
   const [currentFile, setCurrentFile] = useState("");
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [done, setDone] = useState(false);
+  const [topic, setTopic] = useState("");
+  const [audience, setAudience] = useState("");
+  const [isFillingGaps, setIsFillingGaps] = useState(false);
+  const [gapsProgress, setGapsProgress] = useState(0);
+  const [gapsCurrent, setGapsCurrent] = useState("");
+  const [gapsDone, setGapsDone] = useState(false);
 
   const { toast } = useToast();
   const crawlMutation = useCrawlSite();
   const optimizeMutation = useOptimizeHtml();
+  const gapMutation = useDetectContentGaps();
 
   const reset = () => {
     setPages([]);
@@ -63,6 +77,10 @@ export function SiteCrawler() {
     setCurrentFile("");
     setIsOptimizing(false);
     setDone(false);
+    setIsFillingGaps(false);
+    setGapsProgress(0);
+    setGapsCurrent("");
+    setGapsDone(false);
   };
 
   const startCrawl = async () => {
@@ -164,6 +182,92 @@ export function SiteCrawler() {
     saveAs(blob, `seoforge-${safeDomain}-optimized.zip`);
   };
 
+  const fillGapsForAll = async () => {
+    if (!topic.trim()) {
+      toast({
+        title: "Add a topic",
+        description: "Enter the niche so the AI knows which questions to look for.",
+        variant: "destructive",
+      });
+      return;
+    }
+    const targets = pages
+      .map((p, i) => ({ p, i }))
+      .filter(({ p }) => p.status === "success" && (p.optimizedHtml || p.originalHtml));
+    if (targets.length === 0) {
+      toast({ title: "No pages ready", variant: "destructive" });
+      return;
+    }
+
+    setIsFillingGaps(true);
+    setGapsProgress(0);
+    setGapsDone(false);
+    const updated = [...pages];
+
+    let completed = 0;
+    for (const { p, i } of targets) {
+      setGapsCurrent(p.url);
+      updated[i] = { ...updated[i], gapStatus: "processing" };
+      setPages([...updated]);
+      try {
+        const result = await gapMutation.mutateAsync({
+          data: {
+            html: p.optimizedHtml || p.originalHtml,
+            topic: topic.trim(),
+            audience: audience.trim() || undefined,
+          },
+        });
+        updated[i] = {
+          ...updated[i],
+          gapStatus: "success",
+          gapHtml: result.augmentedHtml,
+          gapsCount: result.gaps.length,
+          coverageBefore: result.coverageScoreBefore,
+          coverageAfter: result.coverageScoreAfter,
+        };
+      } catch {
+        updated[i] = { ...updated[i], gapStatus: "error" };
+      }
+      completed++;
+      setGapsProgress((completed / targets.length) * 100);
+      setPages([...updated]);
+    }
+
+    setIsFillingGaps(false);
+    setGapsCurrent("");
+    setGapsDone(true);
+    const okCount = updated.filter((p) => p.gapStatus === "success").length;
+    toast({
+      title: "Content gaps filled",
+      description: `${okCount} of ${targets.length} pages have new sections ready.`,
+    });
+  };
+
+  const sendAllToDeployQueue = () => {
+    const queue = pages
+      .filter((p) => p.gapStatus === "success" && p.gapHtml)
+      .map((p) => ({
+        id: p.url,
+        sourceUrl: p.url,
+        title: p.title,
+        filename: p.filename,
+        html: p.gapHtml!,
+        gapsCount: p.gapsCount,
+      }));
+    if (queue.length === 0) {
+      toast({ title: "Nothing to queue", variant: "destructive" });
+      return;
+    }
+    sessionStorage.setItem("seoforge:deploy-queue", JSON.stringify(queue));
+    sessionStorage.setItem("seoforge:deploy-html", queue[0].html);
+    window.location.hash = "deploy";
+    window.dispatchEvent(new Event("seoforge:deploy-html-updated"));
+    toast({
+      title: `${queue.length} pages queued`,
+      description: "Open the Deploy tab to push them one click at a time.",
+    });
+  };
+
   const downloadSingle = (page: CrawlPage) => {
     if (!page.optimizedHtml) return;
     const blob = new Blob([page.optimizedHtml], {
@@ -173,7 +277,9 @@ export function SiteCrawler() {
   };
 
   const isCrawling = crawlMutation.isPending;
-  const isBusy = isCrawling || isOptimizing;
+  const isBusy = isCrawling || isOptimizing || isFillingGaps;
+  const successPagesCount = pages.filter((p) => p.status === "success").length;
+  const gapsReadyCount = pages.filter((p) => p.gapStatus === "success").length;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -312,6 +418,75 @@ export function SiteCrawler() {
               </div>
             )}
 
+            {done && successPagesCount > 0 && (
+              <div className="mb-6 rounded-lg border-2 border-purple-200 bg-purple-50/50 p-5 space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center shrink-0">
+                    <Sparkles className="h-5 w-5 text-purple-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-base">Apply Content Gaps to ALL Pages</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Run the AI gap detector on every optimized page and inject the missing sections. Then send the
+                      whole batch to the Deploy queue with one click.
+                    </p>
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs">Topic / niche *</Label>
+                    <Input
+                      value={topic}
+                      onChange={(e) => setTopic(e.target.value)}
+                      placeholder="e.g. solar geyser installation"
+                      disabled={isFillingGaps}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Target audience (optional)</Label>
+                    <Input
+                      value={audience}
+                      onChange={(e) => setAudience(e.target.value)}
+                      placeholder="e.g. homeowners in Gauteng"
+                      disabled={isFillingGaps}
+                    />
+                  </div>
+                </div>
+                {isFillingGaps && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-medium text-purple-700">Filling gaps…</span>
+                      <span>{Math.round(gapsProgress)}%</span>
+                    </div>
+                    <Progress value={gapsProgress} className="h-2" />
+                    <p className="text-xs text-muted-foreground truncate">Current: {gapsCurrent}</p>
+                  </div>
+                )}
+                <div className="flex flex-wrap gap-2 justify-end">
+                  <Button
+                    onClick={fillGapsForAll}
+                    disabled={isBusy || !topic.trim()}
+                    className="gap-2 bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    {isFillingGaps ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 animate-spin" /> Filling Gaps…
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4" /> Apply Gaps to All {successPagesCount} Pages
+                      </>
+                    )}
+                  </Button>
+                  {gapsDone && gapsReadyCount > 0 && (
+                    <Button onClick={sendAllToDeployQueue} className="gap-2" variant="default">
+                      <Rocket className="h-4 w-4" /> Send {gapsReadyCount} to Deploy Queue
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
@@ -320,6 +495,7 @@ export function SiteCrawler() {
                     <TableHead>Status</TableHead>
                     <TableHead>Score</TableHead>
                     <TableHead>Changes</TableHead>
+                    <TableHead>Gaps</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -386,6 +562,34 @@ export function SiteCrawler() {
                         {page.changes
                           ? `${page.changes.length} updates`
                           : "-"}
+                      </TableCell>
+                      <TableCell>
+                        {page.gapStatus === "processing" && (
+                          <span className="text-blue-500 text-sm flex items-center gap-1">
+                            <RefreshCw className="h-3 w-3 animate-spin" />
+                            Detecting
+                          </span>
+                        )}
+                        {page.gapStatus === "success" && (
+                          <span className="text-sm flex items-center gap-2">
+                            <Sparkles className="h-3 w-3 text-purple-600" />
+                            <span className="font-medium">{page.gapsCount} new</span>
+                            {typeof page.coverageBefore === "number" && (
+                              <span className="text-xs text-muted-foreground">
+                                {page.coverageBefore}→{page.coverageAfter}
+                              </span>
+                            )}
+                          </span>
+                        )}
+                        {page.gapStatus === "error" && (
+                          <span className="text-red-500 text-sm flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" />
+                            Error
+                          </span>
+                        )}
+                        {!page.gapStatus && (
+                          <span className="text-muted-foreground">-</span>
+                        )}
                       </TableCell>
                       <TableCell className="text-right">
                         <Button
