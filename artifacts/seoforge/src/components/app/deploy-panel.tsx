@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,21 @@ export function DeployPanel() {
 
   const wp = useDeployToWordpress();
   const sh = useDeployToShopify();
+  const [importedFrom, setImportedFrom] = useState<string | null>(null);
+
+  useEffect(() => {
+    const consume = () => {
+      const stored = sessionStorage.getItem("seoforge:deploy-html");
+      if (stored) {
+        setHtml(stored);
+        setImportedFrom("Content Gap Detector");
+        sessionStorage.removeItem("seoforge:deploy-html");
+      }
+    };
+    consume();
+    window.addEventListener("seoforge:deploy-html-updated", consume);
+    return () => window.removeEventListener("seoforge:deploy-html-updated", consume);
+  }, []);
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -85,6 +100,12 @@ export function DeployPanel() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {importedFrom && (
+            <div className="mb-3 px-3 py-2 rounded-md bg-primary/10 border border-primary/20 text-sm text-primary flex items-center justify-between">
+              <span>Imported from {importedFrom} — review and push below.</span>
+              <Button size="sm" variant="ghost" onClick={() => setImportedFrom(null)}>Dismiss</Button>
+            </div>
+          )}
           <div className="relative">
             <Textarea
               value={html}

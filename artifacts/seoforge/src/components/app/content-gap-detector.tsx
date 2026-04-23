@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDetectContentGaps } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowRight, Copy, Download, Play, RefreshCw, Search, TrendingUp, UploadCloud } from "lucide-react";
+import { ArrowRight, Copy, Download, Play, RefreshCw, Rocket, Search, TrendingUp, UploadCloud } from "lucide-react";
 
 const IMPACT_STYLE: Record<string, string> = {
   high: "bg-red-50 text-red-700 border-red-200",
@@ -135,14 +135,28 @@ export function ContentGapDetector() {
         </Card>
       ) : (
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-3">
             <h2 className="text-2xl font-bold flex items-center gap-2">
               <TrendingUp className="h-6 w-6 text-primary" />
               {mutation.data.gaps.length} Content Gaps Found
             </h2>
-            <Button variant="outline" onClick={reset}>
-              <RefreshCw className="h-4 w-4 mr-2" /> Start Over
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="default"
+                onClick={() => {
+                  sessionStorage.setItem("seoforge:deploy-html", mutation.data.augmentedHtml);
+                  window.location.hash = "deploy";
+                  window.dispatchEvent(new Event("seoforge:deploy-html-updated"));
+                  toast({ title: "Sent to Deploy", description: "Open the Deploy tab to push it live." });
+                }}
+                className="gap-2"
+              >
+                <Rocket className="h-4 w-4" /> Send to Deploy
+              </Button>
+              <Button variant="outline" onClick={reset}>
+                <RefreshCw className="h-4 w-4 mr-2" /> Start Over
+              </Button>
+            </div>
           </div>
 
           <Card className="shadow-md">

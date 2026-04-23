@@ -190,7 +190,7 @@ export default function Dashboard() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {data.recent.map((row) => (
+                      {(data.recent ?? []).map((row) => (
                         <TableRow key={row.id}>
                           <TableCell className="font-medium max-w-[260px] truncate">
                             {row.title || row.filename || row.sourceUrl || `Optimization #${row.id}`}

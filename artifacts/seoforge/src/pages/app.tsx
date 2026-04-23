@@ -10,8 +10,30 @@ import { DeployPanel } from "@/components/app/deploy-panel";
 import { SitemapGenerator } from "@/components/app/sitemap-generator";
 import { HreflangTool } from "@/components/app/hreflang-tool";
 import { ContentGapDetector } from "@/components/app/content-gap-detector";
+import { useEffect, useState } from "react";
 
 export default function AppWorkspace() {
+  const initial = typeof window !== "undefined" && window.location.hash
+    ? window.location.hash.slice(1)
+    : "single-page";
+  const [tab, setTab] = useState(initial);
+
+  useEffect(() => {
+    const onHash = () => {
+      const next = window.location.hash.slice(1);
+      if (next) setTab(next);
+    };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+
+  const handleTabChange = (val: string) => {
+    setTab(val);
+    if (window.location.hash.slice(1) !== val) {
+      window.history.replaceState(null, "", `#${val}`);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-muted/20">
       <Navbar />
@@ -25,7 +47,7 @@ export default function AppWorkspace() {
             </p>
           </div>
 
-          <Tabs defaultValue="single-page" className="w-full">
+          <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
             <TabsList className="mb-8 w-full md:w-auto inline-flex overflow-x-auto">
               <TabsTrigger value="single-page" className="flex-1 md:flex-none">Single Page</TabsTrigger>
               <TabsTrigger value="aeo-block" className="flex-1 md:flex-none">AEO Answer Blocks</TabsTrigger>

@@ -1,17 +1,21 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useAgencySettings } from "@/hooks/use-agency-settings";
+import logoUrl from "@/assets/logo.png";
 
 export function Navbar() {
   const { settings } = useAgencySettings();
   const accent = { color: settings.primaryColor };
+  const usingDefaultBrand = settings.brandName === "SEOForge" && !settings.logoUrl;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
           {settings.logoUrl ? (
-            <img src={settings.logoUrl} alt={settings.brandName} className="h-7 w-auto" />
+            <img src={settings.logoUrl} alt={settings.brandName} className="h-8 w-auto" />
+          ) : usingDefaultBrand ? (
+            <img src={logoUrl} alt="SEOForge" className="h-8 w-8" />
           ) : null}
           <span className="font-bold text-xl tracking-tight" style={accent}>{settings.brandName}</span>
         </Link>

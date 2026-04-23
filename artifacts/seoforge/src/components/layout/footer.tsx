@@ -8,7 +8,7 @@ export function Footer() {
           <div className="space-y-4">
             <span className="font-bold text-xl tracking-tight text-primary">SEOForge</span>
             <p className="text-sm text-muted-foreground">
-              Professional SEO & AEO automation for African digital agencies and ambitious SaaS founders.
+              Professional SEO and AEO automation for digital agencies and ambitious SaaS founders.
             </p>
           </div>
           <div>
@@ -36,7 +36,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-12 pt-8 border-t flex flex-col md:flex-row items-center justify-between text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} SEOForge. Built for Africa.</p>
+          <p>© {new Date().getFullYear()} SEOForge. All rights reserved.</p>
         </div>
       </div>
     </footer>
