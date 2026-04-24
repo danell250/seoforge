@@ -4,13 +4,14 @@ export const monitoredSitesTable = pgTable(
   "monitored_sites",
   {
     id: serial("id").primaryKey(),
+    userId: integer("user_id"),
     url: text("url").notNull(),
     domain: text("domain").notNull(),
     email: text("email").notNull(),
     topic: text("topic"),
     audience: text("audience"),
-    frequency: text("frequency").notNull().default("weekly"),
-    maxPages: integer("max_pages").notNull().default(15),
+    frequency: text("frequency").notNull().default("monthly"),
+    maxPages: integer("max_pages").notNull().default(20),
     enabled: boolean("enabled").notNull().default(true),
     nextRunAt: timestamp("next_run_at", { withTimezone: true }).notNull().defaultNow(),
     lastRunAt: timestamp("last_run_at", { withTimezone: true }),
@@ -18,6 +19,7 @@ export const monitoredSitesTable = pgTable(
   },
   (t) => ({
     nextRunIdx: index("monitored_sites_next_run_idx").on(t.nextRunAt),
+    userIdx: index("monitored_sites_user_idx").on(t.userId),
   }),
 );
 

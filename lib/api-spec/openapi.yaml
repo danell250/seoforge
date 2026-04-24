@@ -499,6 +499,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /generate-blog:
+    post:
+      operationId: generateBlogArticle
+      tags: [seo]
+      summary: Generate a 1500-word AEO-optimized blog article from optimized HTML
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlogGenerationRequest"
+      responses:
+        "200":
+          description: Generated blog article with metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlogGenerationResult"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Generation failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -550,6 +580,26 @@ components:
         - content
         - aeo
         - overall
+    ScoreImprovement:
+      type: object
+      properties:
+        technical:
+          type: integer
+          description: Points gained in technical SEO
+        content:
+          type: integer
+          description: Points gained in content SEO
+        aeo:
+          type: integer
+          description: Points gained in AEO readiness
+        overall:
+          type: integer
+          description: Total overall score improvement
+      required:
+        - technical
+        - content
+        - aeo
+        - overall
     OptimizeResponse:
       type: object
       properties:
@@ -561,10 +611,79 @@ components:
             type: string
         score:
           $ref: "#/components/schemas/SeoScore"
+        originalScore:
+          $ref: "#/components/schemas/SeoScore"
+          description: SEO scores before optimization
+        scoreImprovement:
+          $ref: "#/components/schemas/ScoreImprovement"
+          description: Points gained from optimization
+        detectedLanguage:
+          type: string
+          description: ISO 639-1 language code (en, af, zu, xh, pcm, sw)
+        languageGuidance:
+          type: string
+          description: Description of African language optimizations applied
+        africanLanguageSupport:
+          $ref: "#/components/schemas/AfricanLanguageSupport"
       required:
         - optimizedHtml
         - changes
         - score
+        - originalScore
+        - scoreImprovement
+    AfricanLanguageSupport:
+      type: object
+      properties:
+        detected:
+          type: string
+          enum: [en, af, zu, xh, pcm, sw]
+          description: Detected African language code
+        config:
+          $ref: "#/components/schemas/AfricanLanguageConfig"
+        hreflangTags:
+          type: string
+          description: Generated hreflang tags for African market support
+      required:
+        - detected
+        - hreflangTags
+    AfricanLanguageConfig:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        nativeName:
+          type: string
+        region:
+          type: string
+        speakers:
+          type: string
+        searchBehavior:
+          type: object
+          properties:
+            voiceSearchPrevalence:
+              type: string
+              enum: [high, medium, low]
+            mobileFirst:
+              type: boolean
+            localIntent:
+              type: string
+              enum: [high, medium, low]
+        seoGuidance:
+          type: object
+          properties:
+            keywordStrategy:
+              type: string
+        aeoGuidance:
+          type: object
+          properties:
+            questionPatterns:
+              type: array
+              items:
+                type: string
+            answerFormat:
+              type: string
     ScanCompetitorRequest:
       type: object
       properties:
@@ -1076,3 +1195,53 @@ components:
           type: array
           items: { $ref: "#/components/schemas/MonitorReport" }
       required: [reports]
+    BlogGenerationRequest:
+      type: object
+      properties:
+        html:
+          type: string
+          description: The optimized HTML content to base the blog article on
+        topic:
+          type: string
+          description: Optional topic hint for the blog article
+        targetLanguage:
+          type: string
+          enum: [en, af, zu, xh, pcm, sw]
+          description: Target African language for the blog article (auto-detected if not specified)
+      required:
+        - html
+    BlogGenerationResult:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The main H1 title of the blog article
+        metaTitle:
+          type: string
+          description: SEO meta title for search results (under 60 characters)
+        metaDescription:
+          type: string
+          description: SEO meta description (under 160 characters)
+        slug:
+          type: string
+          description: URL-friendly slug for the blog article
+        content:
+          type: string
+          description: Full HTML content of the blog article with proper formatting
+        wordCount:
+          type: integer
+          description: Estimated word count of the article
+        language:
+          type: string
+          enum: [en, af, zu, xh, pcm, sw]
+          description: Language code of the generated blog article
+        languageName:
+          type: string
+          description: Human-readable language name
+      required:
+        - title
+        - metaTitle
+        - metaDescription
+        - slug
+        - content
+        - wordCount

@@ -13,11 +13,13 @@ services:
         value: production
       - key: PORT
         value: 10000
+      - key: AUTH_BOOTSTRAP_ADMIN
+        value: "true"
       - key: DATABASE_URL
         sync: false
       - key: GEMINI_API_KEY
         sync: false
-      - key: RESEND_API_KEY
+      - key: BREVO_API_KEY
         sync: false
       - key: ADMIN_EMAIL
         sync: false

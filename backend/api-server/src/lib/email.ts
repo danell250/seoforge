@@ -1,30 +1,38 @@
-import { Resend } from "resend";
+export const FROM_ADDRESS = process.env["BREVO_FROM"] || process.env["RESEND_FROM"] || "SEOForge <noreply@seoforge.app>";
 
-let client: Resend | null = null;
-function getClient(): Resend | null {
-  const key = process.env["RESEND_API_KEY"];
-  if (!key) return null;
-  if (!client) client = new Resend(key);
-  return client;
+function getApiKey(): string | null {
+  return process.env["BREVO_API_KEY"] || process.env["RESEND_API_KEY"] || null;
 }
-
-export const FROM_ADDRESS = process.env["RESEND_FROM"] || "SEOForge <onboarding@resend.dev>";
 
 export async function sendEmail(opts: {
   to: string;
   subject: string;
   html: string;
 }): Promise<{ ok: boolean; error?: string }> {
-  const c = getClient();
-  if (!c) return { ok: false, error: "RESEND_API_KEY not configured" };
+  const apiKey = getApiKey();
+  if (!apiKey) return { ok: false, error: "BREVO_API_KEY not configured" };
+
   try {
-    const { error } = await c.emails.send({
-      from: FROM_ADDRESS,
-      to: opts.to,
-      subject: opts.subject,
-      html: opts.html,
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "accept": "application/json",
+        "api-key": apiKey,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        sender: { name: "SEOForge", email: FROM_ADDRESS.match(/<(.+)>/)?.[1] || FROM_ADDRESS },
+        to: [{ email: opts.to }],
+        subject: opts.subject,
+        htmlContent: opts.html,
+      }),
     });
-    if (error) return { ok: false, error: error.message };
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({})) as { message?: string };
+      return { ok: false, error: errorData.message || `HTTP ${response.status}` };
+    }
+
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "Unknown error" };

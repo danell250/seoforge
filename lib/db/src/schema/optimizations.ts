@@ -2,6 +2,7 @@ import { pgTable, serial, text, integer, timestamp } from "drizzle-orm/pg-core";
 
 export const optimizationsTable = pgTable("optimizations", {
   id: serial("id").primaryKey(),
+  userId: integer("user_id"),
   filename: text("filename"),
   title: text("title"),
   sourceUrl: text("source_url"),
