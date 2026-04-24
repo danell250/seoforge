@@ -8,10 +8,7 @@
 2. Connect your GitHub repo
 3. Configure:
    - **Runtime:** Node
-   - **Build Command:**
-     ```bash
-     npm install -g pnpm && pnpm install && pnpm -r --filter "./lib/**" --filter "./backend/**" run build
-     ```
+   - **Build Command:** `npm install -g pnpm && pnpm install && cd backend/api-server && pnpm run build:prod`
    - **Start Command:** `cd backend/api-server && node --enable-source-maps ./dist/index.mjs`
    - **Plan:** Standard ($7/month minimum for always-on)
 
