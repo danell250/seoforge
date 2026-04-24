@@ -10,6 +10,7 @@ const SESSION_COOKIE_NAME = "seoforge_session";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 const SESSION_TOUCH_INTERVAL_MS = 1000 * 60 * 5;
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
+const COOKIE_SAME_SITE = (process.env.SESSION_COOKIE_SAMESITE ?? "lax").trim().toLowerCase();
 const DEV_ADMIN_EMAIL = "admin@localhost";
 const DEV_ADMIN_PASSWORD = "ChangeMe123!";
 const BOOTSTRAP_FLAG = "AUTH_BOOTSTRAP_ADMIN";
@@ -198,13 +199,19 @@ export function getSessionCookieName(): string {
 }
 
 function getCookieAttributes(expiresAt?: Date) {
+  const sameSite =
+    COOKIE_SAME_SITE === "none"
+      ? "None"
+      : COOKIE_SAME_SITE === "strict"
+        ? "Strict"
+        : "Lax";
   const parts = [
     `${SESSION_COOKIE_NAME}=`,
     "Path=/",
     "HttpOnly",
-    "SameSite=Lax",
+    `SameSite=${sameSite}`,
   ];
-  if (IS_PRODUCTION) {
+  if (IS_PRODUCTION || sameSite === "None") {
     parts.push("Secure");
   }
   if (expiresAt) {

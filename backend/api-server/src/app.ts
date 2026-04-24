@@ -14,6 +14,13 @@ function normalizeOrigin(value: string): string {
   try {
     return new URL(trimmed).origin;
   } catch {
+    if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed) && trimmed) {
+      try {
+        return new URL(`https://${trimmed}`).origin;
+      } catch {
+        return trimmed;
+      }
+    }
     return trimmed;
   }
 }
