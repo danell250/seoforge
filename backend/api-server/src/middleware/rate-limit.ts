@@ -1,6 +1,7 @@
 import type { RequestHandler } from "express";
 import { sql } from "drizzle-orm";
 import { db, rateLimitBucketsTable } from "@workspace/db";
+import { isMissingRelationError } from "../lib/db-errors";
 
 interface RateLimitOptions {
   key: string;
@@ -11,6 +12,8 @@ interface RateLimitOptions {
 const CLEANUP_INTERVAL_MS = 1000 * 60 * 10;
 let cleanupStarted = false;
 let cleanupTimer: ReturnType<typeof setInterval> | null = null;
+let rateLimitStoreAvailable = true;
+let warnedAboutMissingTable = false;
 
 export function startRateLimitCleanupLoop() {
   if (cleanupStarted) return;
@@ -21,10 +24,15 @@ export function startRateLimitCleanupLoop() {
   }
 
   cleanupTimer = setInterval(() => {
+    if (!rateLimitStoreAvailable) return;
     void db
       .delete(rateLimitBucketsTable)
       .where(sql`${rateLimitBucketsTable.resetAt} <= NOW()`)
-      .catch(() => undefined);
+      .catch((err) => {
+        if (isMissingRelationError(err, "rate_limit_buckets")) {
+          rateLimitStoreAvailable = false;
+        }
+      });
   }, CLEANUP_INTERVAL_MS);
 
   cleanupTimer.unref?.();
@@ -32,6 +40,11 @@ export function startRateLimitCleanupLoop() {
 
 export function createRateLimit(options: RateLimitOptions): RequestHandler {
   return async (req, res, next) => {
+    if (!rateLimitStoreAvailable) {
+      next();
+      return;
+    }
+
     const ip = req.ip || req.socket.remoteAddress || "unknown";
     const bucketKey = `${options.key}:${ip}`;
     const now = new Date();
@@ -73,6 +86,18 @@ export function createRateLimit(options: RateLimitOptions): RequestHandler {
         return;
       }
     } catch (err) {
+      if (isMissingRelationError(err, "rate_limit_buckets")) {
+        rateLimitStoreAvailable = false;
+        if (!warnedAboutMissingTable) {
+          warnedAboutMissingTable = true;
+          req.log.warn(
+            { table: "rate_limit_buckets" },
+            "Rate limiting disabled because the database table is missing. Run the latest schema push.",
+          );
+        }
+        next();
+        return;
+      }
       req.log.error({ err }, "rate limit lookup failed");
     }
 

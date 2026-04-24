@@ -1,27 +1,34 @@
 import { useEffect } from "react";
-import { useGetAgencySettings } from "@workspace/api-client-react";
+import { getGetAgencySettingsQueryKey, useGetAgencySettings } from "@workspace/api-client-react";
+import { useAuth } from "./use-auth";
+
+const DEFAULT_SETTINGS = {
+  brandName: "SEOForge",
+  tagline: "AI-Powered SEO and Answer Engine Optimization",
+  logoUrl: null,
+  primaryColor: "#2563eb",
+  supportEmail: null,
+  websiteUrl: null,
+};
 
 export function useAgencySettings() {
-  const query = useGetAgencySettings();
+  const { isAuthenticated } = useAuth();
+  const query = useGetAgencySettings({
+    query: {
+      enabled: isAuthenticated,
+      queryKey: getGetAgencySettingsQueryKey(),
+      retry: false,
+    },
+  });
+  const settings = query.data ?? DEFAULT_SETTINGS;
 
   useEffect(() => {
-    if (query.data?.primaryColor) {
-      document.documentElement.style.setProperty("--brand-primary", query.data.primaryColor);
-    }
-    if (query.data?.brandName) {
-      document.title = `${query.data.brandName} — ${query.data.tagline}`;
-    }
-  }, [query.data?.primaryColor, query.data?.brandName, query.data?.tagline]);
+    document.documentElement.style.setProperty("--brand-primary", settings.primaryColor);
+    document.title = `${settings.brandName} — ${settings.tagline}`;
+  }, [settings.brandName, settings.primaryColor, settings.tagline]);
 
   return {
-    settings: query.data ?? {
-      brandName: "SEOForge",
-      tagline: "AI-Powered SEO and Answer Engine Optimization",
-      logoUrl: null,
-      primaryColor: "#2563eb",
-      supportEmail: null,
-      websiteUrl: null,
-    },
+    settings,
     isLoading: query.isLoading,
   };
 }

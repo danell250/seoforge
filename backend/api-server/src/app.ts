@@ -9,11 +9,20 @@ import { createRateLimit, startRateLimitCleanupLoop } from "./middleware/rate-li
 
 const app: Express = express();
 
+function normalizeOrigin(value: string): string {
+  const trimmed = value.trim().replace(/^['"`]+|['"`]+$/g, "").replace(/\/+$/, "");
+  try {
+    return new URL(trimmed).origin;
+  } catch {
+    return trimmed;
+  }
+}
+
 function allowedOrigins(): string[] {
   const raw = process.env.FRONTEND_URLS || process.env.FRONTEND_URL || "http://localhost:5173";
   return raw
     .split(",")
-    .map((value) => value.trim())
+    .map(normalizeOrigin)
     .filter(Boolean);
 }
 
@@ -34,11 +43,18 @@ function setSecurityHeaders(req: express.Request, res: express.Response, next: e
 
 const corsOptions: CorsOptions = {
   origin(origin, callback) {
-    if (!origin || allowedOrigins().includes(origin)) {
+    if (!origin || allowedOrigins().includes(normalizeOrigin(origin))) {
       callback(null, true);
       return;
     }
-    callback(new Error("Origin not allowed by CORS"));
+    logger.warn(
+      {
+        origin,
+        allowedOrigins: allowedOrigins(),
+      },
+      "Origin rejected by CORS policy",
+    );
+    callback(null, false);
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],

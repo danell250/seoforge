@@ -3,10 +3,19 @@ import { db, agencySettingsTable } from "@workspace/db";
 import { UpdateAgencySettingsBody, GetAgencySettingsResponse } from "@workspace/api-zod";
 import { eq } from "drizzle-orm";
 import { requireAuthenticatedUser } from "../middleware/auth";
+import { isMissingRelationError } from "../lib/db-errors";
 
 const router: IRouter = Router();
 
 const SINGLETON_ID = 1;
+const DEFAULT_SETTINGS = {
+  brandName: "SEOForge",
+  tagline: "AI-Powered SEO and Answer Engine Optimization",
+  logoUrl: null,
+  primaryColor: "#2563eb",
+  supportEmail: null,
+  websiteUrl: null,
+};
 
 async function ensureRow() {
   const rows = await db.select().from(agencySettingsTable).where(eq(agencySettingsTable.id, SINGLETON_ID));
@@ -26,9 +35,20 @@ function toResponse(row: typeof agencySettingsTable.$inferSelect) {
   };
 }
 
-router.get("/agency-settings", async (_req, res) => {
-  const row = await ensureRow();
-  return res.json(GetAgencySettingsResponse.parse(toResponse(row)));
+router.get("/agency-settings", requireAuthenticatedUser, async (_req, res) => {
+  try {
+    const row = await ensureRow();
+    return res.json(GetAgencySettingsResponse.parse(toResponse(row)));
+  } catch (err) {
+    if (isMissingRelationError(err, "agency_settings")) {
+      _req.log.warn(
+        { table: "agency_settings" },
+        "Agency settings table is missing. Returning defaults until the schema is pushed.",
+      );
+      return res.json(GetAgencySettingsResponse.parse(DEFAULT_SETTINGS));
+    }
+    throw err;
+  }
 });
 
 router.put("/agency-settings", requireAuthenticatedUser, async (req, res) => {
