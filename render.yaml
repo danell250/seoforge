@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: seoforge-api
+    runtime: node
+    plan: standard
+    buildCommand: |
+      npm install -g pnpm
+      pnpm install
+      pnpm -r --filter "./lib/**" --filter "./backend/**" run build:prod
+    startCommand: cd backend/api-server && pnpm start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: https://seoforge.vercel.app
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 60000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 30

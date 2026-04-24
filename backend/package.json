@@ -1,0 +1,11 @@
+{
+  "name": "@workspace/backend",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter @workspace/api-server run dev",
+    "build": "pnpm --filter @workspace/api-server run build",
+    "start": "pnpm --filter @workspace/api-server run start",
+    "typecheck": "pnpm --filter @workspace/api-server run typecheck"
+  }
+}

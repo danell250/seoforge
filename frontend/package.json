@@ -1,0 +1,12 @@
+{
+  "name": "@workspace/frontend",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev:seoforge": "pnpm --filter @workspace/seoforge run dev",
+    "dev:mockup": "pnpm --filter @workspace/mockup-sandbox run dev",
+    "build:seoforge": "pnpm --filter @workspace/seoforge run build",
+    "build:mockup": "pnpm --filter @workspace/mockup-sandbox run build",
+    "typecheck": "pnpm --filter @workspace/seoforge run typecheck && pnpm --filter @workspace/mockup-sandbox run typecheck"
+  }
+}
