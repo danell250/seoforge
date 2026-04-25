@@ -119,11 +119,10 @@ export function HreflangTool() {
             <CardHeader>
               <CardTitle className="text-2xl flex items-center gap-2">
                 <Languages className="h-6 w-6 text-primary" />
-                Multilingual Hreflang Builder
+                Add Language and Country Tags
               </CardTitle>
               <CardDescription>
-                Detects the page language with AI and injects hreflang alternates plus the html lang attribute. Built
-                for African businesses targeting multiple countries and languages.
+                Paste your page HTML, list the other versions of that page, and we will add the correct language and country tags for you.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -131,13 +130,13 @@ export function HreflangTool() {
                 <Textarea
                   value={html}
                   onChange={(e) => setHtml(e.target.value)}
-                  placeholder="<!DOCTYPE html>..."
+                  placeholder="Paste your page HTML here..."
                   className="min-h-[260px] font-mono text-sm resize-y p-4 bg-muted/30 focus-visible:ring-primary"
                 />
                 <div className="absolute top-4 right-4">
                   <Button variant="outline" size="sm" className="bg-background/80 backdrop-blur-sm shadow-sm" asChild>
                     <label className="cursor-pointer flex items-center gap-2">
-                      <UploadCloud className="h-4 w-4" /> Upload .html
+                      <UploadCloud className="h-4 w-4" /> Upload HTML
                       <input type="file" accept=".html,.htm" className="hidden" onChange={handleFile} />
                     </label>
                   </Button>
@@ -150,9 +149,9 @@ export function HreflangTool() {
             <CardHeader className="border-b bg-muted/30 flex flex-row items-center justify-between">
               <div>
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Globe2 className="h-5 w-5 text-primary" /> Locale alternates
+                  <Globe2 className="h-5 w-5 text-primary" /> Other page versions
                 </CardTitle>
-                <CardDescription>Map each language and country to its public URL.</CardDescription>
+                <CardDescription>Add one row for each language or country version of the same page.</CardDescription>
               </div>
               <div className="flex gap-2 flex-wrap">
                 {PRESETS.map((p) => (
@@ -168,7 +167,7 @@ export function HreflangTool() {
                   <Input
                     value={row.hreflang}
                     onChange={(e) => updateAlt(i, "hreflang", e.target.value)}
-                    placeholder="en-ZA"
+                    placeholder="Language code e.g. en-ZA"
                   />
                   <Input
                     value={row.href}
@@ -181,7 +180,7 @@ export function HreflangTool() {
                 </div>
               ))}
               <Button variant="outline" size="sm" onClick={addAlt} className="gap-2">
-                <Plus className="h-4 w-4" /> Add locale
+                <Plus className="h-4 w-4" /> Add page version
               </Button>
             </CardContent>
             <CardFooter className="bg-muted/30 border-t px-6 py-4 flex justify-between items-center">
@@ -195,7 +194,7 @@ export function HreflangTool() {
                   </>
                 ) : (
                   <>
-                    <Play className="h-4 w-4" /> Inject hreflang tags
+                    <Play className="h-4 w-4" /> Add Tags to HTML
                   </>
                 )}
               </Button>
@@ -207,7 +206,7 @@ export function HreflangTool() {
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold flex items-center gap-2">
               <Languages className="h-6 w-6 text-primary" />
-              Hreflang injected
+              Language Tags Added
             </h2>
             <Button variant="outline" onClick={reset}>
               <RefreshCw className="h-4 w-4 mr-2" /> Start Over
@@ -218,8 +217,8 @@ export function HreflangTool() {
             <CardHeader className="border-b bg-muted/30">
               <CardTitle className="text-lg">Detected language</CardTitle>
               <CardDescription>
-                AI identified <span className="font-bold text-foreground">{mutation.data.detectedLanguage}</span> as
-                the primary language. The <code>&lt;html lang&gt;</code> attribute was set automatically.
+                We detected <span className="font-bold text-foreground">{mutation.data.detectedLanguage}</span> as the
+                main page language and updated the <code>&lt;html lang&gt;</code> attribute automatically.
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6 space-y-2">

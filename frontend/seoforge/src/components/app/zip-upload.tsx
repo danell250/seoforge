@@ -155,8 +155,8 @@ export function ZipUpload() {
       {files.length === 0 ? (
         <Card className="border-2 border-primary/10 shadow-lg">
           <CardHeader className="text-center pb-2">
-            <CardTitle className="text-2xl">Bulk ZIP Processing</CardTitle>
-            <CardDescription>Upload an archive containing multiple HTML files to optimize them all automatically.</CardDescription>
+            <CardTitle className="text-2xl">Optimize Many HTML Files</CardTitle>
+            <CardDescription>Upload one ZIP of HTML files. We will improve each file and give you a new ZIP back.</CardDescription>
           </CardHeader>
           <CardContent>
             <div 
@@ -170,11 +170,11 @@ export function ZipUpload() {
               <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                 <FileArchive className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Drag & drop your .zip file here</h3>
-              <p className="text-sm text-muted-foreground mb-6">Contains .html or .htm files. Folders are supported.</p>
+              <h3 className="text-lg font-semibold mb-2">Drop a ZIP file here</h3>
+              <p className="text-sm text-muted-foreground mb-6">The ZIP should contain `.html` or `.htm` files. Folders are fine.</p>
               
               <Button onClick={() => fileInputRef.current?.click()} variant="outline">
-                <UploadCloud className="h-4 w-4 mr-2" /> Browse Files
+                <UploadCloud className="h-4 w-4 mr-2" /> Choose ZIP File
               </Button>
               <input 
                 type="file" 
@@ -190,14 +190,14 @@ export function ZipUpload() {
         <Card className="shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between pb-4 border-b">
             <div>
-              <CardTitle>Batch Optimization</CardTitle>
-              <CardDescription>{files.length} files loaded from archive</CardDescription>
+              <CardTitle>Bulk Results</CardTitle>
+              <CardDescription>{files.length} HTML file{files.length === 1 ? "" : "s"} ready</CardDescription>
             </div>
             {!isProcessing && progress === 100 ? (
               <div className="flex gap-2">
-                <Button variant="outline" onClick={reset}>Upload New</Button>
+                <Button variant="outline" onClick={reset}>Start Over</Button>
                 <Button onClick={downloadAll} className="gap-2">
-                  <Download className="h-4 w-4" /> Download All Optimized
+                  <Download className="h-4 w-4" /> Download Updated ZIP
                 </Button>
               </div>
             ) : (
@@ -205,7 +205,7 @@ export function ZipUpload() {
                 {isProcessing ? (
                   <><RefreshCw className="h-4 w-4 animate-spin" /> Processing...</>
                 ) : (
-                  <><CheckCircle2 className="h-4 w-4" /> Start Optimization</>
+                  <><CheckCircle2 className="h-4 w-4" /> Optimize Files</>
                 )}
               </Button>
             )}

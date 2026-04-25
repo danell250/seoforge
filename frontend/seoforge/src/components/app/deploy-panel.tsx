@@ -163,13 +163,13 @@ export function DeployPanel() {
         <Card className="border-2 border-purple-200 bg-purple-50/30 shadow-md">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
-              <ListChecks className="h-5 w-5 text-purple-600" /> Deploy Queue
+              <ListChecks className="h-5 w-5 text-purple-600" /> Publish Queue
               <span className="text-sm font-normal text-muted-foreground ml-2">
                 {queue.length} page{queue.length === 1 ? "" : "s"} ready
               </span>
             </CardTitle>
             <CardDescription>
-              Click a page to load it. Push to WordPress or Shopify below — we'll auto-jump to the next undeployed page.
+              Click a page to load it. Publish to WordPress or Shopify below and we will jump to the next page still waiting.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 max-h-[280px] overflow-auto">
@@ -236,17 +236,16 @@ export function DeployPanel() {
         <CardHeader>
           <CardTitle className="text-2xl flex items-center gap-2">
             <Rocket className="h-6 w-6 text-primary" />
-            One-Click Deploy
+            Publish HTML to WordPress or Shopify
           </CardTitle>
           <CardDescription>
-            Paste optimized HTML and push it directly into your WordPress page or Shopify page. Credentials stay in
-            this browser session and are never stored.
+            Paste or upload finished HTML, then send it to an existing WordPress page or Shopify page. Credentials stay in this browser session and are never stored.
           </CardDescription>
         </CardHeader>
         <CardContent>
           {importedFrom && (
             <div className="mb-3 px-3 py-2 rounded-md bg-primary/10 border border-primary/20 text-sm text-primary flex items-center justify-between">
-              <span>Imported from {importedFrom} — review and push below.</span>
+              <span>Loaded from {importedFrom}. Review it and publish below.</span>
               <Button size="sm" variant="ghost" onClick={() => setImportedFrom(null)}>Dismiss</Button>
             </div>
           )}
@@ -260,7 +259,7 @@ export function DeployPanel() {
             <div className="absolute top-4 right-4">
               <Button variant="outline" size="sm" className="bg-background/80 backdrop-blur-sm shadow-sm" asChild>
                 <label className="cursor-pointer flex items-center gap-2">
-                  <UploadCloud className="h-4 w-4" /> Upload .html
+                  <UploadCloud className="h-4 w-4" /> Upload HTML
                   <input type="file" accept=".html,.htm" className="hidden" onChange={handleFile} />
                 </label>
               </Button>
@@ -282,13 +281,12 @@ export function DeployPanel() {
                 <Rocket className="h-5 w-5 text-primary" /> WordPress
               </CardTitle>
               <CardDescription>
-                Generate an Application Password under Users &rarr; Profile &rarr; Application Passwords. Requires
-                self-hosted WordPress with REST API enabled.
+                Use an Application Password from WordPress. This works with self-hosted WordPress sites that have the REST API enabled.
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6 grid md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <label className="text-sm font-medium mb-2 block">Site URL</label>
+                <label className="text-sm font-medium mb-2 block">WordPress site URL</label>
                 <Input value={wpSite} onChange={(e) => setWpSite(e.target.value)} placeholder="https://yoursite.com" />
               </div>
               <div>
@@ -317,7 +315,7 @@ export function DeployPanel() {
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block">Page or Post ID</label>
+                <label className="text-sm font-medium mb-2 block">Existing page or post ID</label>
                 <Input value={wpId} onChange={(e) => setWpId(e.target.value)} placeholder="123" />
               </div>
             </CardContent>
@@ -341,7 +339,7 @@ export function DeployPanel() {
                   </>
                 ) : (
                   <>
-                    <Rocket className="h-4 w-4" /> Push to WordPress
+                    <Rocket className="h-4 w-4" /> Publish to WordPress
                   </>
                 )}
               </Button>
@@ -356,13 +354,12 @@ export function DeployPanel() {
                 <ShoppingBag className="h-5 w-5 text-primary" /> Shopify
               </CardTitle>
               <CardDescription>
-                Create a custom app in Shopify Admin with the <code>write_content</code> scope and copy its Admin API
-                access token.
+                Create a Shopify custom app with the <code>write_content</code> scope and paste its Admin API access token here.
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6 grid md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <label className="text-sm font-medium mb-2 block">Shop domain</label>
+                <label className="text-sm font-medium mb-2 block">Shopify store domain</label>
                 <Input value={shop} onChange={(e) => setShop(e.target.value)} placeholder="your-store.myshopify.com" />
               </div>
               <div className="md:col-span-2">
@@ -376,7 +373,7 @@ export function DeployPanel() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block">Page ID</label>
+                <label className="text-sm font-medium mb-2 block">Existing page ID</label>
                 <Input value={pageId} onChange={(e) => setPageId(e.target.value)} placeholder="987654321" />
               </div>
             </CardContent>
@@ -400,7 +397,7 @@ export function DeployPanel() {
                   </>
                 ) : (
                   <>
-                    <ShoppingBag className="h-4 w-4" /> Push to Shopify
+                    <ShoppingBag className="h-4 w-4" /> Publish to Shopify
                   </>
                 )}
               </Button>

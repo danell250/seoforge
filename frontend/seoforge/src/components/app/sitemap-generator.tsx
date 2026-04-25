@@ -103,16 +103,15 @@ ${items
         <CardHeader>
           <CardTitle className="text-2xl flex items-center gap-2">
             <FileCode className="h-6 w-6 text-primary" />
-            Automatic Sitemap &amp; Robots Generator
+            Create `sitemap.xml` and `robots.txt`
           </CardTitle>
           <CardDescription>
-            Add every URL you optimize. We rebuild sitemap.xml and robots.txt automatically and submit to Google Search
-            Console with one click.
+            Add the pages you want indexed and we will build both files for you.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="text-sm font-medium mb-2 block">Your website URL</label>
+            <label className="text-sm font-medium mb-2 block">Website URL</label>
             <Input
               value={siteRoot}
               onChange={(e) => setSiteRoot(e.target.value)}
@@ -121,7 +120,7 @@ ${items
           </div>
           <div className="grid md:grid-cols-[1fr,140px,160px,auto] gap-3 items-end">
             <div>
-              <label className="text-sm font-medium mb-2 block">Add page URL</label>
+              <label className="text-sm font-medium mb-2 block">Page URL to include</label>
               <Input
                 value={newUrl}
                 onChange={(e) => setNewUrl(e.target.value)}
@@ -140,7 +139,7 @@ ${items
               />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">Change freq</label>
+              <label className="text-sm font-medium mb-2 block">Update frequency</label>
               <select
                 value={changefreq}
                 onChange={(e) => setChangefreq(e.target.value as (typeof FREQ_OPTIONS)[number])}
@@ -163,8 +162,8 @@ ${items
       <Card className="shadow-md">
         <CardHeader className="flex flex-row items-center justify-between border-b bg-muted/30">
           <div>
-            <CardTitle className="text-lg">Indexed URLs ({items.length})</CardTitle>
-            <CardDescription>Every URL added here is included in sitemap.xml.</CardDescription>
+            <CardTitle className="text-lg">Pages in the Sitemap ({items.length})</CardTitle>
+            <CardDescription>Every page listed here will be included in `sitemap.xml`.</CardDescription>
           </div>
           <Button variant="ghost" size="sm" onClick={refresh}>
             <RefreshCw className="h-4 w-4" />
@@ -172,7 +171,7 @@ ${items
         </CardHeader>
         <CardContent className="p-0">
           {items.length === 0 ? (
-            <div className="text-center text-muted-foreground py-12 text-sm">No URLs yet. Add your first above.</div>
+            <div className="text-center text-muted-foreground py-12 text-sm">No pages added yet. Add the first URL above to start building your sitemap.</div>
           ) : (
             <Table>
               <TableHeader>
@@ -245,7 +244,7 @@ ${items
       <Card className="shadow-md">
         <CardHeader className="border-b bg-muted/30">
           <CardTitle className="text-lg flex items-center gap-2">
-            <Globe className="h-5 w-5 text-primary" /> Submit to Google Search Console
+            <Globe className="h-5 w-5 text-primary" /> Submit in Google Search Console
           </CardTitle>
           <CardDescription>
             Upload sitemap.xml and robots.txt to your domain root, then click below to open Search Console with your

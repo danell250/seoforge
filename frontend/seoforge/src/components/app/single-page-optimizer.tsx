@@ -325,10 +325,10 @@ export function SinglePageOptimizer() {
           <CardHeader>
             <CardTitle className="text-2xl flex items-center gap-2">
               <FileCode className="h-6 w-6 text-primary" />
-              Optimize HTML
+              Optimize One HTML Page
             </CardTitle>
             <CardDescription>
-              Paste your raw HTML code below or upload a .html file to inject technical SEO, AEO metadata, and multilingual JSON-LD schema.
+              Paste one page of HTML or upload an HTML file. We will improve the metadata, structure, schema, and FAQ-ready formatting for you.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -336,14 +336,14 @@ export function SinglePageOptimizer() {
               <Textarea 
                 value={htmlInput}
                 onChange={(e) => setHtmlInput(e.target.value)}
-                placeholder="<!DOCTYPE html>&#10;<html>&#10;  <head>&#10;    <title>My Page</title>&#10;  </head>&#10;  <body>...</body>&#10;</html>"
+                placeholder="Paste one page of HTML here..."
                 className="min-h-[400px] font-mono text-sm resize-y p-4 bg-muted/30 focus-visible:ring-primary"
               />
               <div className="absolute top-4 right-4 flex items-center gap-2">
                 <Button variant="outline" size="sm" className="bg-background/80 backdrop-blur-sm shadow-sm" asChild>
                   <label className="cursor-pointer flex items-center gap-2">
                     <UploadCloud className="h-4 w-4" />
-                    Upload .html
+                    Upload HTML
                     <input type="file" accept=".html,.htm" className="hidden" onChange={handleFileUpload} />
                   </label>
                 </Button>
@@ -352,7 +352,7 @@ export function SinglePageOptimizer() {
           </CardContent>
           <CardFooter className="bg-muted/30 border-t px-6 py-4 flex justify-between items-center">
             <span className="text-sm text-muted-foreground">
-              {htmlInput.length > 0 ? `${(htmlInput.length / 1024).toFixed(1)} KB loaded` : '0 KB loaded'}
+              {htmlInput.length > 0 ? `${(htmlInput.length / 1024).toFixed(1)} KB loaded` : "No HTML loaded yet"}
             </span>
             <Button 
               size="lg" 
@@ -368,7 +368,7 @@ export function SinglePageOptimizer() {
               ) : (
                 <>
                   <Play className="h-5 w-5" />
-                  Optimize for SEO & AEO
+                  Improve This Page
                 </>
               )}
             </Button>
@@ -392,8 +392,8 @@ export function SinglePageOptimizer() {
                     <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> Generating Blog...
                   </>
                 ) : (
-                  <>
-                    <Sparkles className="h-4 w-4 mr-2" /> Generate Blog Article
+                <>
+                    <Sparkles className="h-4 w-4 mr-2" /> Create Blog Draft
                   </>
                 )}
               </Button>
@@ -422,7 +422,7 @@ export function SinglePageOptimizer() {
               <CardHeader className="bg-muted/30 pb-4 border-b">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-primary" />
-                  SEO Score Improvement
+                  Before and After Scores
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
@@ -482,7 +482,7 @@ export function SinglePageOptimizer() {
                   <ScoreImprovementBar 
                     before={optimizeMutation.data.originalScore.aeo} 
                     after={optimizeMutation.data.score.aeo} 
-                    label="AEO Readiness" 
+                    label="AI Answer Readiness" 
                   />
                 </div>
 

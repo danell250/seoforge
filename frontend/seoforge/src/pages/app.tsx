@@ -36,57 +36,57 @@ export default function AppWorkspace() {
 
   const tabMeta: Record<string, { title: string; description: string }> = {
     "single-page": {
-      title: "Single Page Optimizer",
-      description: "Best when you already have a page ready and want stronger metadata, structure, schema, and answer-engine formatting.",
+      title: "Optimize One Page",
+      description: "Paste one HTML page and get back a cleaner, more search-friendly version.",
     },
     "aeo-block": {
-      title: "AEO Answer Blocks",
-      description: "Generate question-and-answer sections that make the page easier for AI assistants and search answer surfaces to quote.",
+      title: "Add FAQ Answers",
+      description: "Add FAQ-style questions and answers so AI search tools can quote your page more easily.",
     },
     "content-gaps": {
-      title: "Content Gaps",
-      description: "Find missing sections and add stronger topical coverage so the page answers more of the search journey.",
+      title: "Find Missing Content",
+      description: "Find important questions your page is missing and add new sections to cover them.",
     },
     "site-crawler": {
-      title: "Full Site Crawler",
-      description: "Start here when you need a broad picture of a live site before deciding what to fix first.",
+      title: "Scan a Website",
+      description: "Crawl a live site, improve each page, and download the updated files.",
     },
     "zip-upload": {
-      title: "Bulk ZIP Upload",
-      description: "Use this when you are working through many HTML files at once and want a faster batch workflow.",
+      title: "Optimize Many Files",
+      description: "Upload a ZIP of HTML files, improve them in bulk, and download a new ZIP.",
     },
     competitor: {
-      title: "Competitor Scanner",
-      description: "Understand how a competing page is positioned so your rewrite can be sharper, more complete, and easier to differentiate.",
+      title: "Research a Competitor",
+      description: "Analyze a competitor page and see how your page can be stronger.",
     },
     hreflang: {
-      title: "Hreflang Tool",
-      description: "Add alternate language and regional signals when the page serves more than one locale or market.",
+      title: "Add Language Targeting",
+      description: "Add language and country tags when the same page exists in multiple versions.",
     },
     sitemap: {
-      title: "Sitemap and Robots",
-      description: "Maintain crawl instructions and machine-readable discovery files without leaving the workspace.",
+      title: "Create Sitemap Files",
+      description: "Build `sitemap.xml` and `robots.txt` from the pages you want indexed.",
     },
     monitor: {
-      title: "Site Monitor",
-      description: "Track pages over time and watch for regressions so SEO gains stay visible after launch.",
+      title: "Monitor a Website",
+      description: "Keep checking a live site and get alerted when pages lose important search signals.",
     },
     deploy: {
-      title: "Deploy",
-      description: "Push final HTML into WordPress or Shopify once the page is structurally ready to publish.",
+      title: "Publish Changes",
+      description: "Send finished HTML to WordPress or Shopify when it is ready to go live.",
     },
   };
   const active = tabMeta[tab] ?? tabMeta["single-page"];
   const tabs = [
-    { value: "single-page", label: "Single Page" },
-    { value: "zip-upload", label: "ZIP Upload" },
-    { value: "site-crawler", label: "Site Crawler" },
-    { value: "aeo-block", label: "AEO Blocks" },
-    { value: "content-gaps", label: "Content Gaps" },
+    { value: "single-page", label: "One Page" },
+    { value: "zip-upload", label: "Many Files" },
+    { value: "site-crawler", label: "Scan Site" },
+    { value: "aeo-block", label: "Add FAQs" },
+    { value: "content-gaps", label: "Missing Content" },
     { value: "competitor", label: "Competitor" },
-    { value: "hreflang", label: "Hreflang" },
+    { value: "hreflang", label: "Languages" },
     { value: "sitemap", label: "Sitemap" },
-    { value: "deploy", label: "Deploy" },
+    { value: "deploy", label: "Publish" },
     { value: "monitor", label: "Monitor" },
   ] as const;
 

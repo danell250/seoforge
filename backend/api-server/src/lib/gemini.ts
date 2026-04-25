@@ -15,6 +15,28 @@ export function getModel(systemInstruction?: string) {
   });
 }
 
+export async function generateContentWithTimeout(
+  model: ReturnType<typeof getModel>,
+  parts: Parameters<ReturnType<typeof getModel>["generateContent"]>[0],
+  timeoutMs = 45_000,
+) {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      model.generateContent(parts),
+      new Promise<never>((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error(`Gemini request timed out after ${timeoutMs}ms`));
+        }, timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  }
+}
+
 export function extractJson<T = unknown>(text: string): T {
   const trimmed = text.trim();
   // Strip code fences

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useScanCompetitor } from "@workspace/api-client-react";
+import { ApiError, useScanCompetitor } from "@workspace/api-client-react";
 import { Search, RefreshCw, Target, Code, FileText, Lightbulb, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,22 @@ export function CompetitorScanner() {
   const [url, setUrl] = useState("");
   const { toast } = useToast();
   const scanMutation = useScanCompetitor();
+
+  const getErrorMessage = (error: unknown) => {
+    if (error instanceof ApiError) {
+      const message =
+        typeof error.data === "object" && error.data && "message" in error.data
+          ? (error.data as { message?: unknown }).message
+          : null;
+      if (typeof message === "string" && message.trim()) {
+        return message;
+      }
+    }
+    if (error instanceof Error && error.message.trim()) {
+      return error.message;
+    }
+    return "Scan failed, please try again.";
+  };
 
   const handleScan = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,10 +39,10 @@ export function CompetitorScanner() {
     }
     
     scanMutation.mutate({ data: { url: validUrl } }, {
-      onError: () => {
+      onError: (error) => {
         toast({
           title: "Scan failed",
-          description: "Scan failed, please try again.",
+          description: getErrorMessage(error),
           variant: "destructive"
         });
       }
@@ -40,16 +56,16 @@ export function CompetitorScanner() {
         <CardHeader>
           <CardTitle className="text-2xl flex items-center gap-2">
             <Search className="h-6 w-6 text-primary" />
-            Competitor Scanner
+            Research a Competitor Page
           </CardTitle>
           <CardDescription>
-            Enter a competitor's URL to reverse-engineer their SEO strategy, schema usage, and discover how to outrank them.
+            Paste a competitor page URL and we will summarize what they are targeting, how the page is structured, and how your page can be stronger.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleScan} className="flex gap-4">
             <Input 
-              placeholder="https://competitor-agency.co.za" 
+              placeholder="Paste a competitor page URL" 
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               className="flex-1"
@@ -58,7 +74,7 @@ export function CompetitorScanner() {
               {scanMutation.isPending ? (
                 <><RefreshCw className="mr-2 h-4 w-4 animate-spin" /> Scanning...</>
               ) : (
-                <><Target className="mr-2 h-4 w-4" /> Scan Competitor</>
+                <><Target className="mr-2 h-4 w-4" /> Analyze Page</>
               )}
             </Button>
           </form>
@@ -74,7 +90,7 @@ export function CompetitorScanner() {
                 <div>
                   <CardTitle className="text-xl flex items-center gap-2">
                     <Target className="h-5 w-5 text-primary" />
-                    Their Strategy
+                    What They Are Targeting
                   </CardTitle>
                   <CardDescription className="mt-1 flex items-center gap-1">
                     Analysis for <a href={scanMutation.data.url} target="_blank" rel="noreferrer" className="text-primary hover:underline flex items-center gap-1">{scanMutation.data.title} <ExternalLink className="h-3 w-3" /></a>
@@ -104,7 +120,7 @@ export function CompetitorScanner() {
 
               <div>
                 <h4 className="text-sm font-semibold flex items-center gap-2 mb-2 text-muted-foreground uppercase tracking-wide">
-                  <Code className="h-4 w-4" /> Schema Usage
+                  <Code className="h-4 w-4" /> Structured Data
                 </h4>
                 <ul className="space-y-1 bg-muted/50 p-3 rounded-md border text-sm font-mono">
                   {scanMutation.data.strategy.schemaUsage.map((schema, i) => (
@@ -121,7 +137,7 @@ export function CompetitorScanner() {
 
               <div>
                 <h4 className="text-sm font-semibold flex items-center gap-2 mb-2 text-muted-foreground uppercase tracking-wide">
-                  <FileText className="h-4 w-4" /> Content Structure
+                  <FileText className="h-4 w-4" /> Page Structure
                 </h4>
                 <p className="text-sm bg-muted/50 p-3 rounded-md border">{scanMutation.data.strategy.contentStructure}</p>
               </div>
@@ -134,7 +150,7 @@ export function CompetitorScanner() {
             <CardHeader className="bg-primary/5 border-b border-primary/10">
               <CardTitle className="text-xl flex items-center gap-2 text-primary">
                 <Lightbulb className="h-5 w-5" />
-                How To Beat Them
+                How You Can Beat Them
               </CardTitle>
               <CardDescription className="text-primary/70">
                 Actionable recommendations to outrank this competitor.

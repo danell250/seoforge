@@ -2,7 +2,7 @@ import { Router, type IRouter } from "express";
 import { OptimizeHtmlBody, OptimizeHtmlResponse } from "@workspace/api-zod";
 import { db, optimizationsTable, usersTable } from "@workspace/db";
 import { eq, count } from "drizzle-orm";
-import { getModel, extractJson } from "../lib/gemini";
+import { getModel, extractJson, generateContentWithTimeout } from "../lib/gemini";
 import { getAuthenticatedUser, requireAuthenticatedUser } from "../middleware/auth";
 import { 
   type AfricanLanguage, 
@@ -11,6 +11,7 @@ import {
   generateAfricanHreflang,
   getAfricanLanguageConfig
 } from "../lib/african-languages";
+import { prepareHtmlForModel } from "../lib/html-processor";
 
 const router: IRouter = Router();
 router.use(requireAuthenticatedUser);
@@ -195,12 +196,29 @@ async function optimizeHtmlDocument(
   }
   
   const model = getModel();
-  const result = await model.generateContent([
+  const promptParts = [
     enhancedPrompt,
     filename ? `Filename: ${filename}` : "",
     `Detected/Prioritized Language: ${detectedLang} (${langConfig.name})`,
-    "HTML to optimize:\n```html\n" + html + "\n```",
-  ]);
+  ];
+  const primaryHtml = prepareHtmlForModel(html, 60_000);
+  const fallbackHtml = prepareHtmlForModel(html, 30_000);
+  let result;
+  try {
+    result = await generateContentWithTimeout(model, [
+      ...promptParts,
+      "HTML to optimize:\n```html\n" + primaryHtml + "\n```",
+    ], 45_000);
+  } catch (err) {
+    if (fallbackHtml === primaryHtml) {
+      throw err;
+    }
+    log.error({ err, filename }, "Primary Gemini optimize call failed, retrying with compact HTML payload");
+    result = await generateContentWithTimeout(model, [
+      ...promptParts,
+      "HTML to optimize:\n```html\n" + fallbackHtml + "\n```",
+    ], 15_000);
+  }
   const text = result.response.text();
   let data: GeminiResult;
   try {

@@ -77,14 +77,14 @@ export function SiteMonitor() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Lock className="h-5 w-5 text-primary" />
-            Site Monitor
+            Website Monitoring
           </CardTitle>
           <CardDescription>
-            Scheduled monitoring is available on Starter and Agency plans so you can keep crawl history and alerts in one place.
+            Scheduled monitoring is available on Starter and Agency plans so you can keep site checks and alerts in one place.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 text-sm text-muted-foreground">
-          <p>Upgrade to unlock recurring crawls, regression summaries, and emailed monitoring reports for up to 5 domains.</p>
+          <p>Upgrade to unlock recurring site checks, change summaries, and emailed reports for up to 5 domains.</p>
           <Link href="/pricing">
             <Button>View plans</Button>
           </Link>
@@ -196,9 +196,9 @@ export function SiteMonitor() {
               <Radar className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-2xl">Scheduled Site Monitor</CardTitle>
+              <CardTitle className="text-2xl">Watch a Live Website for Changes</CardTitle>
               <CardDescription>
-                Re-crawl any site on a schedule. We email you a diff of pages that lost ranking signals or got new content gaps.
+                Re-scan a live site on a schedule and email you a summary when pages lose important search signals.
               </CardDescription>
             </div>
           </div>
@@ -206,23 +206,23 @@ export function SiteMonitor() {
         <CardContent className="space-y-4">
           <div className="grid md:grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="m-url">Domain to monitor *</Label>
+              <Label htmlFor="m-url">Website URL to monitor *</Label>
               <Input id="m-url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://your-site.co.za" />
             </div>
             <div>
-              <Label htmlFor="m-email">Email for reports *</Label>
+              <Label htmlFor="m-email">Where should reports be emailed? *</Label>
               <Input id="m-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@agency.com" />
             </div>
             <div>
-              <Label htmlFor="m-topic">Topic / niche</Label>
-              <Input id="m-topic" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="e.g. solar geyser installation" />
+              <Label htmlFor="m-topic">What is this site about? (optional)</Label>
+              <Input id="m-topic" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="e.g. contact center" />
             </div>
             <div>
-              <Label htmlFor="m-audience">Audience</Label>
-              <Input id="m-audience" value={audience} onChange={(e) => setAudience(e.target.value)} placeholder="e.g. homeowners in Gauteng" />
+              <Label htmlFor="m-audience">Who is it for? (optional)</Label>
+              <Input id="m-audience" value={audience} onChange={(e) => setAudience(e.target.value)} placeholder="e.g. contact center managers" />
             </div>
             <div>
-              <Label htmlFor="m-pages">Max pages per scan</Label>
+              <Label htmlFor="m-pages">Maximum pages per scan</Label>
               <Input
                 id="m-pages"
                 type="number"
@@ -233,7 +233,7 @@ export function SiteMonitor() {
               />
             </div>
             <div>
-              <Label htmlFor="m-freq">Frequency</Label>
+              <Label htmlFor="m-freq">How often should we check it?</Label>
               <select
                 id="m-freq"
                 value={frequency}
@@ -249,7 +249,7 @@ export function SiteMonitor() {
           <div className="flex justify-end">
             <Button onClick={submit} disabled={create.isPending} className="gap-2">
               {create.isPending ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Radar className="h-4 w-4" />}
-              Start monitoring
+              Start Watching
             </Button>
           </div>
         </CardContent>
@@ -260,7 +260,7 @@ export function SiteMonitor() {
           <CardTitle className="text-lg">Monitored sites</CardTitle>
           <CardDescription>
             {sites.length === 0
-              ? "Nothing here yet. Add a site above to start tracking changes."
+              ? "No websites yet. Add the first one above to start getting reports."
               : `${sites.length} site${sites.length === 1 ? "" : "s"} on a schedule.`}
           </CardDescription>
         </CardHeader>
@@ -332,11 +332,11 @@ function SiteRow({ site, expanded, onToggle, onRun, onRemove, isRunning, isQueue
         <div className="flex gap-2 shrink-0">
           <Button size="sm" variant="outline" onClick={onToggle} className="gap-1">
             {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-            History
+            Reports
           </Button>
           <Button size="sm" onClick={onRun} disabled={isRunning || isQueued} className="gap-1">
             {isRunning || isQueued ? <RefreshCw className="h-3 w-3 animate-spin" /> : <Play className="h-3 w-3" />}
-            {isQueued ? "Queued" : "Run now"}
+            {isQueued ? "Queued" : "Check now"}
           </Button>
           <Button size="sm" variant="ghost" onClick={onRemove}>
             <Trash2 className="h-3 w-3" />
@@ -347,7 +347,7 @@ function SiteRow({ site, expanded, onToggle, onRun, onRemove, isRunning, isQueue
         <div className="border-t bg-muted/30 p-4 space-y-3">
           {reportsQ.isLoading && <div className="text-sm text-muted-foreground">Loading history…</div>}
           {!reportsQ.isLoading && reports.length === 0 && (
-            <div className="text-sm text-muted-foreground">No reports yet. Click Run now to create the first one.</div>
+            <div className="text-sm text-muted-foreground">No reports yet. Click Check now to create the first one.</div>
           )}
           {reports.map((r) => (
             <ReportCard

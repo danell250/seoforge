@@ -63,33 +63,33 @@ export function AeoAnswerBlock() {
           <CardHeader>
             <CardTitle className="text-2xl flex items-center gap-2">
               <MessageSquareQuote className="h-6 w-6 text-primary" />
-              AEO Answer Block Generator
+              FAQ and Answer Block Generator
             </CardTitle>
             <CardDescription>
-              Detects the questions your page should answer to win Google AI Overviews and Perplexity, then injects
-              ready-to-deploy Q&amp;A content and FAQPage JSON-LD schema.
+              Paste in your page HTML and this tool adds a ready-to-use FAQ section, short answer blocks, and the schema markup
+              needed to help Google and AI tools understand the page.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Topic hint (optional)</label>
+              <label className="text-sm font-medium mb-2 block">Page topic (optional)</label>
               <Input
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
-                placeholder="e.g. solar geyser installation Cape Town"
+                placeholder="e.g. call centers"
               />
             </div>
             <div className="relative">
               <Textarea
                 value={html}
                 onChange={(e) => setHtml(e.target.value)}
-                placeholder="<!DOCTYPE html>..."
+                placeholder="Paste your page HTML here..."
                 className="min-h-[360px] font-mono text-sm resize-y p-4 bg-muted/30 focus-visible:ring-primary"
               />
               <div className="absolute top-4 right-4">
                 <Button variant="outline" size="sm" className="bg-background/80 backdrop-blur-sm shadow-sm" asChild>
                   <label className="cursor-pointer flex items-center gap-2">
-                    <UploadCloud className="h-4 w-4" /> Upload .html
+                    <UploadCloud className="h-4 w-4" /> Upload HTML
                     <input type="file" accept=".html,.htm" className="hidden" onChange={handleFile} />
                   </label>
                 </Button>
@@ -98,7 +98,7 @@ export function AeoAnswerBlock() {
           </CardContent>
           <CardFooter className="bg-muted/30 border-t px-6 py-4 flex justify-between items-center">
             <span className="text-sm text-muted-foreground">
-              {html.length > 0 ? `${(html.length / 1024).toFixed(1)} KB loaded` : "0 KB loaded"}
+              {html.length > 0 ? `${(html.length / 1024).toFixed(1)} KB loaded` : "No HTML loaded yet"}
             </span>
             <Button size="lg" onClick={handleRun} disabled={mutation.isPending || !html.trim()} className="gap-2 px-8">
               {mutation.isPending ? (
@@ -107,7 +107,7 @@ export function AeoAnswerBlock() {
                 </>
               ) : (
                 <>
-                  <Play className="h-5 w-5" /> Generate Answer Blocks
+                  <Play className="h-5 w-5" /> Generate FAQ Content
                 </>
               )}
             </Button>

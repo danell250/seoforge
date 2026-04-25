@@ -73,29 +73,29 @@ export function ContentGapDetector() {
           <CardHeader>
             <CardTitle className="text-2xl flex items-center gap-2">
               <Search className="h-6 w-6 text-primary" />
-              AI Content Gap Detector
+              Missing Content Finder
             </CardTitle>
             <CardDescription>
-              Reads your page, identifies the questions real searchers ask in your niche that you're not answering,
-              writes the missing sections, and injects them into your HTML.
+              Paste in your page HTML and this tool finds important questions or topics the page is missing, writes the
+              extra sections for you, and adds them into the page HTML.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Topic / niche *</label>
+                <label className="text-sm font-medium mb-2 block">What is this page about? *</label>
                 <Input
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
-                  placeholder="e.g. solar geyser installation South Africa"
+                  placeholder="e.g. contact center"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block">Target audience (optional)</label>
+                <label className="text-sm font-medium mb-2 block">Who is this page for? (optional)</label>
                 <Input
                   value={audience}
                   onChange={(e) => setAudience(e.target.value)}
-                  placeholder="e.g. homeowners in Gauteng, R5K-R20K budget"
+                  placeholder="e.g. contact center managers"
                 />
               </div>
             </div>
@@ -103,13 +103,13 @@ export function ContentGapDetector() {
               <Textarea
                 value={html}
                 onChange={(e) => setHtml(e.target.value)}
-                placeholder="<!DOCTYPE html>..."
+                placeholder="Paste your page HTML here..."
                 className="min-h-[320px] font-mono text-sm resize-y p-4 bg-muted/30 focus-visible:ring-primary"
               />
               <div className="absolute top-4 right-4">
                 <Button variant="outline" size="sm" className="bg-background/80 backdrop-blur-sm shadow-sm" asChild>
                   <label className="cursor-pointer flex items-center gap-2">
-                    <UploadCloud className="h-4 w-4" /> Upload .html
+                    <UploadCloud className="h-4 w-4" /> Upload HTML
                     <input type="file" accept=".html,.htm" className="hidden" onChange={handleFile} />
                   </label>
                 </Button>
@@ -118,7 +118,7 @@ export function ContentGapDetector() {
           </CardContent>
           <CardFooter className="bg-muted/30 border-t px-6 py-4 flex justify-between items-center">
             <span className="text-sm text-muted-foreground">
-              {html.length > 0 ? `${(html.length / 1024).toFixed(1)} KB loaded` : "0 KB loaded"}
+              {html.length > 0 ? `${(html.length / 1024).toFixed(1)} KB loaded` : "No HTML loaded yet"}
             </span>
             <Button size="lg" onClick={handleRun} disabled={mutation.isPending} className="gap-2 px-8">
               {mutation.isPending ? (
@@ -127,7 +127,7 @@ export function ContentGapDetector() {
                 </>
               ) : (
                 <>
-                  <Play className="h-5 w-5" /> Detect Gaps
+                  <Play className="h-5 w-5" /> Find Missing Content
                 </>
               )}
             </Button>

@@ -291,10 +291,9 @@ export function SiteCrawler() {
                 <Globe className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-2xl">Full Website Crawler</CardTitle>
+                <CardTitle className="text-2xl">Scan and Optimize a Website</CardTitle>
                 <CardDescription>
-                  Paste any domain. We crawl every page and optimize them in one
-                  run — sitemap, schema, AEO, the lot.
+                  Enter a website URL. We scan its pages, improve each one, and let you download the updated files.
                 </CardDescription>
               </div>
             </div>
@@ -322,18 +321,18 @@ export function SiteCrawler() {
                   {isCrawling ? (
                     <>
                       <RefreshCw className="h-4 w-4 animate-spin" />
-                      Crawling…
+                      Scanning…
                     </>
                   ) : (
                     <>
                       <Search className="h-4 w-4" />
-                      Crawl & Optimize
+                      Scan Site
                     </>
                   )}
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                We respect same-origin only and skip non-HTML assets.
+                We only follow pages on the same domain and skip images, PDFs, and other assets.
               </p>
             </div>
 
@@ -360,16 +359,16 @@ export function SiteCrawler() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
               <Feature
-                title="Same-domain BFS"
-                body="We follow internal links breadth-first, skipping PDFs, images and assets."
+                title="Find pages"
+                body="We follow internal links on the same domain and collect each HTML page we can reach."
               />
               <Feature
-                title="One-click optimization"
-                body="Every discovered page is rewritten with full SEO + AEO improvements."
+                title="Improve each page"
+                body="Every discovered page gets rewritten with better metadata, structure, and FAQ-ready formatting."
               />
               <Feature
-                title="Bundled download"
-                body="Get a single zip of every optimized page, ready to ship."
+                title="Download everything"
+                body="Get one ZIP file with every updated page when the run is finished."
               />
             </div>
           </CardContent>
@@ -391,11 +390,11 @@ export function SiteCrawler() {
                   data-testid="button-download-all"
                 >
                   <Download className="h-4 w-4" />
-                  Download Optimized Site
+                  Download Updated Site
                 </Button>
               )}
               <Button variant="outline" onClick={reset} disabled={isBusy}>
-                New Crawl
+                Scan Another Site
               </Button>
             </div>
           </CardHeader>
@@ -427,27 +426,26 @@ export function SiteCrawler() {
                   <div className="flex-1">
                     <h3 className="font-semibold text-base">Apply Content Gaps to ALL Pages</h3>
                     <p className="text-sm text-muted-foreground">
-                      Run the AI gap detector on every optimized page and inject the missing sections. Then send the
-                      whole batch to the Deploy queue with one click.
+                      Find missing topics across all the updated pages, add the new sections, and then send the whole batch to Publish.
                     </p>
                   </div>
                 </div>
                 <div className="grid md:grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs">Topic / niche *</Label>
+                    <Label className="text-xs">What is this site about? *</Label>
                     <Input
                       value={topic}
                       onChange={(e) => setTopic(e.target.value)}
-                      placeholder="e.g. solar geyser installation"
+                      placeholder="e.g. contact center"
                       disabled={isFillingGaps}
                     />
                   </div>
                   <div>
-                    <Label className="text-xs">Target audience (optional)</Label>
+                    <Label className="text-xs">Who is it for? (optional)</Label>
                     <Input
                       value={audience}
                       onChange={(e) => setAudience(e.target.value)}
-                      placeholder="e.g. homeowners in Gauteng"
+                      placeholder="e.g. contact center managers"
                       disabled={isFillingGaps}
                     />
                   </div>
@@ -474,13 +472,13 @@ export function SiteCrawler() {
                       </>
                     ) : (
                       <>
-                        <Sparkles className="h-4 w-4" /> Apply Gaps to All {successPagesCount} Pages
+                        <Sparkles className="h-4 w-4" /> Add Missing Content to {successPagesCount} Pages
                       </>
                     )}
                   </Button>
                   {gapsDone && gapsReadyCount > 0 && (
                     <Button onClick={sendAllToDeployQueue} className="gap-2" variant="default">
-                      <Rocket className="h-4 w-4" /> Send {gapsReadyCount} to Deploy Queue
+                      <Rocket className="h-4 w-4" /> Send {gapsReadyCount} to Publish Queue
                     </Button>
                   )}
                 </div>

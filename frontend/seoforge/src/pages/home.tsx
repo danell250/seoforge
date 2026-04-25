@@ -25,16 +25,16 @@ import {
 
 export default function Home() {
   const features = [
-    { icon: Search, title: "Full-Site Crawler", desc: "Instantly scan and audit your entire domain for critical technical SEO errors and missed AEO opportunities." },
-    { icon: LayoutTemplate, title: "Before/After Google Preview", desc: "See exactly how your Answer Engine Optimization updates will look in Google AI Overviews and traditional SERPs." },
-    { icon: LineChart, title: "Competitor Scanner", desc: "Reverse-engineer the exact meta strategies, schema, and content structures your competitors use to rank." },
-    { icon: BrainCircuit, title: "AEO Answer Block Generator", desc: "Automatically format your content to win Google AI Overviews and featured snippets." },
-    { icon: Zap, title: "CMS Deploy", desc: "Deploy optimized HTML directly to WordPress or Shopify environments in seconds." },
-    { icon: ShieldCheck, title: "SEO Health Score", desc: "Get a granular technical, content, and AEO readiness score for every page you optimize." },
-    { icon: FileCode2, title: "Sitemap & Robots Generator", desc: "Auto-generate perfectly formatted sitemap.xml and robots.txt files ready for Search Console." },
-    { icon: Globe2, title: "Multilingual Schema", desc: "Generate advanced JSON-LD structured data tailored for South African and pan-African multilingual markets." },
-    { icon: Bot, title: "White-Label Reports", desc: "Export agency-branded optimization reports to prove value to your SEO clients." },
-    { icon: Code2, title: "AI Content Gap Detector", desc: "Identify exactly which semantic entities and LSI keywords your content is missing." },
+    { icon: Search, title: "Scan a Website", desc: "Crawl a live site and find the pages that need improvement." },
+    { icon: LayoutTemplate, title: "See the Before and After", desc: "Preview how your updated page can look in search results before you publish it." },
+    { icon: LineChart, title: "Research Competitors", desc: "Analyze a competitor page and see what they are targeting." },
+    { icon: BrainCircuit, title: "Add FAQ Answers", desc: "Generate FAQ-style answers that help Google and AI tools quote your page." },
+    { icon: Zap, title: "Publish to Your CMS", desc: "Send finished HTML straight to WordPress or Shopify." },
+    { icon: ShieldCheck, title: "Track Page Scores", desc: "See how each page improves after optimization." },
+    { icon: FileCode2, title: "Create Sitemap Files", desc: "Generate `sitemap.xml` and `robots.txt` ready for Search Console." },
+    { icon: Globe2, title: "Add Language Targeting", desc: "Create the language and country tags needed for multi-region pages." },
+    { icon: Bot, title: "Client-Friendly Reports", desc: "Export clear reports you can share with clients or teammates." },
+    { icon: Code2, title: "Find Missing Content", desc: "Add the topics and questions your page still does not answer." },
   ];
   const workflow = [
     {
