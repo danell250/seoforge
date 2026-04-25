@@ -10,14 +10,24 @@ const SESSION_COOKIE_NAME = "seoforge_session";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 const SESSION_TOUCH_INTERVAL_MS = 1000 * 60 * 5;
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
-const COOKIE_SAME_SITE = (process.env.SESSION_COOKIE_SAMESITE ?? "lax").trim().toLowerCase();
+const COOKIE_SAME_SITE = (
+  process.env.SESSION_COOKIE_SAMESITE ?? (IS_PRODUCTION ? "none" : "lax")
+).trim().toLowerCase();
+const COOKIE_PARTITIONED = (process.env.SESSION_COOKIE_PARTITIONED ?? "true").trim().toLowerCase() !== "false";
 const DEV_ADMIN_EMAIL = "admin@localhost";
-const DEV_ADMIN_PASSWORD = "ChangeMe123!";
 const BOOTSTRAP_FLAG = "AUTH_BOOTSTRAP_ADMIN";
+const DEFAULT_ADMIN_PLAN = "agency";
 
 let bootstrapPromise: Promise<void> | null = null;
 let warnedAboutDevCredentials = false;
 let warnedAboutBootstrap = false;
+
+export class AuthConfigurationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "AuthConfigurationError";
+  }
+}
 
 export interface SessionUser {
   id: number;
@@ -35,23 +45,26 @@ function getAdminCredentials() {
   const email = process.env.ADMIN_EMAIL?.trim();
   const password = process.env.ADMIN_PASSWORD;
 
-  if (email && password) {
+  if (password) {
     return {
-      email: normalizeEmail(email),
+      email: normalizeEmail(email || DEV_ADMIN_EMAIL),
       password,
-      usingDefaults: false,
+      usingDefaults: !email,
     };
   }
 
   if (!IS_PRODUCTION) {
-    return {
-      email: DEV_ADMIN_EMAIL,
-      password: DEV_ADMIN_PASSWORD,
-      usingDefaults: true,
-    };
+    throw new AuthConfigurationError(
+      "ADMIN_PASSWORD must be set for auth bootstrap. Optionally set ADMIN_EMAIL; it defaults to admin@localhost in development.",
+    );
   }
 
-  throw new Error("ADMIN_EMAIL and ADMIN_PASSWORD must be set in production.");
+  throw new AuthConfigurationError("ADMIN_EMAIL and ADMIN_PASSWORD must be set in production.");
+}
+
+function getAdminPlan() {
+  const plan = process.env.ADMIN_PLAN?.trim();
+  return plan || DEFAULT_ADMIN_PLAN;
 }
 
 function toSessionUser(user: typeof usersTable.$inferSelect): SessionUser {
@@ -82,8 +95,28 @@ function hashSessionToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
 }
 
+async function syncExistingAdmin(existing: typeof usersTable.$inferSelect, password: string, plan: string) {
+  const updates: Partial<typeof usersTable.$inferInsert> = {
+    updatedAt: new Date(),
+  };
+
+  if (existing.plan !== plan) {
+    updates.plan = plan;
+  }
+
+  const passwordMatches = await verifyPassword(password, existing.passwordHash);
+  if (!passwordMatches) {
+    updates.passwordHash = await hashPassword(password);
+  }
+
+  if (Object.keys(updates).length > 1) {
+    await db.update(usersTable).set(updates).where(eq(usersTable.id, existing.id));
+  }
+}
+
 async function ensureAdminUser(): Promise<void> {
   const { email, password, usingDefaults } = getAdminCredentials();
+  const plan = getAdminPlan();
   const [existing] = await db.select().from(usersTable).where(eq(usersTable.email, email)).limit(1);
   const canBootstrap = process.env[BOOTSTRAP_FLAG] === "true";
 
@@ -108,7 +141,10 @@ async function ensureAdminUser(): Promise<void> {
       passwordHash,
       displayName: "Workspace Admin",
       role: "admin",
+      plan,
     });
+  } else if (canBootstrap) {
+    await syncExistingAdmin(existing, password, plan);
   }
 
   if (usingDefaults && !warnedAboutDevCredentials) {
@@ -213,6 +249,9 @@ function getCookieAttributes(expiresAt?: Date) {
   ];
   if (IS_PRODUCTION || sameSite === "None") {
     parts.push("Secure");
+  }
+  if (sameSite === "None" && COOKIE_PARTITIONED) {
+    parts.push("Partitioned");
   }
   if (expiresAt) {
     parts[0] = `${SESSION_COOKIE_NAME}=`;

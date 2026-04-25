@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  ApiError,
   useListMonitoredSites,
   useCreateMonitoredSite,
   useDeleteMonitoredSite,
@@ -20,8 +21,10 @@ import {
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import {
   Calendar,
+  Lock,
   Mail,
   Play,
   RefreshCw,
@@ -33,10 +36,25 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import { Link } from "wouter";
+
+function getApiErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof ApiError) {
+    const message =
+      typeof error.data === "object" && error.data && "message" in error.data
+        ? (error.data as { message?: unknown }).message
+        : null;
+    if (typeof message === "string" && message.trim()) return message;
+    if (typeof error.message === "string" && error.message.trim()) return error.message;
+  }
+  if (error instanceof Error && error.message.trim()) return error.message;
+  return fallback;
+}
 
 export function SiteMonitor() {
   const { toast } = useToast();
   const qc = useQueryClient();
+  const { user } = useAuth();
 
   const [url, setUrl] = useState("");
   const [email, setEmail] = useState("");
@@ -45,11 +63,35 @@ export function SiteMonitor() {
   const [maxPages, setMaxPages] = useState(15);
   const [frequency, setFrequency] = useState<"daily" | "weekly" | "monthly">("weekly");
   const [expandedReports, setExpandedReports] = useState<number | null>(null);
+  const [queuedSiteIds, setQueuedSiteIds] = useState<number[]>([]);
 
   const sitesQ = useListMonitoredSites();
   const create = useCreateMonitoredSite();
   const del = useDeleteMonitoredSite();
   const run = useRunMonitoredSite();
+  const isFreePlan = (user?.plan ?? "free") === "free";
+
+  if (isFreePlan) {
+    return (
+      <Card className="border-dashed border-2 bg-muted/20">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Lock className="h-5 w-5 text-primary" />
+            Site Monitor
+          </CardTitle>
+          <CardDescription>
+            Scheduled monitoring is available on Starter and Agency plans so you can keep crawl history and alerts in one place.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4 text-sm text-muted-foreground">
+          <p>Upgrade to unlock recurring crawls, regression summaries, and emailed monitoring reports for up to 5 domains.</p>
+          <Link href="/pricing">
+            <Button>View plans</Button>
+          </Link>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const submit = () => {
     if (!url.trim() || !email.trim()) {
@@ -71,11 +113,17 @@ export function SiteMonitor() {
         onSuccess: () => {
           toast({ title: "Site added", description: "We'll re-crawl on schedule and email you the diff." });
           setUrl("");
+          setEmail("");
           setTopic("");
           setAudience("");
           qc.invalidateQueries({ queryKey: getListMonitoredSitesQueryKey() });
         },
-        onError: () => toast({ title: "Couldn't add site", variant: "destructive" }),
+        onError: (error) =>
+          toast({
+            title: "Couldn't add site",
+            description: getApiErrorMessage(error, "Please check the details and try again."),
+            variant: "destructive",
+          }),
       },
     );
   };
@@ -89,6 +137,12 @@ export function SiteMonitor() {
           toast({ title: "Removed" });
           qc.invalidateQueries({ queryKey: getListMonitoredSitesQueryKey() });
         },
+        onError: (error) =>
+          toast({
+            title: "Couldn't remove site",
+            description: getApiErrorMessage(error, "Please try again."),
+            variant: "destructive",
+          }),
       },
     );
   };
@@ -101,12 +155,32 @@ export function SiteMonitor() {
     run.mutate(
       { id },
       {
-        onSuccess: () => {
-          toast({ title: "Report ready", description: "Email sent and saved to history." });
+        onSuccess: (result) => {
+          const queued = result.id === 0;
+          toast({
+            title: queued ? "Run queued" : "Report ready",
+            description: queued
+              ? "The monitor job is running in the background. Refresh history shortly to see the finished report."
+              : "Email sent and saved to history.",
+          });
+          if (queued) {
+            setQueuedSiteIds((current) => (current.includes(id) ? current : [...current, id]));
+            window.setTimeout(() => {
+              qc.invalidateQueries({ queryKey: getListMonitoredSitesQueryKey() });
+              qc.invalidateQueries({ queryKey: getListMonitorReportsQueryKey(id) });
+              setQueuedSiteIds((current) => current.filter((siteId) => siteId !== id));
+            }, 20_000);
+            return;
+          }
           qc.invalidateQueries({ queryKey: getListMonitoredSitesQueryKey() });
           qc.invalidateQueries({ queryKey: getListMonitorReportsQueryKey(id) });
         },
-        onError: () => toast({ title: "Run failed", variant: "destructive" }),
+        onError: (error) =>
+          toast({
+            title: "Run failed",
+            description: getApiErrorMessage(error, "Please try again."),
+            variant: "destructive",
+          }),
       },
     );
   };
@@ -203,6 +277,7 @@ export function SiteMonitor() {
               onRun={() => runNow(s.id)}
               onRemove={() => remove(s.id)}
               isRunning={run.isPending && run.variables?.id === s.id}
+              isQueued={queuedSiteIds.includes(s.id)}
             />
           ))}
         </CardContent>
@@ -227,9 +302,10 @@ interface SiteRowProps {
   onRun: () => void;
   onRemove: () => void;
   isRunning: boolean;
+  isQueued: boolean;
 }
 
-function SiteRow({ site, expanded, onToggle, onRun, onRemove, isRunning }: SiteRowProps) {
+function SiteRow({ site, expanded, onToggle, onRun, onRemove, isRunning, isQueued }: SiteRowProps) {
   const reportsQ = useListMonitorReports(site.id, {
     query: { enabled: expanded, queryKey: getListMonitorReportsQueryKey(site.id) },
   });
@@ -258,9 +334,9 @@ function SiteRow({ site, expanded, onToggle, onRun, onRemove, isRunning }: SiteR
             {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
             History
           </Button>
-          <Button size="sm" onClick={onRun} disabled={isRunning} className="gap-1">
-            {isRunning ? <RefreshCw className="h-3 w-3 animate-spin" /> : <Play className="h-3 w-3" />}
-            Run now
+          <Button size="sm" onClick={onRun} disabled={isRunning || isQueued} className="gap-1">
+            {isRunning || isQueued ? <RefreshCw className="h-3 w-3 animate-spin" /> : <Play className="h-3 w-3" />}
+            {isQueued ? "Queued" : "Run now"}
           </Button>
           <Button size="sm" variant="ghost" onClick={onRemove}>
             <Trash2 className="h-3 w-3" />

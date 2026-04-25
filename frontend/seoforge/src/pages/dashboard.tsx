@@ -3,14 +3,30 @@ import { Footer } from "@/components/layout/footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useGetDashboardSummary, useDeleteOptimization, getGetDashboardSummaryQueryKey } from "@workspace/api-client-react";
+import {
+  useGetDashboardSummary,
+  useDeleteOptimization,
+  useListMonitoredSites,
+  getGetDashboardSummaryQueryKey,
+} from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { Activity, BarChart3, CheckCircle2, Trash2, TrendingUp, Trophy, Globe, Lock, Plus, LineChart as LineChartIcon, ExternalLink } from "lucide-react";
+import {
+  Activity,
+  BarChart3,
+  CheckCircle2,
+  Trash2,
+  TrendingUp,
+  Trophy,
+  Globe,
+  Lock,
+  ExternalLink,
+  Radar,
+  CalendarClock,
+  CheckCircle,
+} from "lucide-react";
 import { Link } from "wouter";
-import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 function scoreColor(score: number) {
   if (score >= 80) return "text-green-600 bg-green-50 border-green-200";
@@ -26,30 +42,34 @@ function ScoreChip({ score }: { score: number }) {
   );
 }
 
-// Mock data for domain monitoring - in production, fetch from API
-const mockSiteData = {
-  domain: "example.com",
-  currentScore: 67,
-  previousScore: 45,
-  history: [
-    { date: "Jan", score: 34 },
-    { date: "Feb", score: 42 },
-    { date: "Mar", score: 45 },
-    { date: "Apr", score: 67 },
-  ],
-  pages: [
-    { url: "/", title: "Homepage", score: 72, change: +15 },
-    { url: "/about", title: "About Us", score: 58, change: -5 },
-    { url: "/services", title: "Services", score: 81, change: +22 },
-  ],
-};
+interface MonitoredSiteSummary {
+  id: number;
+  url: string;
+  domain: string;
+  email: string;
+  frequency: string;
+  enabled: boolean;
+  nextRunAt: string;
+  lastRunAt?: string | null;
+}
 
-function DomainMonitoring({ userPlan }: { userPlan: string }) {
-  const [showAddForm, setShowAddForm] = useState(false);
+function DomainMonitoring({
+  userPlan,
+  sitesQ,
+}: {
+  userPlan: string;
+  sitesQ: ReturnType<typeof useListMonitoredSites>;
+}) {
   const isFree = userPlan === "free";
-  const isLocked = isFree;
+  const sites = ((sitesQ.data as { sites?: MonitoredSiteSummary[] } | undefined)?.sites ?? []);
+  const upcomingWindow = Date.now() + 1000 * 60 * 60 * 24 * 7;
+  const dueSoonCount = sites.filter((site) => new Date(site.nextRunAt).getTime() <= upcomingWindow).length;
+  const activeCount = sites.filter((site) => site.enabled).length;
+  const mostRecentCompletedSite = sites
+    .filter((site) => site.lastRunAt)
+    .sort((a, b) => new Date(b.lastRunAt ?? 0).getTime() - new Date(a.lastRunAt ?? 0).getTime())[0];
 
-  if (isLocked) {
+  if (isFree) {
     return (
       <Card className="mt-8 border-dashed border-2 bg-muted/20">
         <CardContent className="p-8">
@@ -59,12 +79,8 @@ function DomainMonitoring({ userPlan }: { userPlan: string }) {
             </div>
             <h3 className="text-xl font-semibold mb-2">Domain Monitoring</h3>
             <p className="text-muted-foreground mb-2 max-w-md">
-              Monitor up to 5 websites with monthly SEO health checks, score trend graphs, and email alerts when pages drop below 60.
+              Monitor up to 5 websites with scheduled crawls, regression summaries, and email alerts when pages lose ranking signals.
             </p>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-              <LineChartIcon className="w-4 h-4" />
-              <span>Example: Score improved from 34 to 91 over 3 months</span>
-            </div>
             <Link href="/pricing">
               <Button size="lg">
                 Upgrade to Starter
@@ -87,127 +103,117 @@ function DomainMonitoring({ userPlan }: { userPlan: string }) {
               Domain Monitoring
             </CardTitle>
             <CardDescription>
-              Track SEO health scores for up to 5 websites
+              Live view of the domains you are already monitoring.
             </CardDescription>
           </div>
-          <Button onClick={() => setShowAddForm(!showAddForm)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Add Domain
-          </Button>
+          <Link href="/app#monitor">
+            <Button>
+              <Radar className="w-4 h-4 mr-2" />
+              Open Monitor
+            </Button>
+          </Link>
         </div>
       </CardHeader>
       <CardContent className="p-6">
-        {showAddForm && (
-          <div className="mb-6 p-4 bg-muted rounded-lg">
-            <p className="text-sm text-muted-foreground mb-3">
-              Add your website URL to start monthly monitoring
+        {sitesQ.isError ? (
+          <div className="rounded-xl border border-dashed bg-muted/20 p-8 text-center">
+            <h4 className="text-lg font-semibold">Monitoring summary unavailable</h4>
+            <p className="mt-2 text-sm text-muted-foreground">
+              We couldn&apos;t load the monitoring overview just now. Open the monitor workspace to retry.
             </p>
-            <div className="flex gap-2">
-              <input
-                type="url"
-                placeholder="https://your-website.com"
-                className="flex-1 px-3 py-2 border rounded-md text-sm"
-              />
-              <Button size="sm">Start Monitoring</Button>
+            <Link href="/app#monitor">
+              <Button className="mt-4">Open Monitor</Button>
+            </Link>
+          </div>
+        ) : sitesQ.isLoading ? (
+          <div className="py-10 text-sm text-muted-foreground text-center">Loading monitored sites...</div>
+        ) : sites.length === 0 ? (
+          <div className="rounded-xl border border-dashed bg-muted/20 p-8 text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Radar className="h-5 w-5" />
             </div>
+            <h4 className="text-lg font-semibold">No domains are being monitored yet</h4>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Add your first live site from the workspace monitor tab and the schedule summary will appear here.
+            </p>
+            <Link href="/app#monitor">
+              <Button className="mt-4">Set up monitoring</Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <div className="grid gap-4 md:grid-cols-3">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardDescription className="flex items-center gap-2">
+                    <Globe className="h-4 w-4" />
+                    Domains live
+                  </CardDescription>
+                  <CardTitle className="text-3xl">{activeCount}</CardTitle>
+                </CardHeader>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardDescription className="flex items-center gap-2">
+                    <CalendarClock className="h-4 w-4" />
+                    Due this week
+                  </CardDescription>
+                  <CardTitle className="text-3xl">{dueSoonCount}</CardTitle>
+                </CardHeader>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardDescription className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4" />
+                    Last completed
+                  </CardDescription>
+                  <CardTitle className="text-lg">
+                    {mostRecentCompletedSite?.lastRunAt ? formatDate(mostRecentCompletedSite.lastRunAt) : "No runs yet"}
+                  </CardTitle>
+                  {mostRecentCompletedSite && (
+                    <div className="text-sm text-muted-foreground">{mostRecentCompletedSite.domain}</div>
+                  )}
+                </CardHeader>
+              </Card>
+            </div>
+
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Domain</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Frequency</TableHead>
+                  <TableHead>Next run</TableHead>
+                  <TableHead>Last run</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sites.map((site) => (
+                  <TableRow key={site.id}>
+                    <TableCell>
+                      <div className="font-medium">{site.domain}</div>
+                      <div className="text-xs text-muted-foreground truncate max-w-[280px]">{site.url}</div>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{site.email}</TableCell>
+                    <TableCell className="capitalize">{site.frequency}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{formatDate(site.nextRunAt)}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {site.lastRunAt ? formatDate(site.lastRunAt) : "Not run yet"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Link href="/app#monitor">
+                        <Button size="sm" variant="ghost">
+                          <ExternalLink className="w-4 h-4" />
+                        </Button>
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         )}
-
-        {/* Example site data - in production, map over user's sites */}
-        <div className="space-y-6">
-          <div className="border rounded-xl overflow-hidden">
-            <div className="p-4 bg-muted/30 border-b flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Globe className="w-5 h-5 text-primary" />
-                <div>
-                  <h4 className="font-semibold">{mockSiteData.domain}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Next scan: {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-green-600">{mockSiteData.currentScore}</div>
-                  <div className="text-xs text-muted-foreground">/100 average</div>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm font-medium text-green-600">+{mockSiteData.currentScore - mockSiteData.previousScore}</div>
-                  <div className="text-xs text-muted-foreground">vs last month</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Score Trend Chart */}
-            <div className="p-4 border-b">
-              <h5 className="text-sm font-medium mb-4">Score Trend Over Time</h5>
-              <div className="h-48">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={mockSiteData.history}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                    <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0' }}
-                      formatter={(value: number) => [`${value}/100`, 'SEO Score']}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="score" 
-                      stroke="#2563eb" 
-                      strokeWidth={2}
-                      dot={{ fill: '#2563eb', strokeWidth: 0, r: 4 }}
-                      activeDot={{ r: 6, stroke: '#2563eb', strokeWidth: 2 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-              <p className="text-center text-sm text-muted-foreground mt-2">
-                Score improved from {mockSiteData.history[0].score} to {mockSiteData.history[mockSiteData.history.length - 1].score} over {mockSiteData.history.length} months
-              </p>
-            </div>
-
-            {/* Pages Table */}
-            <div className="p-4">
-              <h5 className="text-sm font-medium mb-3">Page Scores</h5>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Page</TableHead>
-                    <TableHead className="text-center">Score</TableHead>
-                    <TableHead className="text-center">Change</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {mockSiteData.pages.map((page) => (
-                    <TableRow key={page.url}>
-                      <TableCell>
-                        <div className="font-medium">{page.title}</div>
-                        <div className="text-xs text-muted-foreground">{page.url}</div>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <ScoreChip score={page.score} />
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <span className={`text-sm font-medium ${page.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {page.change > 0 ? '+' : ''}{page.change}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Link href="/app">
-                          <Button size="sm" variant="ghost">
-                            <ExternalLink className="w-4 h-4" />
-                          </Button>
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );
@@ -229,11 +235,13 @@ function formatDate(iso: string) {
 
 export default function Dashboard() {
   const { data, isLoading } = useGetDashboardSummary();
+  const monitoredSitesQuery = useListMonitoredSites();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const deleteMutation = useDeleteOptimization();
   const { user } = useAuth();
   const userPlan = user?.plan || "free";
+  const dashboardIsLoading = isLoading || monitoredSitesQuery.isLoading;
 
   const handleDelete = (id: number) => {
     deleteMutation.mutate(
@@ -260,7 +268,7 @@ export default function Dashboard() {
             </p>
           </div>
 
-          {isLoading ? (
+          {dashboardIsLoading ? (
             <div className="flex items-center justify-center py-24 text-muted-foreground">Loading dashboard...</div>
           ) : !data || data.totalPages === 0 ? (
             <Card className="border-dashed border-2">
@@ -404,11 +412,9 @@ export default function Dashboard() {
                   </Table>
                 </CardContent>
               </Card>
-              
-              {/* Domain Monitoring Section */}
-              <DomainMonitoring userPlan={userPlan} />
             </>
           )}
+          <DomainMonitoring userPlan={userPlan} sitesQ={monitoredSitesQuery} />
         </div>
       </main>
       <Footer />

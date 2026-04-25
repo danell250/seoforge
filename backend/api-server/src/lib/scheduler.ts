@@ -4,7 +4,9 @@ import { logger } from "./logger";
 import { runMonitorForSite } from "./monitor-runner";
 
 const TICK_INTERVAL_MS = 60 * 60 * 1000;
+const MANUAL_TRIGGER_DEBOUNCE_MS = 500;
 let timer: NodeJS.Timeout | null = null;
+let triggerTimer: NodeJS.Timeout | null = null;
 let running = false;
 
 async function tick() {
@@ -44,4 +46,14 @@ export function startScheduler() {
   logger.info("scheduler started");
   setTimeout(tick, 30_000);
   timer = setInterval(tick, TICK_INTERVAL_MS);
+}
+
+export function triggerSchedulerTick() {
+  if (triggerTimer) {
+    clearTimeout(triggerTimer);
+  }
+  triggerTimer = setTimeout(() => {
+    triggerTimer = null;
+    void tick();
+  }, MANUAL_TRIGGER_DEBOUNCE_MS);
 }
