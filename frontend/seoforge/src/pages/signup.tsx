@@ -6,11 +6,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useLocation } from "wouter";
-import { AlertCircle, LoaderCircle, ShieldCheck } from "lucide-react";
+import { AlertCircle, LoaderCircle, UserPlus } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
-export default function Login() {
-  const { login, isAuthenticated, isLoading, isLoginPending, errorMessage } = useAuth();
+export default function Signup() {
+  const { signup, isAuthenticated, isLoading, isSignupPending } = useAuth();
   const [, navigate] = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,7 +30,7 @@ export default function Login() {
     setSubmitError(null);
 
     try {
-      const response = await login({ email, password });
+      const response = await signup({ email, password });
       const params = new URLSearchParams(window.location.search);
       const redirect = params.get("redirect");
       const next = redirect && redirect.startsWith("/") ? redirect : "/app";
@@ -38,36 +38,36 @@ export default function Login() {
         navigate(next);
       }
     } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : "Login failed.");
+      setSubmitError(error instanceof Error ? error.message : "Could not create account.");
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-muted/20">
       <Navbar />
-      
+
       <main className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
+            <CardTitle className="text-2xl font-bold">Create your account</CardTitle>
             <CardDescription>
-              Login to access your SEOForge workspace.
+              Start your SEOForge workspace with an email and password.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {(submitError || errorMessage) && (
+            {submitError && (
               <div className="bg-destructive/10 text-destructive p-4 rounded-md text-sm flex gap-2">
                 <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-                <span>{submitError || errorMessage}</span>
+                <span>{submitError}</span>
               </div>
             )}
 
             <div className="bg-primary/10 text-primary p-4 rounded-md text-sm">
               <div className="flex items-center gap-2 font-medium mb-2">
-                <ShieldCheck className="h-4 w-4" />
-                Existing account
+                <UserPlus className="h-4 w-4" />
+                New account
               </div>
-              <div>Sign in with your account, or <Link href="/signup" className="underline underline-offset-4">create a new one</Link> if you&apos;re new here.</div>
+              <div>You&apos;ll be signed in immediately after your account is created.</div>
             </div>
 
             <form className="space-y-4" onSubmit={handleSubmit}>
@@ -89,28 +89,26 @@ export default function Login() {
                   type="password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                 />
+                <p className="text-xs text-muted-foreground">Use at least 8 characters.</p>
               </div>
 
-              <Button className="w-full" type="submit" disabled={isLoginPending}>
-                {isLoginPending ? (
+              <Button className="w-full" type="submit" disabled={isSignupPending}>
+                {isSignupPending ? (
                   <>
                     <LoaderCircle className="h-4 w-4 mr-2 animate-spin" />
-                    Signing in...
+                    Creating account...
                   </>
                 ) : (
-                  "Sign in"
+                  "Create account"
                 )}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <div className="text-center text-sm text-muted-foreground">
-              Don&apos;t have an account? <Link href="/signup" className="text-primary hover:underline">Create account</Link>
-            </div>
-            <div className="text-center text-sm text-muted-foreground">
-              Need access details? <Link href="/pricing" className="text-primary hover:underline">View plans</Link>
+              Already have an account? <Link href="/login" className="text-primary hover:underline">Sign in</Link>
             </div>
           </CardFooter>
         </Card>

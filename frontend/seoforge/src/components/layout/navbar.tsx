@@ -84,7 +84,7 @@ export function Navbar() {
                       Login
                     </Button>
                   </Link>
-                  <Link href="/app">
+                  <Link href="/signup">
                     <Button size="sm" style={{ backgroundColor: primaryColor }}>
                       Get Started
                     </Button>
@@ -110,7 +110,7 @@ export function Navbar() {
                 </Link>
               );
             })}
-            <Link href="/app">
+            <Link href="/signup">
               <Button size="sm" className="ml-2" style={{ backgroundColor: primaryColor }}>
                 Start
               </Button>

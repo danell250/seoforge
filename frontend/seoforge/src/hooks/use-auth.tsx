@@ -29,9 +29,11 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   isLoading: boolean;
   isLoginPending: boolean;
+  isSignupPending: boolean;
   isLogoutPending: boolean;
   errorMessage: string | null;
   login: (input: LoginInput) => Promise<SessionResponse>;
+  signup: (input: LoginInput) => Promise<SessionResponse>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<SessionResponse>;
 }
@@ -64,6 +66,14 @@ async function loginRequest(input: LoginInput): Promise<SessionResponse> {
   });
 }
 
+async function signupRequest(input: LoginInput): Promise<SessionResponse> {
+  return customFetch<SessionResponse>("/api/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
+
 async function logoutRequest(): Promise<void> {
   await customFetch<{ success: boolean }>("/api/auth/logout", {
     method: "POST",
@@ -81,6 +91,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const loginMutation = useMutation({
     mutationFn: loginRequest,
+    onSuccess: (data) => {
+      queryClient.setQueryData(AUTH_SESSION_QUERY_KEY, data);
+    },
+  });
+
+  const signupMutation = useMutation({
+    mutationFn: signupRequest,
     onSuccess: (data) => {
       queryClient.setQueryData(AUTH_SESSION_QUERY_KEY, data);
     },
@@ -106,9 +123,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
     isAuthenticated: session.authenticated,
     isLoading: sessionQuery.isLoading,
     isLoginPending: loginMutation.isPending,
+    isSignupPending: signupMutation.isPending,
     isLogoutPending: logoutMutation.isPending,
     errorMessage: getErrorMessage(sessionQuery.error),
     login: (input) => loginMutation.mutateAsync(input),
+    signup: (input) => signupMutation.mutateAsync(input),
     logout: async () => {
       await logoutMutation.mutateAsync();
     },

@@ -92,6 +92,36 @@ export default function AppWorkspace() {
   };
   const active = tabMeta[tab] ?? tabMeta["single-page"];
   const ActiveIcon = active.icon;
+  const tabGroups = [
+    {
+      label: "Optimize",
+      description: "Start with the source page or crawl before making changes.",
+      items: [
+        { value: "single-page", label: "Single Page" },
+        { value: "zip-upload", label: "ZIP Upload" },
+        { value: "site-crawler", label: "Site Crawler" },
+      ],
+    },
+    {
+      label: "Enhance",
+      description: "Strengthen answer readiness, structure, and market coverage.",
+      items: [
+        { value: "aeo-block", label: "AEO Blocks" },
+        { value: "content-gaps", label: "Content Gaps" },
+        { value: "competitor", label: "Competitor Scanner" },
+        { value: "hreflang", label: "Hreflang" },
+      ],
+    },
+    {
+      label: "Publish",
+      description: "Package the final result, ship it, and keep watching performance.",
+      items: [
+        { value: "sitemap", label: "Sitemap" },
+        { value: "deploy", label: "Deploy" },
+        { value: "monitor", label: "Monitor" },
+      ],
+    },
+  ] as const;
 
   return (
     <div className="min-h-screen flex flex-col bg-muted/20">
@@ -147,17 +177,26 @@ export default function AppWorkspace() {
           </div>
 
           <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="mb-5 w-full md:w-auto inline-flex overflow-x-auto">
-              <TabsTrigger value="single-page" className="flex-1 md:flex-none">Single Page</TabsTrigger>
-              <TabsTrigger value="aeo-block" className="flex-1 md:flex-none">AEO Answer Blocks</TabsTrigger>
-              <TabsTrigger value="content-gaps" className="flex-1 md:flex-none">Content Gaps</TabsTrigger>
-              <TabsTrigger value="site-crawler" className="flex-1 md:flex-none">Full Site Crawler</TabsTrigger>
-              <TabsTrigger value="zip-upload" className="flex-1 md:flex-none">Bulk ZIP Upload</TabsTrigger>
-              <TabsTrigger value="competitor" className="flex-1 md:flex-none">Competitor Scanner</TabsTrigger>
-              <TabsTrigger value="hreflang" className="flex-1 md:flex-none">Hreflang</TabsTrigger>
-              <TabsTrigger value="sitemap" className="flex-1 md:flex-none">Sitemap &amp; Robots</TabsTrigger>
-              <TabsTrigger value="monitor" className="flex-1 md:flex-none">Monitor</TabsTrigger>
-              <TabsTrigger value="deploy" className="flex-1 md:flex-none">Deploy</TabsTrigger>
+            <TabsList className="mb-6 grid h-auto w-full gap-4 bg-transparent p-0 lg:grid-cols-3">
+              {tabGroups.map((group) => (
+                <Card key={group.label} className="border-border/70 bg-card/85 shadow-sm">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base">{group.label}</CardTitle>
+                    <p className="text-sm text-muted-foreground">{group.description}</p>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    {group.items.map((item) => (
+                      <TabsTrigger
+                        key={item.value}
+                        value={item.value}
+                        className="h-auto w-full justify-start rounded-xl border border-border/70 bg-background px-4 py-3 text-left font-medium text-muted-foreground data-[state=active]:border-primary/40 data-[state=active]:bg-primary/10 data-[state=active]:text-foreground"
+                      >
+                        {item.label}
+                      </TabsTrigger>
+                    ))}
+                  </CardContent>
+                </Card>
+              ))}
             </TabsList>
 
             <div className="mb-8 rounded-3xl border border-border/70 bg-card/85 p-5 shadow-sm">

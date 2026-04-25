@@ -163,7 +163,7 @@ export default function Pricing() {
                 </CardContent>
                 <CardFooter>
                   <Button className="w-full" variant={plan.popular ? "default" : "outline"} asChild>
-                    <Link href="/login">{plan.cta}</Link>
+                    <Link href="/signup">{plan.cta}</Link>
                   </Button>
                 </CardFooter>
               </Card>

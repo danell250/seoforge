@@ -67,6 +67,17 @@ function getAdminPlan() {
   return plan || DEFAULT_ADMIN_PLAN;
 }
 
+function buildDisplayName(email: string) {
+  const local = email.split("@")[0] ?? "Workspace User";
+  const cleaned = local.replace(/[._-]+/g, " ").trim();
+  if (!cleaned) return "Workspace User";
+  return cleaned
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 function toSessionUser(user: typeof usersTable.$inferSelect): SessionUser {
   return {
     id: user.id,
@@ -187,6 +198,46 @@ export async function createSessionForLogin(email: string, password: string) {
   });
 
   return {
+    token: rawToken,
+    expiresAt,
+    user: toSessionUser(user),
+  };
+}
+
+export async function registerUserAccount(email: string, password: string) {
+  await bootstrapAuth();
+
+  const normalizedEmail = normalizeEmail(email);
+  const [existing] = await db.select().from(usersTable).where(eq(usersTable.email, normalizedEmail)).limit(1);
+  if (existing) {
+    return { status: "exists" as const };
+  }
+
+  const passwordHash = await hashPassword(password);
+  const [user] = await db
+    .insert(usersTable)
+    .values({
+      email: normalizedEmail,
+      passwordHash,
+      displayName: buildDisplayName(normalizedEmail),
+      role: "user",
+      plan: "free",
+    })
+    .returning();
+
+  const rawToken = randomBytes(32).toString("base64url");
+  const hashedToken = hashSessionToken(rawToken);
+  const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
+
+  await db.insert(sessionsTable).values({
+    id: hashedToken,
+    userId: user.id,
+    expiresAt,
+    lastSeenAt: new Date(),
+  });
+
+  return {
+    status: "created" as const,
     token: rawToken,
     expiresAt,
     user: toSessionUser(user),
