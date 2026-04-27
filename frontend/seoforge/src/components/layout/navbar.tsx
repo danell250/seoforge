@@ -9,10 +9,10 @@ export function Navbar() {
   const { settings } = useAgencySettings();
   const { user, isAuthenticated, logout, isLogoutPending } = useAuth();
   const [location] = useLocation();
-  const brandName = settings?.brandName ?? "SEOForge";
+  const brandName = settings?.brandName ?? "SEODomination";
   const primaryColor = settings?.primaryColor ?? "#2563eb";
   const logo = settings?.logoUrl ?? undefined;
-  const usingDefaultBrand = brandName === "SEOForge" && !logo;
+  const usingDefaultBrand = brandName === "SEODomination" && !logo;
 
   const navItems = isAuthenticated
     ? [
@@ -39,7 +39,7 @@ export function Navbar() {
             {settings.logoUrl ? (
               <img src={logo} alt={brandName} className="h-7 w-auto" />
             ) : usingDefaultBrand ? (
-              <img src={logoUrl} alt="SEOForge" className="h-7 w-7" />
+              <img src={logoUrl} alt="SEODomination" className="h-7 w-7" />
             ) : (
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <span className="text-sm font-bold">{brandName.slice(0, 1)}</span>

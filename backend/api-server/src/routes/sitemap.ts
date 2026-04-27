@@ -123,7 +123,7 @@ router.get("/robots.txt", async (_req, res) => {
   const baseUrl = settings?.websiteUrl?.replace(/\/$/, "") || "https://seoforge.app";
   const sitemapUrl = `${baseUrl}/api/sitemap.xml`;
   
-  const body = `# SEOForge robots.txt
+  const body = `# SEODomination robots.txt
 # Allow all crawlers
 User-agent: *
 Allow: /

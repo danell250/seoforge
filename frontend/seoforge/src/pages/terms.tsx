@@ -18,14 +18,14 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-3">1. Agreement to Terms</h2>
               <p className="text-muted-foreground leading-relaxed">
-                By accessing or using SEOForge ("the Service"), you agree to be bound by these Terms of Service. If you disagree with any part of the terms, you may not access the Service.
+                By accessing or using SEODomination ("the Service"), you agree to be bound by these Terms of Service. If you disagree with any part of the terms, you may not access the Service.
               </p>
             </section>
 
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-3">2. Description of Service</h2>
               <p className="text-muted-foreground leading-relaxed">
-                SEOForge is an AI-powered platform that provides SEO (Search Engine Optimization) and AEO (Answer Engine Optimization) tools, including HTML optimization, meta tag generation, schema markup creation, sitemap generation, and website analysis services.
+                SEODomination is an AI-powered platform that provides SEO (Search Engine Optimization) and AEO (Answer Engine Optimization) tools, including HTML optimization, meta tag generation, schema markup creation, sitemap generation, and website analysis services.
               </p>
             </section>
 
@@ -67,7 +67,7 @@ export default function TermsOfService() {
               
               <h3 className="text-lg font-medium mb-2">5.2 Our Intellectual Property</h3>
               <p className="text-muted-foreground leading-relaxed">
-                The Service and its original content, features, and functionality are owned by SEOForge and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.
+                The Service and its original content, features, and functionality are owned by SEODomination and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.
               </p>
             </section>
 
@@ -110,14 +110,14 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-3">9. Limitation of Liability</h2>
               <p className="text-muted-foreground leading-relaxed">
-                In no event shall SEOForge be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of the Service.
+                In no event shall SEODomination be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of the Service.
               </p>
             </section>
 
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-3">10. Indemnification</h2>
               <p className="text-muted-foreground leading-relaxed">
-                You agree to defend, indemnify, and hold harmless SEOForge and its officers, directors, employees, and agents from any claims, damages, obligations, losses, liabilities, costs, or expenses arising from your use of the Service or violation of these Terms.
+                You agree to defend, indemnify, and hold harmless SEODomination and its officers, directors, employees, and agents from any claims, damages, obligations, losses, liabilities, costs, or expenses arising from your use of the Service or violation of these Terms.
               </p>
             </section>
 

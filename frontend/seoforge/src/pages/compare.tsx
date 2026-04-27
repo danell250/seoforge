@@ -31,26 +31,26 @@ const jsonLdSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "Is SEOForge better than Semrush?",
+      "name": "Is SEODomination better than Semrush?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "For businesses that need to fix their website without technical expertise, yes. Semrush identifies problems. SEOForge fixes them automatically in 30 seconds with no technical skills required."
+        "text": "For businesses that need to fix their website without technical expertise, yes. Semrush identifies problems. SEODomination fixes them automatically in 30 seconds with no technical skills required."
       }
     },
     {
       "@type": "Question",
-      "name": "How does SEOForge compare to AutoSEO?",
+      "name": "How does SEODomination compare to AutoSEO?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "AutoSEO writes blog articles. SEOForge fixes your entire website — meta tags, schema markup, AEO optimization, health scores, and sitemaps. SEOForge also generates blog articles, making it a complete solution at a lower price point."
+        "text": "AutoSEO writes blog articles. SEODomination fixes your entire website — meta tags, schema markup, AEO optimization, health scores, and sitemaps. SEODomination also generates blog articles, making it a complete solution at a lower price point."
       }
     },
     {
       "@type": "Question",
-      "name": "Is SEOForge cheaper than hiring an SEO agency?",
+      "name": "Is SEODomination cheaper than hiring an SEO agency?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes significantly. Traditional SEO agencies charge R5,000 to R50,000 per month. SEOForge Agency plan is R999 per month with full transparency, instant results, and no contract lock-in."
+        "text": "Yes significantly. Traditional SEO agencies charge R5,000 to R50,000 per month. SEODomination Agency plan is R999 per month with full transparency, instant results, and no contract lock-in."
       }
     }
   ]
@@ -168,7 +168,7 @@ function PricingCard({
 
 export default function ComparePage() {
   useEffect(() => {
-    document.title = "SEOForge vs AutoSEO vs Semrush vs SEO Agencies — Full Comparison 2026";
+    document.title = "SEODomination vs AutoSEO vs Semrush vs SEO Agencies — Full Comparison 2026";
     
     // Inject JSON-LD schema
     const script = document.createElement('script');
@@ -184,7 +184,7 @@ export default function ComparePage() {
       metaDesc.setAttribute('name', 'description');
       document.head.appendChild(metaDesc);
     }
-    metaDesc.setAttribute('content', 'How does SEOForge compare to AutoSEO, Semrush, Ahrefs, and traditional SEO agencies? Full feature-by-feature comparison.');
+    metaDesc.setAttribute('content', 'How does SEODomination compare to AutoSEO, Semrush, Ahrefs, and traditional SEO agencies? Full feature-by-feature comparison.');
     
     return () => {
       const existingScript = document.getElementById('compare-page-schema');
@@ -213,7 +213,7 @@ export default function ComparePage() {
               
               <div className="space-y-6">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground max-w-4xl mx-auto leading-[1.1]">
-                  SEOForge vs The Rest -
+                  SEODomination vs The Rest -
                   <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">
                     There's No Comparison
@@ -221,7 +221,7 @@ export default function ComparePage() {
                 </h1>
                 <p className="max-w-2xl mx-auto text-lg text-muted-foreground leading-relaxed">
                   Every SEO tool promises results. Most deliver complexity, confusion, and invoices. 
-                  Here is the honest breakdown of how SEOForge compares to every alternative.
+                  Here is the honest breakdown of how SEODomination compares to every alternative.
                 </p>
               </div>
             </motion.div>
@@ -293,9 +293,9 @@ export default function ComparePage() {
                     <Zap className="w-8 h-8 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold mb-2">What SEOForge Does Differently</h3>
+                    <h3 className="text-xl font-bold mb-2">What SEODomination Does Differently</h3>
                     <p className="text-muted-foreground leading-relaxed">
-                      SEOForge does what none of them do, it fixes your entire website automatically. 
+                      SEODomination does what none of them do, it fixes your entire website automatically. 
                       Existing pages, technical SEO, AEO schema, health scores, sitemaps, competitor intelligence - 
                       all in one tool, at a fraction of the cost.
                     </p>
@@ -327,7 +327,7 @@ export default function ComparePage() {
                     <thead>
                       <tr className="bg-muted/50 border-b">
                         <th className="text-left py-4 px-6 font-semibold">Feature</th>
-                        <th className="text-center py-4 px-4 font-bold text-primary bg-primary/5">SEOForge</th>
+                        <th className="text-center py-4 px-4 font-bold text-primary bg-primary/5">SEODomination</th>
                         <th className="text-center py-4 px-4 font-semibold text-muted-foreground">AutoSEO</th>
                         <th className="text-center py-4 px-4 font-semibold text-muted-foreground">Semrush</th>
                         <th className="text-center py-4 px-4 font-semibold text-muted-foreground">SEO Agency</th>
@@ -359,7 +359,7 @@ export default function ComparePage() {
           </div>
         </section>
 
-        {/* SEOForge vs AutoSEO */}
+        {/* SEODomination vs AutoSEO */}
         <section className="px-4 py-16 md:py-24">
           <div className="container mx-auto max-w-4xl">
             <motion.div
@@ -374,7 +374,7 @@ export default function ComparePage() {
                   <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-bold">SEOForge vs AutoSEO</h2>
+                  <h2 className="text-3xl font-bold">SEODomination vs AutoSEO</h2>
                   <p className="text-muted-foreground">Content tool vs Complete platform</p>
                 </div>
               </div>
@@ -401,10 +401,10 @@ export default function ComparePage() {
                 <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-xl p-6 my-8">
                   <h4 className="text-green-800 dark:text-green-200 font-semibold flex items-center gap-2 mb-3">
                     <Check className="w-5 h-5" />
-                    What SEOForge Does Differently
+                    What SEODomination Does Differently
                   </h4>
                   <p className="text-green-700 dark:text-green-300">
-                    SEOForge fixes the foundation first. Paste any page HTML and get back a fully optimized 
+                    SEODomination fixes the foundation first. Paste any page HTML and get back a fully optimized 
                     version with meta tags, schema, AEO answer blocks, and a health score - in 30 seconds. 
                     Then use the blog generator to create new content on top of a solid base.
                   </p>
@@ -413,7 +413,7 @@ export default function ComparePage() {
 
               <div className="bg-white dark:bg-card border rounded-2xl shadow-sm overflow-hidden">
                 <MiniComparisonTable 
-                  headers={["SEOForge", "AutoSEO"]}
+                  headers={["SEODomination", "AutoSEO"]}
                   rows={[
                     { label: "Fixes existing pages", values: [true, false] },
                     { label: "Technical SEO automation", values: [true, false] },
@@ -427,22 +427,22 @@ export default function ComparePage() {
                 <PricingCard 
                   seoforge="R299/month" 
                   competitor="R1,800+/month" 
-                  seoforgeLabel="SEOForge Starter" 
+                  seoforgeLabel="SEODomination Starter" 
                   competitorLabel="AutoSEO Basic"
                 />
               </div>
 
               <div className="p-6 bg-primary/5 border border-primary/20 rounded-xl">
                 <p className="font-semibold text-primary">
-                  Verdict: AutoSEO is a content tool. SEOForge is a complete website optimization platform. 
-                  If you want articles, use AutoSEO. If you want your entire website to rank - use SEOForge.
+                  Verdict: AutoSEO is a content tool. SEODomination is a complete website optimization platform. 
+                  If you want articles, use AutoSEO. If you want your entire website to rank - use SEODomination.
                 </p>
               </div>
             </motion.div>
           </div>
         </section>
 
-        {/* SEOForge vs Semrush */}
+        {/* SEODomination vs Semrush */}
         <section className="px-4 py-16 md:py-24 bg-muted/30">
           <div className="container mx-auto max-w-4xl">
             <motion.div
@@ -457,7 +457,7 @@ export default function ComparePage() {
                   <BarChart3 className="w-8 h-8 text-orange-600 dark:text-orange-400" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-bold">SEOForge vs Semrush</h2>
+                  <h2 className="text-3xl font-bold">SEODomination vs Semrush</h2>
                   <p className="text-muted-foreground">Execution vs Diagnosis</p>
                 </div>
               </div>
@@ -472,12 +472,12 @@ export default function ComparePage() {
                 <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 my-8">
                   <h4 className="text-blue-800 dark:text-blue-200 font-semibold mb-3">The Fundamental Difference</h4>
                   <p className="text-blue-700 dark:text-blue-300">
-                    <strong>Semrush tells you what is wrong. SEOForge fixes it.</strong> A Semrush audit 
+                    <strong>Semrush tells you what is wrong. SEODomination fixes it.</strong> A Semrush audit 
                     will show you 200 issues across your website. It will not fix a single one. You still 
                     need a developer, an SEO specialist, and hours of manual work to action anything it finds.
                   </p>
                   <p className="text-blue-700 dark:text-blue-300 mt-4">
-                    SEOForge shows you the issues <em>and</em> fixes them automatically in the same workflow. 
+                    SEODomination shows you the issues <em>and</em> fixes them automatically in the same workflow. 
                     Paste your HTML. Get back optimized HTML. No developer needed. No additional tools needed.
                   </p>
                 </div>
@@ -485,7 +485,7 @@ export default function ComparePage() {
 
               <div className="bg-white dark:bg-card border rounded-2xl shadow-sm overflow-hidden">
                 <MiniComparisonTable 
-                  headers={["SEOForge", "Semrush"]}
+                  headers={["SEODomination", "Semrush"]}
                   rows={[
                     { label: "Automatically fixes issues", values: [true, false] },
                     { label: "No technical skills needed", values: [true, false] },
@@ -497,7 +497,7 @@ export default function ComparePage() {
                 />
                 <div className="grid grid-cols-2 gap-4 mt-4 p-4">
                   <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
-                    <p className="text-xs text-primary font-semibold uppercase mb-1">SEOForge Learning Curve</p>
+                    <p className="text-xs text-primary font-semibold uppercase mb-1">SEODomination Learning Curve</p>
                     <p className="text-2xl font-bold text-primary">Minutes</p>
                   </div>
                   <div className="p-4 bg-muted rounded-lg border">
@@ -508,22 +508,22 @@ export default function ComparePage() {
                 <PricingCard 
                   seoforge="R299/month" 
                   competitor="R2,500+/month" 
-                  seoforgeLabel="SEOForge Starter" 
+                  seoforgeLabel="SEODomination Starter" 
                   competitorLabel="Semrush Pro"
                 />
               </div>
 
               <div className="p-6 bg-primary/5 border border-primary/20 rounded-xl">
                 <p className="font-semibold text-primary">
-                  Verdict: Semrush is a diagnostic tool for experts. SEOForge is an execution tool for everyone. 
-                  If you have an in-house SEO team, use Semrush. If you want results without the complexity - use SEOForge.
+                  Verdict: Semrush is a diagnostic tool for experts. SEODomination is an execution tool for everyone. 
+                  If you have an in-house SEO team, use Semrush. If you want results without the complexity - use SEODomination.
                 </p>
               </div>
             </motion.div>
           </div>
         </section>
 
-        {/* SEOForge vs Ahrefs */}
+        {/* SEODomination vs Ahrefs */}
         <section className="px-4 py-16 md:py-24">
           <div className="container mx-auto max-w-4xl">
             <motion.div
@@ -538,7 +538,7 @@ export default function ComparePage() {
                   <Target className="w-8 h-8 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-bold">SEOForge vs Ahrefs</h2>
+                  <h2 className="text-3xl font-bold">SEODomination vs Ahrefs</h2>
                   <p className="text-muted-foreground">Implementation vs Research</p>
                 </div>
               </div>
@@ -557,7 +557,7 @@ export default function ComparePage() {
 
               <div className="bg-white dark:bg-card border rounded-2xl shadow-sm overflow-hidden">
                 <MiniComparisonTable 
-                  headers={["SEOForge", "Ahrefs"]}
+                  headers={["SEODomination", "Ahrefs"]}
                   rows={[
                     { label: "Automatically fixes pages", values: [true, false] },
                     { label: "AEO optimization", values: [true, false] },
@@ -569,14 +569,14 @@ export default function ComparePage() {
                 <PricingCard 
                   seoforge="R299/month" 
                   competitor="R2,000+/month" 
-                  seoforgeLabel="SEOForge Starter" 
+                  seoforgeLabel="SEODomination Starter" 
                   competitorLabel="Ahrefs Lite"
                 />
               </div>
 
               <div className="p-6 bg-primary/5 border border-primary/20 rounded-xl">
                 <p className="font-semibold text-primary">
-                  Verdict: Ahrefs is for keyword research and backlink analysis. SEOForge is for implementing 
+                  Verdict: Ahrefs is for keyword research and backlink analysis. SEODomination is for implementing 
                   SEO and AEO on your actual website. They solve different problems - but for most businesses, implementation is the urgent need, not more research.
                 </p>
               </div>
@@ -584,7 +584,7 @@ export default function ComparePage() {
           </div>
         </section>
 
-        {/* SEOForge vs SEO Agencies */}
+        {/* SEODomination vs SEO Agencies */}
         <section className="px-4 py-16 md:py-24 bg-muted/30">
           <div className="container mx-auto max-w-4xl">
             <motion.div
@@ -599,7 +599,7 @@ export default function ComparePage() {
                   <Users className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-bold">SEOForge vs Hiring an SEO Agency</h2>
+                  <h2 className="text-3xl font-bold">SEODomination vs Hiring an SEO Agency</h2>
                   <p className="text-muted-foreground">Automation vs Outsourcing</p>
                 </div>
               </div>
@@ -618,7 +618,7 @@ export default function ComparePage() {
                       Transparency Problem
                     </h4>
                     <p className="text-sm text-red-700 dark:text-red-300">
-                      You do not see the actual work. You see a report. SEOForge shows you every change 
+                      You do not see the actual work. You see a report. SEODomination shows you every change 
                       — before code, after code, complete list of what was added.
                     </p>
                   </div>
@@ -630,7 +630,7 @@ export default function ComparePage() {
                     </h4>
                     <p className="text-sm text-orange-700 dark:text-orange-300">
                       An agency takes weeks to audit, more weeks to implement, months for results. 
-                      SEOForge optimizes a page in 30 seconds.
+                      SEODomination optimizes a page in 30 seconds.
                     </p>
                   </div>
 
@@ -640,7 +640,7 @@ export default function ComparePage() {
                       Cost Problem
                     </h4>
                     <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                      At R5,000/month minimum = R60,000/year. SEOForge Agency is R11,988/year. 
+                      At R5,000/month minimum = R60,000/year. SEODomination Agency is R11,988/year. 
                       You save over R48,000 annually.
                     </p>
                   </div>
@@ -649,7 +649,7 @@ export default function ComparePage() {
 
               <div className="bg-white dark:bg-card border rounded-2xl shadow-sm overflow-hidden">
                 <MiniComparisonTable 
-                  headers={["SEOForge Agency", "SEO Agency"]}
+                  headers={["SEODomination Agency", "SEO Agency"]}
                   rows={[
                     { label: "Full transparency", values: [true, "rarely"] },
                     { label: "No contract lock-in", values: [true, false] },
@@ -660,7 +660,7 @@ export default function ComparePage() {
                 />
                 <div className="grid grid-cols-2 gap-4 mt-4 p-4">
                   <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
-                    <p className="text-xs text-primary font-semibold uppercase mb-1">SEOForge Agency</p>
+                    <p className="text-xs text-primary font-semibold uppercase mb-1">SEODomination Agency</p>
                     <p className="text-2xl font-bold text-primary">R11,988/year</p>
                     <p className="text-xs text-primary/70">R999/month</p>
                   </div>
@@ -675,7 +675,7 @@ export default function ComparePage() {
               <div className="p-6 bg-primary/5 border border-primary/20 rounded-xl">
                 <p className="font-semibold text-primary">
                   Verdict: Agencies make sense for businesses that want to completely outsource their 
-                  SEO strategy and have the budget. SEOForge is for businesses that want professional 
+                  SEO strategy and have the budget. SEODomination is for businesses that want professional 
                   results at a fraction of the cost with full control and transparency.
                 </p>
               </div>
@@ -701,7 +701,7 @@ export default function ComparePage() {
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">The Only Tool Built for Local Markets</h2>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
                   Every competitor was built for the US or UK market. Their keyword databases prioritize 
-                  American search intent. Their pricing is in USD. SEOForge is different.
+                  American search intent. Their pricing is in USD. SEODomination is different.
                 </p>
               </div>
 
@@ -802,13 +802,13 @@ export default function ComparePage() {
             >
               <h2 className="text-3xl md:text-4xl font-bold">Start Free. No Credit Card. No Risk.</h2>
               <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-                SEOForge has a free tier. Paste your first page right now and see your SEO health score 
+                SEODomination has a free tier. Paste your first page right now and see your SEO health score 
                 in 30 seconds. No signup required to try the optimizer.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link href="/app">
                   <Button size="lg" className="h-14 px-8 text-base gap-2">
-                    Try SEOForge Free
+                    Try SEODomination Free
                     <ArrowRight className="h-5 w-5" />
                   </Button>
                 </Link>
@@ -839,25 +839,25 @@ export default function ComparePage() {
 
               <div className="space-y-4">
                 <div className="bg-white dark:bg-card border rounded-xl p-6">
-                  <h3 className="font-semibold mb-2">Is SEOForge really better than Semrush?</h3>
+                  <h3 className="font-semibold mb-2">Is SEODomination really better than Semrush?</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">
                     For businesses that need to fix their website without technical expertise, yes. 
-                    Semrush identifies problems. SEOForge fixes them automatically. If you have an enterprise 
+                    Semrush identifies problems. SEODomination fixes them automatically. If you have an enterprise 
                     SEO team that needs deep keyword research and backlink analysis, Semrush is still the 
-                    industry leader for that specific use case. For implementation and AEO optimization, SEOForge wins.
+                    industry leader for that specific use case. For implementation and AEO optimization, SEODomination wins.
                   </p>
                 </div>
 
                 <div className="bg-white dark:bg-card border rounded-xl p-6">
-                  <h3 className="font-semibold mb-2">Can I use SEOForge alongside other tools?</h3>
+                  <h3 className="font-semibold mb-2">Can I use SEODomination alongside other tools?</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    Absolutely. Many users run Semrush or Ahrefs for keyword research, then use SEOForge to 
-                    implement the fixes those tools identify. SEOForge handles the execution that other tools cannot.
+                    Absolutely. Many users run Semrush or Ahrefs for keyword research, then use SEODomination to 
+                    implement the fixes those tools identify. SEODomination handles the execution that other tools cannot.
                   </p>
                 </div>
 
                 <div className="bg-white dark:bg-card border rounded-xl p-6">
-                  <h3 className="font-semibold mb-2">Is SEOForge suitable for agencies?</h3>
+                  <h3 className="font-semibold mb-2">Is SEODomination suitable for agencies?</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">
                     Yes. The Agency plan at R999/month includes unlimited page optimizations, white label reports, 
                     and full client management features. It is designed specifically for digital 
@@ -866,20 +866,20 @@ export default function ComparePage() {
                 </div>
 
                 <div className="bg-white dark:bg-card border rounded-xl p-6">
-                  <h3 className="font-semibold mb-2">Why is SEOForge cheaper than global alternatives?</h3>
+                  <h3 className="font-semibold mb-2">Why is SEODomination cheaper than global alternatives?</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">
                     Because it is built for local markets and priced accordingly. Global tools price in USD 
-                    for US market purchasing power. SEOForge is priced in local currency for local businesses. 
+                    for US market purchasing power. SEODomination is priced in local currency for local businesses. 
                     Same professional results. Local price.
                   </p>
                 </div>
 
                 <div className="bg-white dark:bg-card border rounded-xl p-6">
-                  <h3 className="font-semibold mb-2">Does SEOForge replace my content strategy?</h3>
+                  <h3 className="font-semibold mb-2">Does SEODomination replace my content strategy?</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    No. SEOForge handles technical SEO and AEO implementation - the foundation that makes your 
+                    No. SEODomination handles technical SEO and AEO implementation - the foundation that makes your 
                     content rankable. For ongoing content creation, use the built-in blog generator or pair 
-                    SEOForge with your existing content workflow.
+                    SEODomination with your existing content workflow.
                   </p>
                 </div>
               </div>

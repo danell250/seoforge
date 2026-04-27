@@ -1,4 +1,4 @@
-// African Language Support for SEOForge
+// African Language Support for SEODomination
 // Comprehensive support for Afrikaans, Zulu/Xhosa, Nigerian Pidgin, and Swahili
 
 export type AfricanLanguage = 

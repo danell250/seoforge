@@ -69,7 +69,7 @@ export default function Settings() {
   };
 
   const handleReset = () => {
-    setBrandName("SEOForge");
+    setBrandName("SEODomination");
     setTagline("AI-Powered SEO and Answer Engine Optimization");
     setLogoUrl("");
     setPrimaryColor("#2563eb");

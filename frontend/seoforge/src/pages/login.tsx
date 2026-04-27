@@ -51,7 +51,7 @@ export default function Login() {
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
             <CardDescription>
-              Login to access your SEOForge workspace.
+              Login to access your SEODomination workspace.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

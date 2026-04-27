@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,63 +8,13 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-function extractMeta(html: string) {
-  try {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
-    const title = doc.querySelector("title")?.textContent || "No Title";
-    const desc = doc.querySelector('meta[name="description"]')?.getAttribute("content") || "No description provided.";
-    const url = "https://example.com/page"; // Mock URL for preview
-    return { title, desc, url };
-  } catch (e) {
-    return { title: "Error", desc: "Error parsing HTML", url: "" };
-  }
-}
-
-function extractCanonicalUrl(html: string): string {
-  try {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
-    const canonical = doc.querySelector('link[rel="canonical"]')?.getAttribute("href");
-    if (canonical) return canonical;
-    const ogUrl = doc.querySelector('meta[property="og:url"]')?.getAttribute("content");
-    if (ogUrl) return ogUrl;
-    return "https://example.com/page";
-  } catch (e) {
-    return "https://example.com/page";
-  }
-}
-
-function generateSitemapXml(url: string): string {
-  const today = new Date().toISOString().split("T")[0];
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>${escapeXml(url)}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-</urlset>`;
-}
-
-function generateRobotsTxt(url: string): string {
-  const sitemapUrl = url.endsWith("/") ? `${url}sitemap.xml` : `${url}/sitemap.xml`;
-  return `User-agent: *
-Allow: /
-
-Sitemap: ${sitemapUrl}`;
-}
-
-function escapeXml(unsafe: string): string {
-  return unsafe
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
-}
+import { HtmlGuide } from "@/components/app/html-guide";
+import {
+  extractCanonicalUrl,
+  extractMeta,
+  generateRobotsTxt,
+  generateSitemapXml,
+} from "@/lib/seo-utils";
 
 function GooglePreview({ html, label }: { html: string, label: string }) {
   const { title, desc, url } = extractMeta(html);
@@ -243,9 +193,35 @@ export function SinglePageOptimizer() {
   const [sourceFilename, setSourceFilename] = useState("optimized.html");
   const [blogDialogOpen, setBlogDialogOpen] = useState(false);
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const optimizeMutation = useOptimizeHtml();
   const blogMutation = useGenerateBlogArticle();
+
+  const sendPrompt = async (prompt: string) => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("seoforge:send-prompt", {
+          detail: { prompt, source: "single-page-optimizer" },
+        }),
+      );
+    }
+
+    let copied = false;
+    try {
+      await navigator.clipboard.writeText(prompt);
+      copied = true;
+    } catch (error) {
+      copied = false;
+    }
+
+    toast({
+      title: "Help prompt ready",
+      description: copied
+        ? "We copied a support prompt. Paste it into live chat or email support@seoforge.app if you still need a hand."
+        : "Use this prompt in live chat or email support@seoforge.app if you still need a hand.",
+    });
+  };
 
   const handleOptimize = () => {
     if (!htmlInput.trim()) {
@@ -327,11 +303,13 @@ export function SinglePageOptimizer() {
               <FileCode className="h-6 w-6 text-primary" />
               Optimize One HTML Page
             </CardTitle>
-            <CardDescription>
-              Paste one page of HTML or upload an HTML file. We will improve the metadata, structure, schema, and FAQ-ready formatting for you.
-            </CardDescription>
           </CardHeader>
           <CardContent>
+            <HtmlGuide
+              sendPrompt={sendPrompt}
+              onUploadClick={() => fileInputRef.current?.click()}
+              hasHtml={htmlInput.length > 0}
+            />
             <div className="relative">
               <Textarea 
                 value={htmlInput}
@@ -344,7 +322,7 @@ export function SinglePageOptimizer() {
                   <label className="cursor-pointer flex items-center gap-2">
                     <UploadCloud className="h-4 w-4" />
                     Upload HTML
-                    <input type="file" accept=".html,.htm" className="hidden" onChange={handleFileUpload} />
+                    <input ref={fileInputRef} type="file" accept=".html,.htm" className="hidden" onChange={handleFileUpload} />
                   </label>
                 </Button>
               </div>

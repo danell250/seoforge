@@ -3,7 +3,7 @@ import { getGetAgencySettingsQueryKey, useGetAgencySettings } from "@workspace/a
 import { useAuth } from "./use-auth";
 
 const DEFAULT_SETTINGS = {
-  brandName: "SEOForge",
+  brandName: "SEODomination",
   tagline: "AI-Powered SEO and Answer Engine Optimization",
   logoUrl: null,
   primaryColor: "#2563eb",
