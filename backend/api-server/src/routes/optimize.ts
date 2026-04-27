@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { OptimizeHtmlBody, OptimizeHtmlResponse } from "@workspace/api-zod";
 import { db, optimizationsTable, usersTable } from "@workspace/db";
-import { eq, count } from "drizzle-orm";
+import { and, count, eq, gte } from "drizzle-orm";
 import { getModel, extractJson, generateContentWithTimeout } from "../lib/gemini";
 import { getAuthenticatedUser, requireAuthenticatedUser } from "../middleware/auth";
 import { 
@@ -37,8 +37,12 @@ async function checkPlanLimit(userId: number): Promise<{ allowed: boolean; limit
   const [result] = await db
     .select({ count: count() })
     .from(optimizationsTable)
-    .where(eq(optimizationsTable.userId, userId));
-    // Note: In production, add date filter: .where(and(eq(optimizationsTable.userId, userId), gte(optimizationsTable.createdAt, startOfMonth)))
+    .where(
+      and(
+        eq(optimizationsTable.userId, userId),
+        gte(optimizationsTable.createdAt, startOfMonth),
+      ),
+    );
   
   const current = result?.count || 0;
   

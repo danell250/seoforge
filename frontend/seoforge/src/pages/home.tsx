@@ -50,12 +50,6 @@ export default function Home() {
       desc: "Push final HTML into WordPress or Shopify, then keep a record of improvements in the dashboard and monitor views.",
     },
   ];
-  const outcomes = [
-    "Clearer metadata and technical SEO structure",
-    "Better formatting for AI Overviews and answer engines",
-    "A workflow a freelancer, founder, or agency team can explain quickly",
-  ];
-
   return (
     <div className="min-h-screen flex flex-col font-sans">
       <Navbar />
@@ -108,15 +102,6 @@ export default function Home() {
               <p className="text-sm text-muted-foreground">
                 Free to start. No credit card required.
               </p>
-
-              <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
-                {outcomes.map((item, i) => (
-                  <span key={item} className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-primary" />
-                    {item}
-                  </span>
-                ))}
-              </div>
             </motion.div>
 
             {/* Demo Preview */}
