@@ -36,11 +36,11 @@ export function Footer() {
 
   return (
     <footer className="mt-auto bg-[#0F172A] border-t border-slate-800">
-      <div className="container py-16 md:py-20">
+      <div className="container px-4 py-16 sm:px-6 md:py-20">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-8">
           {/* Brand Column */}
-          <div className="md:col-span-1">
+          <div className="md:col-span-1 pl-1 sm:pl-2">
             {/* Logo matching navbar style */}
             <Link href="/" className="flex items-center gap-2.5 mb-4">
               {settings?.logoUrl ? (
