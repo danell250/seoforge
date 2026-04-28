@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { Link } from "wouter";
 
 export default function TermsOfService() {
   return (
@@ -79,7 +80,7 @@ export default function TermsOfService() {
               <ul className="list-disc pl-5 text-muted-foreground space-y-1">
                 <li>Pay all fees associated with your subscription plan</li>
                 <li>Provide accurate billing information</li>
-                <li>Accept that fees are non-refundable except as required by law</li>
+                <li>Review our <Link href="/refund-policy" className="text-primary hover:underline">Refund Policy</Link> for how cancellations, first-charge refunds, and billing errors are handled</li>
                 <li>Accept that we may change pricing with 30 days notice</li>
               </ul>
             </section>

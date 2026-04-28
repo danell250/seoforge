@@ -6,12 +6,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Pricing from "@/pages/pricing";
+import Checkout from "@/pages/checkout";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import AppWorkspace from "@/pages/app";
 import Dashboard from "@/pages/dashboard";
 import Settings from "@/pages/settings";
 import PrivacyPolicy from "@/pages/privacy";
+import RefundPolicy from "@/pages/refund-policy";
 import TermsOfService from "@/pages/terms";
 import Contact from "@/pages/contact";
 import Blog from "@/pages/blog";
@@ -52,10 +54,12 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/pricing" component={Pricing} />
+        <Route path="/checkout" component={Checkout} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
         <Route path="/blog" component={Blog} />
         <Route path="/privacy" component={PrivacyPolicy} />
+        <Route path="/refund-policy" component={RefundPolicy} />
         <Route path="/terms" component={TermsOfService} />
         <Route path="/contact" component={Contact} />
         <Route path="/compare" component={Compare} />

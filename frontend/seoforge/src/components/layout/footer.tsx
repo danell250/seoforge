@@ -22,6 +22,7 @@ export function Footer() {
 
   const legalLinks = [
     { href: "/privacy", label: "Privacy Policy" },
+    { href: "/refund-policy", label: "Refund Policy" },
     { href: "/terms", label: "Terms of Service" },
     { href: "/contact", label: "Contact Us" },
   ];

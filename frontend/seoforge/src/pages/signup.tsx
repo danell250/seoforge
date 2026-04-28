@@ -15,6 +15,11 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const redirect =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("redirect")
+      : null;
+  const isReturningToCheckout = redirect?.startsWith("/checkout") ?? false;
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
@@ -51,7 +56,9 @@ export default function Signup() {
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl font-bold">Create your account</CardTitle>
             <CardDescription>
-              Start your SEOaxe workspace with an email and password.
+              {isReturningToCheckout
+                ? "Create your account, then continue to your selected plan."
+                : "Start your SEOaxe workspace with an email and password."}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -67,7 +74,11 @@ export default function Signup() {
                 <UserPlus className="h-4 w-4" />
                 New account
               </div>
-              <div>You&apos;ll be signed in immediately after your account is created.</div>
+              <div>
+                {isReturningToCheckout
+                  ? "You'll be signed in right away and sent back to checkout."
+                  : "You'll be signed in immediately after your account is created."}
+              </div>
             </div>
 
             <form className="space-y-4" onSubmit={handleSubmit}>
@@ -108,7 +119,13 @@ export default function Signup() {
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <div className="text-center text-sm text-muted-foreground">
-              Already have an account? <Link href="/login" className="text-primary hover:underline">Sign in</Link>
+              Already have an account?{" "}
+              <Link
+                href={redirect ? `/login?redirect=${encodeURIComponent(redirect)}` : "/login"}
+                className="text-primary hover:underline"
+              >
+                Sign in
+              </Link>
             </div>
           </CardFooter>
         </Card>

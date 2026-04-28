@@ -6,58 +6,13 @@ import { Check, X } from "lucide-react";
 import { Link } from "wouter";
 import { useEffect, useMemo, useState } from "react";
 import { BRAND_NAME, PRODUCT_DESCRIPTION } from "@/lib/brand-metadata";
+import { useAuth } from "@/hooks/use-auth";
 import {
   detectPricingLocale,
   formatLocalPrice,
   type PricingLocale,
 } from "@/lib/local-pricing";
-
-const BASE_PLANS = [
-  {
-    name: "Free",
-    amountZar: 0,
-    period: "forever",
-    description: "Perfect for testing the waters.",
-    features: [
-      "3 pages optimized per month",
-      "Basic technical SEO checks",
-      "Standard JSON-LD schema",
-      "Community support",
-    ],
-    cta: "Get Started",
-    popular: false,
-  },
-  {
-    name: "Starter",
-    amountZar: 299,
-    period: "month",
-    description: "For ambitious freelancers & founders.",
-    features: [
-      "20 pages optimized per month",
-      "Full AEO & Answer Block Generation",
-      "Advanced Multilingual Schema",
-      "Competitor Scanner access",
-      "Email support within 24h",
-    ],
-    cta: "Start Starter Plan",
-    popular: true,
-  },
-  {
-    name: "Agency",
-    amountZar: 999,
-    period: "month",
-    description: "Scale your entire agency operations.",
-    features: [
-      "Unlimited pages optimized",
-      "Bulk ZIP processing pipeline",
-      "White-label PDF reports",
-      "CMS deployment integrations",
-      "Priority Slack/WhatsApp support",
-    ],
-    cta: "Start Agency Plan",
-    popular: false,
-  },
-] as const;
+import { PLAN_DEFINITIONS } from "@/lib/plans";
 
 interface PricingContextResponse {
   currency: PricingLocale["currency"];
@@ -121,6 +76,7 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
 }
 
 export default function Pricing() {
+  const { isAuthenticated } = useAuth();
   const [pricingLocale] = useState(() => detectPricingLocale());
   const [pricingContext, setPricingContext] = useState<PricingContextResponse | null>(null);
 
@@ -153,14 +109,20 @@ export default function Pricing() {
 
   const plans = useMemo(
     () =>
-      BASE_PLANS.map((plan) => ({
+      PLAN_DEFINITIONS.map((plan) => ({
         ...plan,
         price: formatLocalPrice(
-          pricingContext?.plans[plan.name.toLowerCase() as keyof PricingContextResponse["plans"]] ?? plan.amountZar,
+          pricingContext?.plans[plan.slug] ?? plan.amountZar,
           displayLocale,
         ),
+        href:
+          plan.slug === "free"
+            ? isAuthenticated
+              ? "/app"
+              : "/signup?redirect=%2Fapp"
+            : `/checkout?plan=${plan.slug}`,
       })),
-    [displayLocale, pricingContext],
+    [displayLocale, isAuthenticated, pricingContext],
   );
   const productSchema = useMemo(
     () => buildProductSchema(pricingContext),
@@ -225,11 +187,22 @@ export default function Pricing() {
                 </CardContent>
                 <CardFooter>
                   <Button className="w-full" variant={plan.popular ? "default" : "outline"} asChild>
-                    <Link href="/signup">{plan.cta}</Link>
+                    <Link href={plan.href}>{plan.cta}</Link>
                   </Button>
                 </CardFooter>
               </Card>
             ))}
+          </div>
+
+          <div className="mt-8 max-w-3xl mx-auto rounded-2xl border bg-muted/20 px-6 py-5 text-sm text-muted-foreground">
+            <p>
+              Paid plans come with a customer-friendly first-charge refund window. If your first paid month is not the right fit, contact us within 14 days and we will review it fairly.
+              {" "}
+              <Link href="/refund-policy" className="font-medium text-primary hover:underline">
+                Read the refund policy
+              </Link>
+              .
+            </p>
           </div>
 
           {/* Killer Positioning Comparison */}

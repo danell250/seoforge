@@ -15,6 +15,11 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const redirect =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("redirect")
+      : null;
+  const isReturningToCheckout = redirect?.startsWith("/checkout") ?? false;
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
@@ -51,7 +56,9 @@ export default function Login() {
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
             <CardDescription>
-              Login to access your SEOaxe workspace.
+              {isReturningToCheckout
+                ? "Sign in to continue to your selected plan."
+                : "Login to access your SEOaxe workspace."}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -67,7 +74,17 @@ export default function Login() {
                 <ShieldCheck className="h-4 w-4" />
                 Existing account
               </div>
-              <div>Sign in with your account, or <Link href="/signup" className="underline underline-offset-4">create a new one</Link> if you&apos;re new here.</div>
+              <div>
+                {isReturningToCheckout ? (
+                  <>
+                    Sign in with your account and we&apos;ll send you back to checkout.
+                  </>
+                ) : (
+                  <>
+                    Sign in with your account, or <Link href="/signup" className="underline underline-offset-4">create a new one</Link> if you&apos;re new here.
+                  </>
+                )}
+              </div>
             </div>
 
             <form className="space-y-4" onSubmit={handleSubmit}>
@@ -107,7 +124,13 @@ export default function Login() {
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <div className="text-center text-sm text-muted-foreground">
-              Don&apos;t have an account? <Link href="/signup" className="text-primary hover:underline">Create account</Link>
+              Don&apos;t have an account?{" "}
+              <Link
+                href={redirect ? `/signup?redirect=${encodeURIComponent(redirect)}` : "/signup"}
+                className="text-primary hover:underline"
+              >
+                Create account
+              </Link>
             </div>
             <div className="text-center text-sm text-muted-foreground">
               Need access details? <Link href="/pricing" className="text-primary hover:underline">View plans</Link>
