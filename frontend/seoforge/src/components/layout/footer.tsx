@@ -57,7 +57,7 @@ export function Footer() {
             
             {/* Tagline */}
             <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
-              Built for African businesses. Powered by AI.
+              Built for modern SEO teams. Powered by AI.
             </p>
           </div>
 

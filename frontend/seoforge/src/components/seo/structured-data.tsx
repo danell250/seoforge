@@ -1,13 +1,23 @@
+import {
+  BRAND_NAME,
+  GLOBAL_SUPPORT_ANSWER,
+  PRODUCT_AUTOMATION_DESCRIPTION,
+  PRODUCT_DESCRIPTION,
+  SITE_URL,
+  SUPPORT_EMAIL,
+} from "@/lib/brand-metadata";
+import { detectPricingLocale } from "@/lib/local-pricing";
+
 // JSON-LD Structured Data Components for SEO
 
 export function OrganizationSchema() {
   const organizationData = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "SEOaxe",
-    "url": "https://seoforge.app",
-    "logo": "https://seoforge.app/android-chrome-512x512.png",
-    "description": "AI-powered SEO and Answer Engine Optimization platform for South African businesses. Automate meta tags, schema markup, AEO answer blocks, and sitemaps.",
+    "name": BRAND_NAME,
+    "url": SITE_URL,
+    "logo": `${SITE_URL}/android-chrome-512x512.png`,
+    "description": PRODUCT_AUTOMATION_DESCRIPTION,
     "sameAs": [
       "https://twitter.com/seoforge",
       "https://linkedin.com/company/seoforge"
@@ -15,7 +25,7 @@ export function OrganizationSchema() {
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "customer support",
-      "email": "support@seoforge.app",
+      "email": SUPPORT_EMAIL,
       "availableLanguage": ["English"]
     },
     "address": {
@@ -36,14 +46,14 @@ export function WebsiteSchema() {
   const websiteData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "SEOaxe",
-    "url": "https://seoforge.app",
-    "description": "AI-powered SEO and AEO optimization platform",
+    "name": BRAND_NAME,
+    "url": SITE_URL,
+    "description": PRODUCT_DESCRIPTION,
     "potentialAction": {
       "@type": "SearchAction",
       "target": {
         "@type": "EntryPoint",
-        "urlTemplate": "https://seoforge.app/app?search={search_term_string}"
+        "urlTemplate": `${SITE_URL}/app?search={search_term_string}`
       },
       "query-input": "required name=search_term_string"
     }
@@ -64,10 +74,10 @@ export function FAQPageSchema() {
     "mainEntity": [
       {
         "@type": "Question",
-        "name": "What is SEOaxe?",
+        "name": `What is ${BRAND_NAME}?`,
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "SEOaxe is an AI-powered SEO and Answer Engine Optimization (AEO) platform designed for South African businesses. It automates the process of optimizing HTML pages for search engines and AI answer engines like Google AI Overviews, Perplexity, and ChatGPT search. Simply paste your HTML code and receive fully optimized code with meta tags, schema markup, AEO answer blocks, health scores, and sitemaps in seconds."
+          "text": `${BRAND_NAME} is an AI-powered SEO and Answer Engine Optimization platform for businesses worldwide. It automates the process of optimizing HTML pages for search engines and AI answer engines like Google AI Overviews, Perplexity, and ChatGPT search. Simply paste your HTML code and receive fully optimized code with meta tags, schema markup, AEO answer blocks, health scores, and sitemaps in seconds.`
         }
       },
       {
@@ -88,10 +98,10 @@ export function FAQPageSchema() {
       },
       {
         "@type": "Question",
-        "name": "Does SEOaxe support South African websites?",
+        "name": `Does ${BRAND_NAME} support websites in different regions and languages?`,
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Absolutely! SEOaxe is specifically designed with South African businesses in mind. The platform supports multilingual schema markup for South Africa's 11 official languages, understands local SEO requirements, and provides hreflang tag generation for businesses targeting multiple language markets within South Africa and across Africa. Our AI is trained to recognize and optimize for South African search patterns and user intent."
+          "text": GLOBAL_SUPPORT_ANSWER
         }
       }
     ]
@@ -106,16 +116,17 @@ export function FAQPageSchema() {
 }
 
 export function SoftwareApplicationSchema() {
+  const pricingLocale = detectPricingLocale();
   const softwareData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "SEOaxe",
+    "name": BRAND_NAME,
     "applicationCategory": "WebApplication",
     "operatingSystem": "Web Browser",
     "offers": {
       "@type": "Offer",
       "price": "0",
-      "priceCurrency": "ZAR"
+      "priceCurrency": pricingLocale.currency
     },
     "aggregateRating": {
       "@type": "AggregateRating",
@@ -148,12 +159,12 @@ export function LocalBusinessSchema() {
   const localData = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
-    "name": "SEOaxe",
-    "description": "AI-powered SEO and AEO optimization services for South African businesses",
-    "url": "https://seoforge.app",
+    "name": BRAND_NAME,
+    "description": PRODUCT_DESCRIPTION,
+    "url": SITE_URL,
     "areaServed": {
-      "@type": "Country",
-      "name": "South Africa"
+      "@type": "Place",
+      "name": "Worldwide"
     },
     "serviceType": [
       "SEO Optimization",

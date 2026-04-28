@@ -1,4 +1,5 @@
 import app from "./app";
+import { normalizeStoredAgencyBrandName } from "./lib/agency-settings";
 import { logger } from "./lib/logger";
 import { startScheduler } from "./lib/scheduler";
 
@@ -17,6 +18,7 @@ if (Number.isNaN(port) || port <= 0) {
 }
 
 async function start() {
+  await normalizeStoredAgencyBrandName();
   app.listen(port, (err) => {
     if (err) {
       logger.error({ err }, "Error listening on port");

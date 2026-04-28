@@ -12,6 +12,7 @@ import {
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { DEFAULT_AGENCY_SETTINGS, normalizeBrandName } from "../../../../lib/api-zod/src/brand";
 import { Brush, CheckCircle2, RefreshCw, Save } from "lucide-react";
 
 export default function Settings() {
@@ -29,7 +30,7 @@ export default function Settings() {
 
   useEffect(() => {
     if (data) {
-      setBrandName(data.brandName);
+      setBrandName(normalizeBrandName(data.brandName));
       setTagline(data.tagline);
       setLogoUrl(data.logoUrl ?? "");
       setPrimaryColor(data.primaryColor);
@@ -69,12 +70,12 @@ export default function Settings() {
   };
 
   const handleReset = () => {
-    setBrandName("SEOaxe");
-    setTagline("AI-Powered SEO and Answer Engine Optimization");
-    setLogoUrl("");
-    setPrimaryColor("#2563eb");
-    setSupportEmail("");
-    setWebsiteUrl("");
+    setBrandName(DEFAULT_AGENCY_SETTINGS.brandName);
+    setTagline(DEFAULT_AGENCY_SETTINGS.tagline);
+    setLogoUrl(DEFAULT_AGENCY_SETTINGS.logoUrl ?? "");
+    setPrimaryColor(DEFAULT_AGENCY_SETTINGS.primaryColor);
+    setSupportEmail(DEFAULT_AGENCY_SETTINGS.supportEmail ?? "");
+    setWebsiteUrl(DEFAULT_AGENCY_SETTINGS.websiteUrl ?? "");
   };
 
   return (

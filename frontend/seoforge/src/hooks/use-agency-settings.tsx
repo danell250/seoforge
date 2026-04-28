@@ -1,15 +1,7 @@
 import { useEffect } from "react";
 import { getGetAgencySettingsQueryKey, useGetAgencySettings } from "@workspace/api-client-react";
+import { DEFAULT_AGENCY_SETTINGS, normalizeBrandName } from "../../../../lib/api-zod/src/brand";
 import { useAuth } from "./use-auth";
-
-const DEFAULT_SETTINGS = {
-  brandName: "SEOaxe",
-  tagline: "AI-Powered SEO and Answer Engine Optimization",
-  logoUrl: null,
-  primaryColor: "#2563eb",
-  supportEmail: null,
-  websiteUrl: null,
-};
 
 export function useAgencySettings() {
   const { isAuthenticated } = useAuth();
@@ -20,7 +12,12 @@ export function useAgencySettings() {
       retry: false,
     },
   });
-  const settings = query.data ?? DEFAULT_SETTINGS;
+  const settings = query.data
+    ? {
+        ...query.data,
+        brandName: normalizeBrandName(query.data.brandName),
+      }
+    : DEFAULT_AGENCY_SETTINGS;
 
   useEffect(() => {
     document.documentElement.style.setProperty("--brand-primary", settings.primaryColor);

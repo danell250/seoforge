@@ -1,32 +1,24 @@
 import { Router, type IRouter } from "express";
 import { db, agencySettingsTable } from "@workspace/db";
-import { UpdateAgencySettingsBody, GetAgencySettingsResponse } from "@workspace/api-zod";
+import {
+  DEFAULT_AGENCY_SETTINGS,
+  GetAgencySettingsResponse,
+  normalizeBrandName,
+  UpdateAgencySettingsBody,
+} from "@workspace/api-zod";
 import { eq } from "drizzle-orm";
 import { requireAuthenticatedUser } from "../middleware/auth";
 import { isMissingRelationError } from "../lib/db-errors";
+import { ensureAgencySettingsRow, getAgencySettingsRow } from "../lib/agency-settings";
 
 const router: IRouter = Router();
 
+const DEFAULT_SETTINGS = DEFAULT_AGENCY_SETTINGS;
 const SINGLETON_ID = 1;
-const DEFAULT_SETTINGS = {
-  brandName: "SEOaxe",
-  tagline: "AI-Powered SEO and Answer Engine Optimization",
-  logoUrl: null,
-  primaryColor: "#2563eb",
-  supportEmail: null,
-  websiteUrl: null,
-};
-
-async function ensureRow() {
-  const rows = await db.select().from(agencySettingsTable).where(eq(agencySettingsTable.id, SINGLETON_ID));
-  if (rows.length > 0) return rows[0];
-  const [created] = await db.insert(agencySettingsTable).values({ id: SINGLETON_ID }).returning();
-  return created;
-}
 
 function toResponse(row: typeof agencySettingsTable.$inferSelect) {
   return {
-    brandName: row.brandName,
+    brandName: normalizeBrandName(row.brandName),
     tagline: row.tagline,
     logoUrl: row.logoUrl,
     primaryColor: row.primaryColor,
@@ -37,7 +29,10 @@ function toResponse(row: typeof agencySettingsTable.$inferSelect) {
 
 router.get("/agency-settings", requireAuthenticatedUser, async (_req, res) => {
   try {
-    const row = await ensureRow();
+    const row = await getAgencySettingsRow();
+    if (!row) {
+      return res.json(GetAgencySettingsResponse.parse(DEFAULT_SETTINGS));
+    }
     return res.json(GetAgencySettingsResponse.parse(toResponse(row)));
   } catch (err) {
     if (isMissingRelationError(err, "agency_settings")) {
@@ -56,11 +51,11 @@ router.put("/agency-settings", requireAuthenticatedUser, async (req, res) => {
   if (!parsed.success) {
     return res.status(400).json({ message: "Invalid request body" });
   }
-  await ensureRow();
+  await ensureAgencySettingsRow();
   const [updated] = await db
     .update(agencySettingsTable)
     .set({
-      brandName: parsed.data.brandName,
+      brandName: normalizeBrandName(parsed.data.brandName),
       tagline: parsed.data.tagline,
       logoUrl: parsed.data.logoUrl ?? null,
       primaryColor: parsed.data.primaryColor,

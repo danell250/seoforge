@@ -476,7 +476,7 @@ const articles = [
       <p>If a significant portion of your target market speaks Afrikaans or Zulu, creating content in those languages can give you a major competitive advantage as most competitors only publish in English.</p>
 
       <h3>What is the best SEO tool for South African websites?</h3>
-      <p>SEOaxe is built specifically for the South African and broader African market, with support for multilingual schema, local business markup, and AEO optimization tailored to African search behaviour.</p>
+      <p>SEOaxe supports South African websites alongside global markets, with multilingual schema, local business markup, hreflang support, and AEO optimization for region-specific search behaviour.</p>
 
       <script type="application/ld+json">
 {
@@ -2190,7 +2190,7 @@ export default function Blog() {
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold mb-3">Want These Results for Your Website?</h3>
                 <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-                  SEOaxe helps South African businesses implement the exact strategies in these articles—in minutes, not months.
+                  SEOaxe helps teams implement the exact strategies in these articles—in minutes, not months.
                 </p>
                 <a 
                   href="/app"

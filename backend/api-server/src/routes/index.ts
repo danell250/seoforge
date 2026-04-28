@@ -13,6 +13,7 @@ import hreflangRouter from "./hreflang";
 import contentGapsRouter from "./content-gaps";
 import siteMonitorRouter from "./site-monitor";
 import blogGeneratorRouter from "./blog-generator";
+import pricingRouter from "./pricing";
 
 const router: IRouter = Router();
 
@@ -30,5 +31,6 @@ router.use(hreflangRouter);
 router.use(contentGapsRouter);
 router.use(siteMonitorRouter);
 router.use(blogGeneratorRouter);
+router.use(pricingRouter);
 
 export default router;

@@ -4,134 +4,196 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X } from "lucide-react";
 import { Link } from "wouter";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { BRAND_NAME, PRODUCT_DESCRIPTION } from "@/lib/brand-metadata";
+import {
+  detectPricingLocale,
+  formatLocalPrice,
+  type PricingLocale,
+} from "@/lib/local-pricing";
 
-const productSchema = {
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": "SEOaxe",
-  "description": "AI-powered SEO and AEO optimization platform for businesses",
-  "brand": {
-    "@type": "Brand",
-    "name": "SEOaxe"
+const BASE_PLANS = [
+  {
+    name: "Free",
+    amountZar: 0,
+    period: "forever",
+    description: "Perfect for testing the waters.",
+    features: [
+      "3 pages optimized per month",
+      "Basic technical SEO checks",
+      "Standard JSON-LD schema",
+      "Community support",
+    ],
+    cta: "Get Started",
+    popular: false,
   },
-  "offers": [
-    {
-      "@type": "Offer",
-      "name": "Free Plan",
-      "price": "0",
-      "priceCurrency": "ZAR",
-      "description": "3 pages optimized per month, basic technical SEO checks",
-      "availability": "https://schema.org/InStock"
+  {
+    name: "Starter",
+    amountZar: 299,
+    period: "month",
+    description: "For ambitious freelancers & founders.",
+    features: [
+      "20 pages optimized per month",
+      "Full AEO & Answer Block Generation",
+      "Advanced Multilingual Schema",
+      "Competitor Scanner access",
+      "Email support within 24h",
+    ],
+    cta: "Start Starter Plan",
+    popular: true,
+  },
+  {
+    name: "Agency",
+    amountZar: 999,
+    period: "month",
+    description: "Scale your entire agency operations.",
+    features: [
+      "Unlimited pages optimized",
+      "Bulk ZIP processing pipeline",
+      "White-label PDF reports",
+      "CMS deployment integrations",
+      "Priority Slack/WhatsApp support",
+    ],
+    cta: "Start Agency Plan",
+    popular: false,
+  },
+] as const;
+
+interface PricingContextResponse {
+  currency: PricingLocale["currency"];
+  locale: string;
+  region: string | null;
+  plans: {
+    free: number;
+    starter: number;
+    agency: number;
+  };
+}
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+
+function buildProductSchema(pricingContext: PricingContextResponse | null) {
+  const activeCurrency = pricingContext?.currency ?? "ZAR";
+  const prices = pricingContext?.plans ?? { free: 0, starter: 299, agency: 999 };
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": BRAND_NAME,
+    "description": PRODUCT_DESCRIPTION,
+    "brand": {
+      "@type": "Brand",
+      "name": BRAND_NAME,
     },
-    {
-      "@type": "Offer",
-      "name": "Starter Plan",
-      "price": "299",
-      "priceCurrency": "ZAR",
-      "priceValidUntil": "2026-12-31",
-      "description": "20 pages optimized per month, full AEO & Answer Block Generation",
-      "availability": "https://schema.org/InStock"
+    "offers": [
+      {
+        "@type": "Offer",
+        "name": "Free Plan",
+        "price": prices.free.toFixed(2),
+        "priceCurrency": activeCurrency,
+        "description": "3 pages optimized per month, basic technical SEO checks",
+        "availability": "https://schema.org/InStock",
+      },
+      {
+        "@type": "Offer",
+        "name": "Starter Plan",
+        "price": prices.starter.toFixed(2),
+        "priceCurrency": activeCurrency,
+        "priceValidUntil": "2026-12-31",
+        "description": "20 pages optimized per month, full AEO and answer block generation",
+        "availability": "https://schema.org/InStock",
+      },
+      {
+        "@type": "Offer",
+        "name": "Agency Plan",
+        "price": prices.agency.toFixed(2),
+        "priceCurrency": activeCurrency,
+        "priceValidUntil": "2026-12-31",
+        "description": "Unlimited pages optimized, white-label PDF reports",
+        "availability": "https://schema.org/InStock",
+      },
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "127",
     },
-    {
-      "@type": "Offer",
-      "name": "Agency Plan",
-      "price": "999",
-      "priceCurrency": "ZAR",
-      "priceValidUntil": "2026-12-31",
-      "description": "Unlimited pages optimized, white-label PDF reports",
-      "availability": "https://schema.org/InStock"
-    }
-  ],
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.8",
-    "reviewCount": "127"
-  }
-};
+  };
+}
 
 export default function Pricing() {
+  const [pricingLocale] = useState(() => detectPricingLocale());
+  const [pricingContext, setPricingContext] = useState<PricingContextResponse | null>(null);
+
   useEffect(() => {
-    // Inject Product schema
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.text = JSON.stringify(productSchema);
-    script.id = 'pricing-product-schema';
-    document.head.appendChild(script);
-    
+    const controller = new AbortController();
+
+    void fetch(`${API_BASE_URL}/pricing-context?locale=${encodeURIComponent(pricingLocale.locale)}`, {
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Pricing context request failed with ${response.status}`);
+        }
+        return response.json() as Promise<PricingContextResponse>;
+      })
+      .then((data) => setPricingContext(data))
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+        setPricingContext(null);
+      });
+
+    return () => controller.abort();
+  }, [pricingLocale.locale]);
+
+  const displayLocale = pricingContext
+    ? { currency: pricingContext.currency, locale: pricingContext.locale, region: pricingContext.region }
+    : pricingLocale;
+
+  const plans = useMemo(
+    () =>
+      BASE_PLANS.map((plan) => ({
+        ...plan,
+        price: formatLocalPrice(
+          pricingContext?.plans[plan.name.toLowerCase() as keyof PricingContextResponse["plans"]] ?? plan.amountZar,
+          displayLocale,
+        ),
+      })),
+    [displayLocale, pricingContext],
+  );
+  const productSchema = useMemo(
+    () => buildProductSchema(pricingContext),
+    [pricingContext],
+  );
+
+  useEffect(() => {
     // Update title and meta
-    document.title = "SEOaxe Pricing — Free, Starter R299/month, Agency R999/month";
     let metaDesc = document.querySelector('meta[name="description"]');
     if (!metaDesc) {
       metaDesc = document.createElement('meta');
       metaDesc.setAttribute('name', 'description');
       document.head.appendChild(metaDesc);
     }
-    metaDesc.setAttribute('content', 'SEOaxe pricing: Free plan (3 pages/month), Starter R299/month (20 pages), Agency R999/month (unlimited). All plans include AEO optimization, schema markup, and health scoring.');
-    
-    return () => {
-      const existing = document.getElementById('pricing-product-schema');
-      if (existing) existing.remove();
-    };
+    document.title = "SEOaxe Pricing — Flexible plans for every team";
+    metaDesc.setAttribute('content', 'SEOaxe pricing: Free, Starter, and Agency plans for teams that want SEO fixes, schema markup, AEO improvements, and health scoring in one workflow.');
   }, []);
-  
-  const plans = [
-    {
-      name: "Free",
-      price: "R0",
-      period: "forever",
-      description: "Perfect for testing the waters.",
-      features: [
-        "3 pages optimized per month",
-        "Basic technical SEO checks",
-        "Standard JSON-LD schema",
-        "Community support"
-      ],
-      cta: "Get Started",
-      popular: false
-    },
-    {
-      name: "Starter",
-      price: "R299",
-      period: "per month",
-      description: "For ambitious freelancers & founders.",
-      features: [
-        "20 pages optimized per month",
-        "Full AEO & Answer Block Generation",
-        "Advanced Multilingual Schema",
-        "Competitor Scanner access",
-        "Email support within 24h"
-      ],
-      cta: "Start Starter Plan",
-      popular: true
-    },
-    {
-      name: "Agency",
-      price: "R999",
-      period: "per month",
-      description: "Scale your entire agency operations.",
-      features: [
-        "Unlimited pages optimized",
-        "Bulk ZIP processing pipeline",
-        "White-label PDF reports",
-        "CMS deployment integrations",
-        "Priority Slack/WhatsApp support"
-      ],
-      cta: "Start Agency Plan",
-      popular: false
-    }
-  ];
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
+      <script
+        id="pricing-product-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
       
       <main className="flex-1 py-20 px-4">
         <div className="container max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Simple, transparent pricing</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Invest in your organic growth. All plans are billed in South African Rand.
+              Invest in your organic growth. Prices are shown in your local currency based on your browser locale.
             </p>
           </div>
 
@@ -150,7 +212,7 @@ export default function Pricing() {
                 <CardContent className="flex-1">
                   <div className="mb-6">
                     <span className="text-4xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground">/{plan.period}</span>
+                    <span className="text-muted-foreground">{plan.period === "forever" ? `/${plan.period}` : ` per ${plan.period}`}</span>
                   </div>
                   <ul className="space-y-3">
                     {plan.features.map((feature, j) => (
