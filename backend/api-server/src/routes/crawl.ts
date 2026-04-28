@@ -26,7 +26,7 @@ async function fetchHtml(url: string): Promise<string | null> {
       signal: ctrl.signal,
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (compatible; SEODominationBot/1.0; +https://seoforge.app)",
+          "Mozilla/5.0 (compatible; SEOaxeBot/1.0; +https://seoforge.app)",
         Accept: "text/html,application/xhtml+xml",
       },
       redirect: "follow",

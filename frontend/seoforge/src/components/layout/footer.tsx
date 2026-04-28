@@ -8,14 +8,14 @@ export function Footer() {
   const { settings } = useAgencySettings();
   const { isAuthenticated } = useAuth();
 
-  const brandName = settings?.brandName ?? "SEODomination";
+  const brandName = settings?.brandName ?? "SEOaxe";
   const logo = settings?.logoUrl ?? undefined;
-  const usingDefaultBrand = brandName === "SEODomination" && !logo;
+  const usingDefaultBrand = !logo;
 
   const exploreLinks = [
     { href: "/#features", label: "Features" },
     { href: "/pricing", label: "Pricing" },
-    { href: "/compare", label: "SEODomination vs Competitors" },
+    { href: "/compare", label: "SEOaxe vs Competitors" },
     { href: "/blog", label: "Blog" },
     { href: "/login", label: "Login" },
   ];
@@ -46,7 +46,7 @@ export function Footer() {
               {settings?.logoUrl ? (
                 <img src={logo} alt={brandName} className="h-7 w-auto" />
               ) : usingDefaultBrand ? (
-                <img src={logoUrl} alt="SEODomination" className="h-7 w-7" />
+                <img src={logoUrl} alt={brandName} className="h-7 w-7" />
               ) : (
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <span className="text-sm font-bold">{brandName.slice(0, 1)}</span>

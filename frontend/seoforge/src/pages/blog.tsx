@@ -6,7 +6,7 @@ import { Calendar, Clock, User, ChevronLeft } from "lucide-react";
 import { useState } from "react";
 
 const author = {
-  name: "SEODomination Team",
+  name: "SEOaxe Team",
   role: "SEO & AEO Specialists",
   avatar: "SF",
 };
@@ -58,14 +58,14 @@ const articles = [
         <li><strong>Write your content in direct question and answer format</strong></li>
         <li><strong>Put the answer in the first two sentences</strong> — before any introduction</li>
         <li><strong>Use structured headings</strong> that mirror how people search</li>
-        <li><strong>Run every page through an AEO optimizer</strong> like <a href="/app" class="text-primary hover:underline font-semibold">SEODomination</a> to automate the technical implementation</li>
+        <li><strong>Run every page through an AEO optimizer</strong> like <a href="/app" class="text-primary hover:underline font-semibold">SEOaxe</a> to automate the technical implementation</li>
       </ol>
 
       <div class="p-6 bg-primary/10 border border-primary/20 rounded-xl my-8">
         <p class="font-semibold text-primary mb-2">Ready to optimize your website for AEO?</p>
         <p class="text-muted-foreground mb-4">Paste your HTML into our optimizer and get an instant AEO readiness score with automated fixes.</p>
         <a href="/app" class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors">
-          Try SEODomination Free →
+          Try SEOaxe Free →
         </a>
       </div>
 
@@ -183,7 +183,7 @@ const articles = [
       <p>A score of 80 or above is considered excellent. Scores between 50 and 79 need improvement. Anything below 50 indicates critical issues that are actively hurting your rankings.</p>
 
       <h3>How do I check my SEO health score?</h3>
-      <p>You can check your SEO health score using <a href="/app" class="text-primary hover:underline font-semibold">SEODomination</a> — paste your HTML and get an instant score broken down by Technical SEO, Content SEO, and AEO Readiness. Compare us to other tools on our <a href="/compare" class="text-primary hover:underline">comparison page</a>.</p>
+      <p>You can check your SEO health score using <a href="/app" class="text-primary hover:underline font-semibold">SEOaxe</a> — paste your HTML and get an instant score broken down by Technical SEO, Content SEO, and AEO Readiness. Compare us to other tools on our <a href="/compare" class="text-primary hover:underline">comparison page</a>.</p>
 
       <h3>How long does it take to improve an SEO health score?</h3>
       <p>With the right tool, technical SEO fixes can be applied in minutes. Rankings typically improve within 2 to 8 weeks after fixes are implemented and Google recrawls your pages.</p>
@@ -209,7 +209,7 @@ const articles = [
       "name": "How do I check my SEO health score?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "You can check your SEO health score using SEODomination — paste your HTML and get an instant score broken down by Technical SEO, Content SEO, and AEO Readiness."
+        "text": "You can check your SEO health score using SEOaxe — paste your HTML and get an instant score broken down by Technical SEO, Content SEO, and AEO Readiness."
       }
     },
     {
@@ -257,8 +257,8 @@ const articles = [
 
       <h2>How to Add Schema Without Coding</h2>
 
-      <h3>Method 1 — Use SEODomination (Fastest)</h3>
-      <p>Paste your page HTML into SEODomination. The AI automatically detects what schema types apply to your page and injects the correct JSON-LD code. Copy the optimized HTML and paste it back into your site. Done in under 60 seconds.</p>
+      <h3>Method 1 — Use SEOaxe (Fastest)</h3>
+      <p>Paste your page HTML into SEOaxe. The AI automatically detects what schema types apply to your page and injects the correct JSON-LD code. Copy the optimized HTML and paste it back into your site. Done in under 60 seconds.</p>
 
       <h3>Method 2 — WordPress Plugin</h3>
       <p>If your site runs on WordPress, install the free Rank Math or Yoast SEO plugin. Both generate schema markup automatically from your content with no coding required.</p>
@@ -347,7 +347,7 @@ const articles = [
       <h2>Reason 1 — You Have No Schema Markup</h2>
       <p>Google AI Overviews heavily favour websites with structured data. Schema markup tells the AI exactly what your content means and makes it easy to extract clean answers. Without it your content is ambiguous and gets skipped in favour of sites that have it.</p>
 
-      <p><strong>Fix:</strong> Add FAQPage, Article, and Organization schema to your pages. Use SEODomination to do this automatically.</p>
+      <p><strong>Fix:</strong> Add FAQPage, Article, and Organization schema to your pages. Use SEOaxe to do this automatically.</p>
 
       <h2>Reason 2 — Your Content Doesn't Answer Questions Directly</h2>
       <p>Answer engines don't show dozens of results. They show one or two. Making the cut requires being the best authority to respond clearly and reliably.</p>
@@ -376,7 +376,7 @@ const articles = [
       <h2>FAQ</h2>
 
       <h3>How do I get my website into Google AI Overviews?</h3>
-      <p>Implement schema markup, write direct answer-first content, add FAQ sections, fix your meta tags, and build authority signals like directory listings and backlinks. Tools like SEODomination automate the technical implementation.</p>
+      <p>Implement schema markup, write direct answer-first content, add FAQ sections, fix your meta tags, and build authority signals like directory listings and backlinks. Tools like SEOaxe automate the technical implementation.</p>
 
       <h3>How long does it take to appear in Google AI Overviews?</h3>
       <p>There is no guaranteed timeline but well-optimized pages have been seen appearing in AI Overviews within two to four weeks of implementation.</p>
@@ -394,7 +394,7 @@ const articles = [
       "name": "How do I get my website into Google AI Overviews?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Implement schema markup, write direct answer-first content, add FAQ sections, fix your meta tags, and build authority signals like directory listings and backlinks. Tools like SEODomination automate the technical implementation."
+        "text": "Implement schema markup, write direct answer-first content, add FAQ sections, fix your meta tags, and build authority signals like directory listings and backlinks. Tools like SEOaxe automate the technical implementation."
       }
     },
     {
@@ -476,7 +476,7 @@ const articles = [
       <p>If a significant portion of your target market speaks Afrikaans or Zulu, creating content in those languages can give you a major competitive advantage as most competitors only publish in English.</p>
 
       <h3>What is the best SEO tool for South African websites?</h3>
-      <p>SEODomination is built specifically for the South African and broader African market, with support for multilingual schema, local business markup, and AEO optimization tailored to African search behaviour.</p>
+      <p>SEOaxe is built specifically for the South African and broader African market, with support for multilingual schema, local business markup, and AEO optimization tailored to African search behaviour.</p>
 
       <script type="application/ld+json">
 {
@@ -558,12 +558,12 @@ const articles = [
         <li><strong>Step 5</strong> — Submit your updated sitemap to Google Search Console</li>
       </ol>
 
-      <p>The fastest method is to use SEODomination — paste your HTML and it automatically detects which schema types your page needs and injects them correctly.</p>
+      <p>The fastest method is to use SEOaxe — paste your HTML and it automatically detects which schema types your page needs and injects them correctly.</p>
 
       <h2>FAQ</h2>
 
       <h3>Is JSON-LD hard to implement?</h3>
-      <p>Not anymore. Tools like SEODomination generate and inject JSON-LD automatically. You paste your HTML in, get fully schema-marked-up HTML back, and paste it into your site.</p>
+      <p>Not anymore. Tools like SEOaxe generate and inject JSON-LD automatically. You paste your HTML in, get fully schema-marked-up HTML back, and paste it into your site.</p>
 
       <h3>Does JSON-LD schema improve Google rankings?</h3>
       <p>JSON-LD does not directly change your ranking position but it enables rich results and AI citations that significantly increase your search visibility and click-through rates.</p>
@@ -584,7 +584,7 @@ const articles = [
       "name": "Is JSON-LD hard to implement?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Not anymore. Tools like SEODomination generate and inject JSON-LD automatically. You paste your HTML in, get fully schema-marked-up HTML back, and paste it into your site."
+        "text": "Not anymore. Tools like SEOaxe generate and inject JSON-LD automatically. You paste your HTML in, get fully schema-marked-up HTML back, and paste it into your site."
       }
     },
     {
@@ -750,7 +750,7 @@ const articles = [
       <p>Neither alone is sufficient. SEO provides visibility. AEO provides citation authority. Both are required for maximum search performance in 2026.</p>
 
       <h3>How do I implement both SEO and AEO at the same time?</h3>
-      <p>Use a tool like SEODomination that handles both simultaneously — optimizing your meta tags, headings, and technical SEO while also injecting the schema markup and structured content that AEO requires.</p>
+      <p>Use a tool like SEOaxe that handles both simultaneously — optimizing your meta tags, headings, and technical SEO while also injecting the schema markup and structured content that AEO requires.</p>
 
       <script type="application/ld+json">
 {
@@ -778,7 +778,7 @@ const articles = [
       "name": "How do I implement both SEO and AEO at the same time?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Use a tool like SEODomination that handles both simultaneously — optimizing your meta tags, headings, and technical SEO while also injecting the schema markup and structured content that AEO requires."
+        "text": "Use a tool like SEOaxe that handles both simultaneously — optimizing your meta tags, headings, and technical SEO while also injecting the schema markup and structured content that AEO requires."
       }
     }
   ]
@@ -811,7 +811,7 @@ const articles = [
       <p>Install Rank Math or Yoast SEO. Both generate your sitemap automatically at yourdomain.co.za/sitemap.xml</p>
 
       <h3>If you built a custom site:</h3>
-      <p>Use SEODomination to generate a complete sitemap.xml file after optimizing your pages. Download it and upload it to your website's root folder.</p>
+      <p>Use SEOaxe to generate a complete sitemap.xml file after optimizing your pages. Download it and upload it to your website's root folder.</p>
 
       <h3>Manual creation:</h3>
       <p>Create a file named sitemap.xml in your website root with this structure:</p>
@@ -910,7 +910,7 @@ const articles = [
       <h2>2. No Schema Markup</h2>
       <p>Schema markup is virtually absent from South African small business websites. This is a massive competitive gap. Any SA business that implements schema markup is immediately ahead of the majority of local competitors.</p>
 
-      <p><strong>Fix:</strong> Add Organization schema to your homepage, Article schema to blog posts, LocalBusiness schema to your contact page, and FAQPage schema to any page with questions. Use SEODomination to automate this entirely.</p>
+      <p><strong>Fix:</strong> Add Organization schema to your homepage, Article schema to blog posts, LocalBusiness schema to your contact page, and FAQPage schema to any page with questions. Use SEOaxe to automate this entirely.</p>
 
       <h2>3. Slow Page Speed</h2>
       <p>South African internet infrastructure means many users are on slower connections. Google's algorithm penalizes slow-loading pages and prioritizes fast ones. Most SA websites are loaded with large uncompressed images and unnecessary scripts that make them painfully slow.</p>
@@ -935,7 +935,7 @@ const articles = [
       <h2>7. No AEO Implementation</h2>
       <p>South African businesses are almost entirely absent from Google AI Overviews. This is not because SA content is lower quality — it is because SA websites have not implemented the AEO requirements that get content cited.</p>
 
-      <p><strong>Fix:</strong> Add FAQ sections to every major page. Structure content in direct question-and-answer format. Implement FAQPage and Article schema. Run every page through SEODomination to automate the full AEO optimization.</p>
+      <p><strong>Fix:</strong> Add FAQ sections to every major page. Structure content in direct question-and-answer format. Implement FAQPage and Article schema. Run every page through SEOaxe to automate the full AEO optimization.</p>
 
       <h2>FAQ</h2>
 
@@ -943,7 +943,7 @@ const articles = [
       <p>Technical SEO fixes like meta tags and schema can show ranking improvements within 2 to 6 weeks after Google recrawls your pages. Content improvements typically take 2 to 4 months to fully reflect in rankings.</p>
 
       <h3>Do I need to hire an SEO agency in South Africa?</h3>
-      <p>Not necessarily. Most technical SEO issues can be fixed using tools like SEODomination without hiring an agency. Agencies add value for ongoing strategy, content creation, and link building — but the technical foundation can be self-managed.</p>
+      <p>Not necessarily. Most technical SEO issues can be fixed using tools like SEOaxe without hiring an agency. Agencies add value for ongoing strategy, content creation, and link building — but the technical foundation can be self-managed.</p>
 
       <h3>What is the fastest SEO win for a South African website?</h3>
       <p>Adding meta tags and schema markup. These are technical fixes that take minutes to implement with the right tool and can show measurable ranking improvements within weeks.</p>
@@ -966,7 +966,7 @@ const articles = [
       "name": "Do I need to hire an SEO agency in South Africa?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Not necessarily. Most technical SEO issues can be fixed using tools like SEODomination without hiring an agency. Agencies add value for ongoing strategy, content creation, and link building — but the technical foundation can be self-managed."
+        "text": "Not necessarily. Most technical SEO issues can be fixed using tools like SEOaxe without hiring an agency. Agencies add value for ongoing strategy, content creation, and link building — but the technical foundation can be self-managed."
       }
     },
     {
@@ -1110,7 +1110,7 @@ const articles = [
       <p>AEO results typically appear faster than traditional SEO. While traditional SEO can take 3-6 months to show significant ranking improvements, AEO optimizations—particularly for featured snippets—can show results within 2-4 weeks. AI Overview citations may take 1-3 months depending on your site's authority.</p>
 
       <h3>Can I do AEO without technical SEO knowledge?</h3>
-      <p>Yes, basic AEO can be implemented without deep technical knowledge. Using a tool like SEODomination, you can automatically generate FAQ sections, schema markup, and optimized answer blocks without writing code. However, understanding the principles helps you create better content that AI systems prefer to cite.</p>
+      <p>Yes, basic AEO can be implemented without deep technical knowledge. Using a tool like SEOaxe, you can automatically generate FAQ sections, schema markup, and optimized answer blocks without writing code. However, understanding the principles helps you create better content that AI systems prefer to cite.</p>
 
       <h3>Is AEO only for large websites?</h3>
       <p>No, AEO works for websites of all sizes. In fact, smaller niche websites often have an advantage because they can demonstrate deeper topical authority in specific areas. AI systems prioritize accuracy and relevance over domain size.</p>
@@ -1305,7 +1305,7 @@ const articles = [
 
       <h3>Third-Party Tools</h3>
       <ul>
-        <li><strong>SEODomination's AI Overview Tracker</strong> – Monitors citation presence</li>
+        <li><strong>SEOaxe's AI Overview Tracker</strong> – Monitors citation presence</li>
         <li><strong>Ahrefs</strong> – Shows SERP feature appearances</li>
         <li><strong>Semrush</strong> – Tracks keyword positions and features</li>
         <li><strong>STAT</strong> – Daily SERP tracking with AI Overview detection</li>
@@ -1331,7 +1331,7 @@ const articles = [
       <h2>FAQ: Google AI Overviews</h2>
 
       <h3>How do I know if my site is being cited in AI Overviews?</h3>
-      <p>Manually search your target keywords and look for the AI Overview section at the top of results. Citations appear as numbered source cards at the bottom of the overview. You can also use SEODomination's AI Overview monitoring tool to track citations automatically.</p>
+      <p>Manually search your target keywords and look for the AI Overview section at the top of results. Citations appear as numbered source cards at the bottom of the overview. You can also use SEOaxe's AI Overview monitoring tool to track citations automatically.</p>
 
       <h3>Do AI Overviews hurt traditional SEO traffic?</h3>
       <p>It depends. If you're NOT cited in the overview, you may see traffic declines as users get answers without clicking. However, if you ARE cited, AI Overviews can drive more qualified traffic than traditional rankings because users trust AI-selected sources.</p>
@@ -1611,14 +1611,14 @@ const articles = [
   "tool": [
     {
       "@type": "HowToTool",
-      "name": "SEODomination"
+      "name": "SEOaxe"
     }
   ],
   "step": [
     {
       "@type": "HowToStep",
       "name": "Audit Your Current SEO",
-      "text": "Run a comprehensive SEO audit using SEODomination to identify issues.",
+      "text": "Run a comprehensive SEO audit using SEOaxe to identify issues.",
       "url": "https://www.yoursite.co.za/step-1",
       "image": "https://www.yoursite.co.za/step-1.jpg"
     },
@@ -1722,7 +1722,7 @@ const articles = [
         <li>Use your CMS's schema plugins (WordPress: Yoast, Rank Math)</li>
         <li>Implement dynamic schema generation in your backend</li>
         <li>Use Google Tag Manager for deployment</li>
-        <li>Consider SEODomination's automated schema generation</li>
+        <li>Consider SEOaxe's automated schema generation</li>
       </ul>
 
       <h2>Measuring Schema Impact</h2>
@@ -1746,7 +1746,7 @@ const articles = [
       <h2>FAQ: Schema Markup Implementation</h2>
 
       <h3>Do I need to be a developer to implement schema?</h3>
-      <p>No, basic schema implementation doesn't require coding knowledge. Tools like SEODomination can automatically generate schema markup based on your content. However, understanding the structure helps you troubleshoot issues and implement advanced schemas.</p>
+      <p>No, basic schema implementation doesn't require coding knowledge. Tools like SEOaxe can automatically generate schema markup based on your content. However, understanding the structure helps you troubleshoot issues and implement advanced schemas.</p>
 
       <h3>How long until schema affects my search results?</h3>
       <p>Schema can take effect within days, but rich snippets typically appear within 1-4 weeks after Google recrawls your page. Submit updated pages via Google Search Console's URL Inspection tool to request faster crawling.</p>
@@ -2018,7 +2018,7 @@ const articles = [
       <p>Yes, often better than in traditional SEO. AEO rewards topical authority and accuracy over domain size. A specialized small site can outrank major publications if it demonstrates deeper expertise.</p>
 
       <h3>How much does AEO cost compared to traditional SEO?</h3>
-      <p>The additional cost is minimal if you're already doing SEO. AEO is primarily about content restructuring and schema markup. Tools like SEODomination automate much of the technical implementation at low cost.</p>
+      <p>The additional cost is minimal if you're already doing SEO. AEO is primarily about content restructuring and schema markup. Tools like SEOaxe automate much of the technical implementation at low cost.</p>
 
       <h2>Conclusion: Adapt or Become Invisible</h2>
       <p>The search landscape has permanently changed. AI-generated answers are not a trend—they are the new default. Websites that cling to traditional SEO alone will see their visibility erode month by month.</p>
@@ -2137,7 +2137,7 @@ export default function Blog() {
             <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
               SEO & AEO Insights
             </Badge>
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">SEODomination Blog</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">SEOaxe Blog</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Expert guides on SEO and Answer Engine Optimization. Actionable strategies to dominate search in 2026.
             </p>
@@ -2190,7 +2190,7 @@ export default function Blog() {
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold mb-3">Want These Results for Your Website?</h3>
                 <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-                  SEODomination helps South African businesses implement the exact strategies in these articles—in minutes, not months.
+                  SEOaxe helps South African businesses implement the exact strategies in these articles—in minutes, not months.
                 </p>
                 <a 
                   href="/app"

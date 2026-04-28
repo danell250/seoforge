@@ -9,11 +9,11 @@ import { useEffect } from "react";
 const productSchema = {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": "SEODomination",
+  "name": "SEOaxe",
   "description": "AI-powered SEO and AEO optimization platform for businesses",
   "brand": {
     "@type": "Brand",
-    "name": "SEODomination"
+    "name": "SEOaxe"
   },
   "offers": [
     {
@@ -60,14 +60,14 @@ export default function Pricing() {
     document.head.appendChild(script);
     
     // Update title and meta
-    document.title = "SEODomination Pricing — Free, Starter R299/month, Agency R999/month";
+    document.title = "SEOaxe Pricing — Free, Starter R299/month, Agency R999/month";
     let metaDesc = document.querySelector('meta[name="description"]');
     if (!metaDesc) {
       metaDesc = document.createElement('meta');
       metaDesc.setAttribute('name', 'description');
       document.head.appendChild(metaDesc);
     }
-    metaDesc.setAttribute('content', 'SEODomination pricing: Free plan (3 pages/month), Starter R299/month (20 pages), Agency R999/month (unlimited). All plans include AEO optimization, schema markup, and health scoring.');
+    metaDesc.setAttribute('content', 'SEOaxe pricing: Free plan (3 pages/month), Starter R299/month (20 pages), Agency R999/month (unlimited). All plans include AEO optimization, schema markup, and health scoring.');
     
     return () => {
       const existing = document.getElementById('pricing-product-schema');
@@ -173,7 +173,7 @@ export default function Pricing() {
           {/* Killer Positioning Comparison */}
           <div className="mt-24 max-w-4xl mx-auto">
             <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold mb-3">Why Businesses Choose SEODomination</h2>
+              <h2 className="text-3xl font-bold mb-3">Why Businesses Choose SEOaxe</h2>
               <p className="text-muted-foreground">See how we compare to traditional content tools</p>
             </div>
             
@@ -182,7 +182,7 @@ export default function Pricing() {
                 <thead>
                   <tr className="bg-muted/50 border-b">
                     <th className="text-left py-4 px-6 font-semibold">Feature</th>
-                    <th className="text-center py-4 px-4 font-bold text-primary bg-primary/5 w-1/3">SEODomination</th>
+                    <th className="text-center py-4 px-4 font-bold text-primary bg-primary/5 w-1/3">SEOaxe</th>
                     <th className="text-center py-4 px-4 font-semibold text-muted-foreground w-1/3">Traditional Content Tools</th>
                   </tr>
                 </thead>
@@ -330,7 +330,7 @@ export default function Pricing() {
             <div className="mt-8 p-6 bg-primary/10 border border-primary/20 rounded-xl">
               <p className="font-semibold text-primary mb-2">The difference is clear</p>
               <p className="text-muted-foreground text-sm">
-                Traditional content tools create new articles. SEODomination fixes your entire website — existing pages, technical SEO, AEO schema, and health scores. That's why our users see rankings improve faster.
+                Traditional content tools create new articles. SEOaxe fixes your entire website — existing pages, technical SEO, AEO schema, and health scores. That's why our users see rankings improve faster.
               </p>
             </div>
           </div>

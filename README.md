@@ -1,4 +1,4 @@
-# Code Optimizer Pro (SEOForge)
+# Code Optimizer Pro (SEOaxe)
 
 A B2B SaaS web app that optimizes HTML for SEO and AEO using Google Gemini.
 
@@ -9,7 +9,7 @@ This is a **pnpm monorepo** with separate frontend and backend workspaces:
 ```
 Code-Optimizer-Pro/
 ├── frontend/                    # Frontend applications
-│   ├── seoforge/               # Main SEOForge React app
+│   ├── seoforge/               # Main SEOaxe React app
 │   └── mockup-sandbox/         # Mockup sandbox for testing
 ├── backend/                     # Backend services
 │   └── api-server/             # Express 5 API server
@@ -181,7 +181,7 @@ pnpm run typecheck
 
 ## Architecture
 
-### Frontend (SEOForge)
+### Frontend (SEOaxe)
 - React 19 with TypeScript
 - Vite for bundling and dev server
 - Tailwind CSS v4 for styling

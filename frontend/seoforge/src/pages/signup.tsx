@@ -51,7 +51,7 @@ export default function Signup() {
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl font-bold">Create your account</CardTitle>
             <CardDescription>
-              Start your SEODomination workspace with an email and password.
+              Start your SEOaxe workspace with an email and password.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

@@ -1,4 +1,4 @@
-# SEOForge Deployment Guide
+# SEOaxe Deployment Guide
 
 ## Vercel + Render Setup
 

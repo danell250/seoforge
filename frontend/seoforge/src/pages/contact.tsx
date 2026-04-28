@@ -14,7 +14,7 @@ export default function Contact() {
           <div className="text-center mb-12">
             <h1 className="text-3xl md:text-4xl font-bold mb-4">Contact Us</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Have questions about SEODomination? We're here to help. Reach out to our team and we'll get back to you as soon as possible.
+              Have questions about SEOaxe? We're here to help. Reach out to our team and we'll get back to you as soon as possible.
             </p>
           </div>
 

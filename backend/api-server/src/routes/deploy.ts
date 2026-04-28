@@ -33,7 +33,7 @@ router.post("/deploy/wordpress", async (req, res) => {
       headers: {
         "Content-Type": "application/json",
         Authorization: auth,
-        "User-Agent": "SEODomination/1.0",
+        "User-Agent": "SEOaxe/1.0",
       },
       body: JSON.stringify({ content: html }),
       signal: controller.signal,
@@ -91,7 +91,7 @@ router.post("/deploy/shopify", async (req, res) => {
       headers: {
         "Content-Type": "application/json",
         "X-Shopify-Access-Token": accessToken,
-        "User-Agent": "SEODomination/1.0",
+        "User-Agent": "SEOaxe/1.0",
       },
       body: JSON.stringify({ page: { id: pageId, body_html: html } }),
       signal: controller.signal,

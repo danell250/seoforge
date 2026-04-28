@@ -44,10 +44,10 @@ export function HtmlGuide({ sendPrompt, onUploadClick, hasHtml }: HtmlGuideProps
 
   const conversationPrompt =
     option === "live"
-      ? `I am on the SEODomination one-page optimizer and I need help getting the full HTML from a live website. Please walk me through it for ${browserLabel(browserTab)}.`
+      ? `I am on the SEOaxe one-page optimizer and I need help getting the full HTML from a live website. Please walk me through it for ${browserLabel(browserTab)}.`
       : option === "cms"
-        ? `I am on the SEODomination one-page optimizer and I need help getting the full HTML from ${cmsLabel(cmsTab)}. Please give me the exact steps.`
-        : "I already have an HTML file but I am not sure if it is the right file for SEODomination. Please help me confirm what to upload.";
+        ? `I am on the SEOaxe one-page optimizer and I need help getting the full HTML from ${cmsLabel(cmsTab)}. Please give me the exact steps.`
+        : "I already have an HTML file but I am not sure if it is the right file for SEOaxe. Please help me confirm what to upload.";
 
   return (
     <div className="mb-4 overflow-hidden rounded-lg border border-primary/15 bg-primary/[0.03]">
@@ -162,7 +162,7 @@ export function HtmlGuide({ sendPrompt, onUploadClick, hasHtml }: HtmlGuideProps
                     <>If you only have your phone, save the page to Files and use <strong>Upload HTML</strong> below.</>,
                     <>You can also try adding <Kbd>view-source:</Kbd> before the URL in Chrome, but desktop is more reliable.</>,
                   ]}
-                  tip="SEODomination works best with the full page source, including the head tags."
+                  tip="SEOaxe works best with the full page source, including the head tags."
                 />
               )}
             </div>
@@ -238,7 +238,7 @@ export function HtmlGuide({ sendPrompt, onUploadClick, hasHtml }: HtmlGuideProps
                   items={[
                     <>Wix and Squarespace usually do not expose clean raw HTML in the editor.</>,
                     <>Open the published page and use the browser page-source method instead.</>,
-                    <>After SEODomination improves the page, copy the title, description, schema, and content changes back into your CMS.</>,
+                    <>After SEOaxe improves the page, copy the title, description, schema, and content changes back into your CMS.</>,
                   ]}
                   tip="You do not need to rebuild your site by hand. Most CMS tools have fields for SEO title, description, and code injection."
                 />
@@ -251,7 +251,7 @@ export function HtmlGuide({ sendPrompt, onUploadClick, hasHtml }: HtmlGuideProps
               <Steps
                 items={[
                   <>Click <strong>Upload HTML</strong> and choose your <Kbd>.html</Kbd> or <Kbd>.htm</Kbd> file.</>,
-                  <>SEODomination will load it into the editor automatically.</>,
+                  <>SEOaxe will load it into the editor automatically.</>,
                   <>Click <strong>Improve This Page</strong> when you are ready.</>,
                 ]}
                 tip="If you have a whole folder of pages, use the Many Files tab for a ZIP upload."
@@ -275,7 +275,7 @@ export function HtmlGuide({ sendPrompt, onUploadClick, hasHtml }: HtmlGuideProps
               />
               <Faq
                 q="Do I need to know code?"
-                a="No. If you can open the page source or upload a file, SEODomination can do the heavy lifting from there."
+                a="No. If you can open the page source or upload a file, SEOaxe can do the heavy lifting from there."
               />
               <Faq
                 q="How much HTML should I copy?"
@@ -294,7 +294,7 @@ export function HtmlGuide({ sendPrompt, onUploadClick, hasHtml }: HtmlGuideProps
               variant="outline"
               className="sm:flex-1"
               onClick={() =>
-                sendPrompt("I am stuck getting HTML into SEODomination. Please tell me the simplest way to copy or upload the right HTML for my page.")
+                sendPrompt("I am stuck getting HTML into SEOaxe. Please tell me the simplest way to copy or upload the right HTML for my page.")
               }
             >
               <MessageCircle className="h-4 w-4" />

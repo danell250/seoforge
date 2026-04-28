@@ -4,7 +4,7 @@ export function OrganizationSchema() {
   const organizationData = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "SEODomination",
+    "name": "SEOaxe",
     "url": "https://seoforge.app",
     "logo": "https://seoforge.app/android-chrome-512x512.png",
     "description": "AI-powered SEO and Answer Engine Optimization platform for South African businesses. Automate meta tags, schema markup, AEO answer blocks, and sitemaps.",
@@ -36,7 +36,7 @@ export function WebsiteSchema() {
   const websiteData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "SEODomination",
+    "name": "SEOaxe",
     "url": "https://seoforge.app",
     "description": "AI-powered SEO and AEO optimization platform",
     "potentialAction": {
@@ -64,10 +64,10 @@ export function FAQPageSchema() {
     "mainEntity": [
       {
         "@type": "Question",
-        "name": "What is SEODomination?",
+        "name": "What is SEOaxe?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "SEODomination is an AI-powered SEO and Answer Engine Optimization (AEO) platform designed for South African businesses. It automates the process of optimizing HTML pages for search engines and AI answer engines like Google AI Overviews, Perplexity, and ChatGPT search. Simply paste your HTML code and receive fully optimized code with meta tags, schema markup, AEO answer blocks, health scores, and sitemaps in seconds."
+          "text": "SEOaxe is an AI-powered SEO and Answer Engine Optimization (AEO) platform designed for South African businesses. It automates the process of optimizing HTML pages for search engines and AI answer engines like Google AI Overviews, Perplexity, and ChatGPT search. Simply paste your HTML code and receive fully optimized code with meta tags, schema markup, AEO answer blocks, health scores, and sitemaps in seconds."
         }
       },
       {
@@ -75,23 +75,23 @@ export function FAQPageSchema() {
         "name": "How does AI SEO optimization work?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "SEODomination uses advanced AI to analyze your HTML code and identify optimization opportunities. The platform automatically generates optimized meta titles and descriptions, creates JSON-LD structured data schema, adds AEO (Answer Engine Optimization) answer blocks for featured snippets, generates XML sitemaps and robots.txt files, and provides an SEO health score. All optimizations follow best practices for both traditional search engines and AI answer engines."
+          "text": "SEOaxe uses advanced AI to analyze your HTML code and identify optimization opportunities. The platform automatically generates optimized meta titles and descriptions, creates JSON-LD structured data schema, adds AEO (Answer Engine Optimization) answer blocks for featured snippets, generates XML sitemaps and robots.txt files, and provides an SEO health score. All optimizations follow best practices for both traditional search engines and AI answer engines."
         }
       },
       {
         "@type": "Question",
-        "name": "Is SEODomination free?",
+        "name": "Is SEOaxe free?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes, SEODomination is free to start with no credit card required. You can begin optimizing your pages immediately. We also offer premium plans with additional features like bulk optimization, competitor analysis, site monitoring, and CMS deployment to WordPress and Shopify for agencies and larger businesses."
+          "text": "Yes, SEOaxe is free to start with no credit card required. You can begin optimizing your pages immediately. We also offer premium plans with additional features like bulk optimization, competitor analysis, site monitoring, and CMS deployment to WordPress and Shopify for agencies and larger businesses."
         }
       },
       {
         "@type": "Question",
-        "name": "Does SEODomination support South African websites?",
+        "name": "Does SEOaxe support South African websites?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Absolutely! SEODomination is specifically designed with South African businesses in mind. The platform supports multilingual schema markup for South Africa's 11 official languages, understands local SEO requirements, and provides hreflang tag generation for businesses targeting multiple language markets within South Africa and across Africa. Our AI is trained to recognize and optimize for South African search patterns and user intent."
+          "text": "Absolutely! SEOaxe is specifically designed with South African businesses in mind. The platform supports multilingual schema markup for South Africa's 11 official languages, understands local SEO requirements, and provides hreflang tag generation for businesses targeting multiple language markets within South Africa and across Africa. Our AI is trained to recognize and optimize for South African search patterns and user intent."
         }
       }
     ]
@@ -109,7 +109,7 @@ export function SoftwareApplicationSchema() {
   const softwareData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "SEODomination",
+    "name": "SEOaxe",
     "applicationCategory": "WebApplication",
     "operatingSystem": "Web Browser",
     "offers": {
@@ -148,7 +148,7 @@ export function LocalBusinessSchema() {
   const localData = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
-    "name": "SEODomination",
+    "name": "SEOaxe",
     "description": "AI-powered SEO and AEO optimization services for South African businesses",
     "url": "https://seoforge.app",
     "areaServed": {

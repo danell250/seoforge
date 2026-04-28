@@ -2,7 +2,7 @@ import { pgTable, serial, text, timestamp, integer } from "drizzle-orm/pg-core";
 
 export const agencySettingsTable = pgTable("agency_settings", {
   id: serial("id").primaryKey(),
-  brandName: text("brand_name").notNull().default("SEOForge"),
+  brandName: text("brand_name").notNull().default("SEOaxe"),
   tagline: text("tagline").notNull().default("AI-Powered SEO and Answer Engine Optimization"),
   logoUrl: text("logo_url"),
   primaryColor: text("primary_color").notNull().default("#2563eb"),

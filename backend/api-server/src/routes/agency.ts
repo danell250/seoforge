@@ -9,7 +9,7 @@ const router: IRouter = Router();
 
 const SINGLETON_ID = 1;
 const DEFAULT_SETTINGS = {
-  brandName: "SEODomination",
+  brandName: "SEOaxe",
   tagline: "AI-Powered SEO and Answer Engine Optimization",
   logoUrl: null,
   primaryColor: "#2563eb",

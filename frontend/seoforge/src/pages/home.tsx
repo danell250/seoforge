@@ -77,7 +77,7 @@ export default function Home() {
                   While other tools write articles,
                   <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">
-                    SEODomination fixes your entire website.
+                    SEOaxe fixes your entire website.
                   </span>
                 </h1>
                 <p className="max-w-2xl mx-auto text-lg text-muted-foreground leading-relaxed">
@@ -119,7 +119,7 @@ export default function Home() {
                     <div className="w-3 h-3 rounded-full bg-green-400" />
                   </div>
                   <div className="flex-1 text-center">
-                    <span className="text-xs text-muted-foreground">SEODomination Workspace</span>
+                    <span className="text-xs text-muted-foreground">SEOaxe Workspace</span>
                   </div>
                 </div>
                 <div className="grid md:grid-cols-[1fr_280px] divide-y md:divide-y-0 md:divide-x">
@@ -256,7 +256,7 @@ export default function Home() {
                 <span className="ml-2 text-sm font-medium text-muted-foreground">4.9/5 from 127 reviews</span>
               </div>
               <h2 className="text-3xl font-bold mb-3">Loved by businesses worldwide</h2>
-              <p className="text-muted-foreground max-w-xl mx-auto">See what founders, marketers, and agencies say about SEODomination.</p>
+              <p className="text-muted-foreground max-w-xl mx-auto">See what founders, marketers, and agencies say about SEOaxe.</p>
             </div>
             
             <div className="grid md:grid-cols-3 gap-6">
@@ -306,7 +306,7 @@ export default function Home() {
                     <p className="font-semibold text-sm" itemProp="name">{testimonial.author}</p>
                     <p className="text-xs text-muted-foreground" itemProp="jobTitle">{testimonial.role}</p>
                   </div>
-                  <meta itemProp="itemReviewed" content="SEODomination" />
+                  <meta itemProp="itemReviewed" content="SEOaxe" />
                 </motion.div>
               ))}
             </div>

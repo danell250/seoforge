@@ -34,7 +34,7 @@ async function fetchHtml(url: string): Promise<string | null> {
     const res = await fetch(url, {
       signal: ctrl.signal,
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; SEODominationBot/1.0; +https://seoforge.app)",
+        "User-Agent": "Mozilla/5.0 (compatible; SEOaxeBot/1.0; +https://seoforge.app)",
         Accept: "text/html,application/xhtml+xml",
       },
       redirect: "follow",
@@ -266,7 +266,7 @@ export async function runMonitorForSite(
     });
     const result = await sendEmail({
       to: site.email,
-      subject: `SEODomination: ${site.domain} — ${regressions} regressions, ${newGapsTotal} new gaps`,
+      subject: `SEOaxe: ${site.domain} — ${regressions} regressions, ${newGapsTotal} new gaps`,
       html,
     });
     if (result.ok) {

@@ -374,7 +374,7 @@ export default function Dashboard() {
                   <Sparkles className="h-3.5 w-3.5" />
                   Dashboard ready
                 </div>
-                <h2 className="text-3xl font-semibold tracking-tight">Welcome to SEODomination</h2>
+                <h2 className="text-3xl font-semibold tracking-tight">Welcome to SEOaxe</h2>
                 <p className="mt-2 text-sm text-blue-100 md:text-base">
                   Start optimizing pages to see your scores here
                 </p>

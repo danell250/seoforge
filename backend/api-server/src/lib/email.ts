@@ -1,4 +1,4 @@
-export const FROM_ADDRESS = process.env["BREVO_FROM"] || process.env["RESEND_FROM"] || "SEODomination <noreply@seoforge.app>";
+export const FROM_ADDRESS = process.env["BREVO_FROM"] || process.env["RESEND_FROM"] || "SEOaxe <noreply@seoforge.app>";
 
 function getApiKey(): string | null {
   return process.env["BREVO_API_KEY"] || process.env["RESEND_API_KEY"] || null;
@@ -21,7 +21,7 @@ export async function sendEmail(opts: {
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        sender: { name: "SEODomination", email: FROM_ADDRESS.match(/<(.+)>/)?.[1] || FROM_ADDRESS },
+        sender: { name: "SEOaxe", email: FROM_ADDRESS.match(/<(.+)>/)?.[1] || FROM_ADDRESS },
         to: [{ email: opts.to }],
         subject: opts.subject,
         htmlContent: opts.html,
@@ -109,7 +109,7 @@ export function renderReportEmail(opts: {
   <div style="max-width:640px;margin:0 auto;padding:32px 16px;">
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
       <div style="padding:24px 28px;background:#2563eb;color:#fff;">
-        <div style="font-size:14px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.85;">SEODomination Weekly Report</div>
+        <div style="font-size:14px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.85;">SEOaxe Weekly Report</div>
         <div style="font-size:22px;font-weight:700;margin-top:6px;">${escapeHtml(opts.domain)}</div>
       </div>
       <div style="padding:24px 28px;">
@@ -138,11 +138,11 @@ export function renderReportEmail(opts: {
           <tbody>${rows || `<tr><td colspan="2" style="padding:24px;text-align:center;color:#64748b;font-size:14px;">No notable changes this week.</td></tr>`}</tbody>
         </table>
         <div style="margin-top:24px;text-align:center;">
-          <a href="${opts.appUrl}" style="display:inline-block;background:#2563eb;color:#fff;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">Open SEODomination dashboard</a>
+          <a href="${opts.appUrl}" style="display:inline-block;background:#2563eb;color:#fff;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">Open SEOaxe dashboard</a>
         </div>
       </div>
     </div>
-    <div style="text-align:center;color:#94a3b8;font-size:12px;margin-top:16px;">You receive this because you subscribed ${escapeHtml(opts.domain)} to SEODomination monitoring.</div>
+    <div style="text-align:center;color:#94a3b8;font-size:12px;margin-top:16px;">You receive this because you subscribed ${escapeHtml(opts.domain)} to SEOaxe monitoring.</div>
   </div>
 </body></html>`;
 }
@@ -182,7 +182,7 @@ export function renderLowScoreAlertEmail(opts: {
         
         <p style="color:#334155;line-height:1.6;font-size:14px;margin:16px 0;">
           A low SEO score means this page is missing critical elements that help it rank. 
-          Run it through SEODomination to get automated fixes and bring your score back above 60.
+          Run it through SEOaxe to get automated fixes and bring your score back above 60.
         </p>
         
         <div style="margin-top:24px;text-align:center;">
@@ -190,7 +190,7 @@ export function renderLowScoreAlertEmail(opts: {
         </div>
       </div>
     </div>
-    <div style="text-align:center;color:#94a3b8;font-size:12px;margin-top:16px;">You receive this because you subscribed ${escapeHtml(opts.domain)} to SEODomination monitoring.</div>
+    <div style="text-align:center;color:#94a3b8;font-size:12px;margin-top:16px;">You receive this because you subscribed ${escapeHtml(opts.domain)} to SEOaxe monitoring.</div>
   </div>
 </body></html>`;
 }
