@@ -1,8 +1,7 @@
 import { Router, type IRouter } from "express";
 import { OptimizeHtmlBody, OptimizeHtmlResponse } from "@workspace/api-zod";
 import { createHash } from "node:crypto";
-import { db, optimizationsTable, usersTable } from "@workspace/db";
-import { aiFeedbackTable } from "@workspace/db/schema";
+import { aiFeedbackTable, aiTrainingExamplesTable, db, optimizationsTable, usersTable } from "@workspace/db";
 import { and, count, eq, gte } from "drizzle-orm";
 import { getAuthenticatedUser, requireAuthenticatedUser } from "../middleware/auth";
 import { 
@@ -182,6 +181,7 @@ router.post("/optimize", async (req, res) => {
     optimized.optimizationId = optimizationId ?? undefined;
     if (optimizationId) {
       await persistOptimizationFeedbackSeed(optimized, optimizationId, user.id, req.log);
+      await persistTrainingExampleSeed(html, optimized, optimizationId, user.id, req.log);
     }
     return res.json(OptimizeHtmlResponse.parse(optimized));
   } catch (err) {
@@ -343,6 +343,34 @@ async function persistOptimizationFeedbackSeed(
     });
   } catch (persistErr) {
     log.error({ err: persistErr }, "Failed to persist optimization feedback seed");
+  }
+}
+
+async function persistTrainingExampleSeed(
+  originalHtml: string,
+  optimized: OptimizationOutcome,
+  optimizationId: number,
+  userId: number,
+  log: AiLogger,
+) {
+  try {
+    const titleMatch = optimized.optimizedHtml.match(/<title[^>]*>([^<]*)<\/title>/i);
+    await db.insert(aiTrainingExamplesTable).values({
+      userId,
+      optimizationId,
+      taskName: "optimize",
+      pageType: optimized.pageType,
+      title: titleMatch?.[1]?.trim() || null,
+      inputHtml: originalHtml,
+      outputHtml: optimized.optimizedHtml,
+      outputFingerprint: createHash("sha256").update(optimized.optimizedHtml).digest("hex"),
+      evaluationScore: optimized.aiReview.score,
+      evaluationSummary: optimized.aiReview.summary,
+      feedbackVerdict: "pending",
+      feedbackNote: null,
+    });
+  } catch (persistErr) {
+    log.error({ err: persistErr }, "Failed to persist training example seed");
   }
 }
 
