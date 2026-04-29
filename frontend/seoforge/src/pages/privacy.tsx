@@ -18,7 +18,7 @@ export default function PrivacyPolicy() {
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-3">1. Introduction</h2>
               <p className="text-muted-foreground leading-relaxed">
-                SEOaxe ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI-powered SEO optimization platform.
+                SEOaxe ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our SEO repair platform.
               </p>
             </section>
 
@@ -34,8 +34,8 @@ export default function PrivacyPolicy() {
               
               <h3 className="text-lg font-medium mb-2">2.2 Usage Data</h3>
               <ul className="list-disc pl-5 text-muted-foreground space-y-1 mb-4">
-                <li>HTML content you upload for optimization</li>
-                <li>Optimization history and preferences</li>
+                <li>HTML content you upload for repair</li>
+                <li>Repair history and preferences</li>
                 <li>Website URLs you crawl or analyze</li>
                 <li>Log data and analytics</li>
               </ul>
@@ -47,8 +47,8 @@ export default function PrivacyPolicy() {
                 We use the information we collect to:
               </p>
               <ul className="list-disc pl-5 text-muted-foreground space-y-1">
-                <li>Provide and maintain our SEO optimization services</li>
-                <li>Process and optimize your HTML content using AI</li>
+                <li>Provide and maintain our SEO repair services</li>
+                <li>Process and repair your HTML content using AI</li>
                 <li>Generate reports, sitemaps, and schema markup</li>
                 <li>Communicate with you about your account and services</li>
                 <li>Improve our platform and develop new features</li>

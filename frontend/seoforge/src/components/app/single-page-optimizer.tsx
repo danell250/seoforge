@@ -334,7 +334,7 @@ export function SinglePageOptimizer() {
           <CardHeader>
             <CardTitle className="text-2xl flex items-center gap-2">
               <FileCode className="h-6 w-6 text-primary" />
-              Optimize One HTML Page
+              Repair One HTML Page
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -379,7 +379,7 @@ export function SinglePageOptimizer() {
               ) : (
                 <>
                   <Play className="h-5 w-5" />
-                  Improve This Page
+                  Repair This Page
                 </>
               )}
             </Button>
@@ -390,7 +390,7 @@ export function SinglePageOptimizer() {
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold flex items-center gap-2">
               <CheckCircle2 className="h-6 w-6 text-green-500" />
-              Optimization Complete
+              Repair Receipt Ready
             </h2>
             <div className="flex gap-2 flex-wrap">
               <Button
@@ -427,6 +427,36 @@ export function SinglePageOptimizer() {
               </Button>
             </div>
           </div>
+
+          <Card className="border-primary/20 shadow-md">
+            <CardHeader className="border-b bg-muted/30">
+              <CardTitle className="flex items-center gap-2">
+                <CheckSquare className="h-5 w-5 text-primary" />
+                Page Repair Receipt
+              </CardTitle>
+              <CardDescription>
+                A clear record of what SEOaxe changed, what improved, and what is ready to deploy.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4 pt-6 md:grid-cols-4">
+              <div className="rounded-lg border bg-background p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Page type</p>
+                <p className="mt-2 text-lg font-bold capitalize">{optimizeMutation.data.pageType ?? "page"}</p>
+              </div>
+              <div className="rounded-lg border bg-background p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Repairs applied</p>
+                <p className="mt-2 text-lg font-bold">{optimizeMutation.data.changes.length}</p>
+              </div>
+              <div className="rounded-lg border bg-background p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Score lift</p>
+                <p className="mt-2 text-lg font-bold text-green-600">+{optimizeMutation.data.scoreImprovement.overall}</p>
+              </div>
+              <div className="rounded-lg border bg-background p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Deploy pack</p>
+                <p className="mt-2 text-sm font-medium">HTML + sitemap + robots</p>
+              </div>
+            </CardContent>
+          </Card>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <Card className="lg:col-span-1 border-primary/20 shadow-md">
@@ -701,7 +731,7 @@ export function SinglePageOptimizer() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CheckSquare className="h-5 w-5 text-primary" />
-                  Changes Applied
+                  Repair Receipt Details
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -725,7 +755,7 @@ export function SinglePageOptimizer() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Globe className="h-5 w-5 text-primary" />
-                  Sitemap & Deployment
+                  Deploy Repair Pack
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">

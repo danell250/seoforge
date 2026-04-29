@@ -34,7 +34,7 @@ const jsonLdSchema = {
       "name": "Is SEOaxe better than Semrush?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "For businesses that need to fix their website without technical expertise, yes. Semrush identifies problems. SEOaxe fixes them automatically in 30 seconds with no technical skills required."
+        "text": "For businesses that need deployable fixes instead of another diagnostic dashboard, SEOaxe is more direct. Semrush is excellent for research; SEOaxe repairs existing pages and shows a before/after receipt."
       }
     },
     {
@@ -42,7 +42,7 @@ const jsonLdSchema = {
       "name": "How does SEOaxe compare to AutoSEO?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "AutoSEO writes blog articles. SEOaxe fixes your entire website — meta tags, schema markup, AEO optimization, health scores, and sitemaps. SEOaxe also generates blog articles, making it a complete solution at a lower price point."
+        "text": "AutoSEO focuses on article creation. SEOaxe focuses on repairing existing pages with meta tags, schema markup, AEO answer blocks, health scores, sitemaps, and a visible repair receipt."
       }
     },
     {
@@ -57,15 +57,15 @@ const jsonLdSchema = {
 };
 
 const fullComparisonFeatures = [
-  { feature: "Fixes existing pages automatically", seoforge: true, autoseo: false, semrush: false, agency: "manual" },
+  { feature: "Repairs existing HTML pages", seoforge: true, autoseo: false, semrush: false, agency: "manual" },
   { feature: "Meta tag automation", seoforge: true, autoseo: false, semrush: false, agency: "manual" },
   { feature: "Schema/JSON-LD injection", seoforge: true, autoseo: false, semrush: false, agency: "sometimes" },
   { feature: "AEO answer block optimization", seoforge: true, autoseo: false, semrush: false, agency: false },
-  { feature: "SEO health score per page", seoforge: true, autoseo: false, semrush: true, agency: "pdf" },
+  { feature: "Before/after repair receipt", seoforge: true, autoseo: false, semrush: true, agency: "pdf" },
   { feature: "Competitor SEO scanner", seoforge: true, autoseo: false, semrush: true, agency: true },
   { feature: "Blog article generation", seoforge: true, autoseo: true, semrush: false, agency: true },
   { feature: "Sitemap + robots.txt generator", seoforge: true, autoseo: false, semrush: false, agency: "sometimes" },
-  { feature: "ZIP bulk upload optimization", seoforge: true, autoseo: false, semrush: false, agency: false },
+  { feature: "ZIP bulk repair workflow", seoforge: true, autoseo: false, semrush: false, agency: false },
   { feature: "Emerging market optimization", seoforge: true, autoseo: false, semrush: false, agency: false },
   { feature: "Multilingual schema support", seoforge: true, autoseo: false, semrush: false, agency: false },
   { feature: "White label for agencies", seoforge: true, autoseo: false, semrush: false, agency: "na" },
@@ -168,7 +168,7 @@ function PricingCard({
 
 export default function ComparePage() {
   useEffect(() => {
-    document.title = "SEOaxe vs AutoSEO vs Semrush vs SEO Agencies — Full Comparison 2026";
+    document.title = "SEOaxe vs AutoSEO vs Semrush - SEO repair comparison 2026";
     
     // Inject JSON-LD schema
     const script = document.createElement('script');
@@ -184,7 +184,7 @@ export default function ComparePage() {
       metaDesc.setAttribute('name', 'description');
       document.head.appendChild(metaDesc);
     }
-    metaDesc.setAttribute('content', 'How does SEOaxe compare to AutoSEO, Semrush, Ahrefs, and traditional SEO agencies? Full feature-by-feature comparison.');
+    metaDesc.setAttribute('content', 'How does SEOaxe compare to AutoSEO, Semrush, Ahrefs, and traditional SEO agencies? See why SEOaxe is positioned as an SEO repair engine for existing pages.');
     
     return () => {
       const existingScript = document.getElementById('compare-page-schema');
@@ -213,15 +213,15 @@ export default function ComparePage() {
               
               <div className="space-y-6">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground max-w-4xl mx-auto leading-[1.1]">
-                  SEOaxe vs The Rest -
+                  SEOaxe is the SEO repair engine
                   <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">
-                    There's No Comparison
+                    for pages you already have
                   </span>
                 </h1>
                 <p className="max-w-2xl mx-auto text-lg text-muted-foreground leading-relaxed">
-                  Every SEO tool promises results. Most deliver complexity, confusion, and invoices. 
-                  Here is the honest breakdown of how SEOaxe compares to every alternative.
+                  Most SEO tools diagnose, draft, or report. SEOaxe takes a narrower lane:
+                  it repairs real HTML, returns deployable output, and gives you a receipt of what changed.
                 </p>
               </div>
             </motion.div>
@@ -241,7 +241,7 @@ export default function ComparePage() {
               <div className="text-center">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">The Problem With Every Other Option</h2>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
-                  Understanding why most SEO solutions fail small and medium businesses.
+                  Understanding where diagnostics, content tools, and agencies stop short for small and medium businesses.
                 </p>
               </div>
 
@@ -272,7 +272,7 @@ export default function ComparePage() {
                   </div>
                   <h3 className="font-semibold mb-2">Content Tools (AutoSEO)</h3>
                   <p className="text-sm text-muted-foreground">
-                    Write blog articles but never touch existing pages. Your meta tags missing, schema broken, AEO absent — and they keep writing on top of sand.
+                    Write blog articles but rarely repair existing pages. Your meta tags can stay thin, schema can stay missing, and AEO sections can stay absent.
                   </p>
                 </div>
 
@@ -295,9 +295,8 @@ export default function ComparePage() {
                   <div>
                     <h3 className="text-xl font-bold mb-2">What SEOaxe Does Differently</h3>
                     <p className="text-muted-foreground leading-relaxed">
-                      SEOaxe does what none of them do, it fixes your entire website automatically. 
-                      Existing pages, technical SEO, AEO schema, health scores, sitemaps, competitor intelligence - 
-                      all in one tool, at a fraction of the cost.
+                      SEOaxe is not trying to be the biggest SEO suite. It is trying to own the repair job:
+                      existing pages, technical SEO patches, AEO schema, repair receipts, sitemaps, and deployable output.
                     </p>
                   </div>
                 </div>
@@ -375,7 +374,7 @@ export default function ComparePage() {
                 </div>
                 <div>
                   <h2 className="text-3xl font-bold">SEOaxe vs AutoSEO</h2>
-                  <p className="text-muted-foreground">Content tool vs Complete platform</p>
+                <p className="text-muted-foreground">Content generation vs page repair</p>
                 </div>
               </div>
 
@@ -404,8 +403,8 @@ export default function ComparePage() {
                     What SEOaxe Does Differently
                   </h4>
                   <p className="text-green-700 dark:text-green-300">
-                    SEOaxe fixes the foundation first. Paste any page HTML and get back a fully optimized 
-                    version with meta tags, schema, AEO answer blocks, and a health score - in 30 seconds. 
+                    SEOaxe repairs the foundation first. Paste any page HTML and get back a deployable
+                    version with meta tags, schema, AEO answer blocks, and a health score.
                     Then use the blog generator to create new content on top of a solid base.
                   </p>
                 </div>
@@ -415,10 +414,10 @@ export default function ComparePage() {
                 <MiniComparisonTable 
                   headers={["SEOaxe", "AutoSEO"]}
                   rows={[
-                    { label: "Fixes existing pages", values: [true, false] },
+                    { label: "Repairs existing pages", values: [true, false] },
                     { label: "Technical SEO automation", values: [true, false] },
                     { label: "AEO schema injection", values: [true, false] },
-                    { label: "SEO health score", values: [true, false] },
+                    { label: "Repair receipt", values: [true, false] },
                     { label: "Blog generation", values: [true, true] },
                     { label: "Emerging market focus", values: [true, false] },
                     { label: "Priced in ZAR", values: [true, false] },
@@ -434,8 +433,8 @@ export default function ComparePage() {
 
               <div className="p-6 bg-primary/5 border border-primary/20 rounded-xl">
                 <p className="font-semibold text-primary">
-                  Verdict: AutoSEO is a content tool. SEOaxe is a complete website optimization platform. 
-                  If you want articles, use AutoSEO. If you want your entire website to rank - use SEOaxe.
+                  Verdict: AutoSEO is a content tool. SEOaxe is the repair layer for pages that already exist.
+                  If you want more articles, use a content tool. If you want existing pages patched and ready to ship, use SEOaxe.
                 </p>
               </div>
             </motion.div>

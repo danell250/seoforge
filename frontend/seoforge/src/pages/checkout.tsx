@@ -86,7 +86,7 @@ export default function Checkout() {
                 </h1>
                 <p className="text-muted-foreground max-w-2xl">
                   {selectedPlan.slug === "free"
-                    ? "Create your account and jump into the workspace right away."
+                    ? "Create your account and repair your first page right away."
                     : "We use your account to attach the subscription to the right workspace, then send you to payment."}
                 </p>
               </div>
@@ -124,7 +124,7 @@ export default function Checkout() {
                       You&apos;re ready to go
                     </CardTitle>
                     <CardDescription>
-                      Your account is signed in. Open the workspace and start optimizing pages.
+                      Your account is signed in. Open the workspace and start repairing pages.
                     </CardDescription>
                   </CardHeader>
                   <CardFooter>

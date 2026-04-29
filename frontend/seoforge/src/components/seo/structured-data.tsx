@@ -77,15 +77,15 @@ export function FAQPageSchema() {
         "name": `What is ${BRAND_NAME}?`,
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `${BRAND_NAME} is an AI-powered SEO and Answer Engine Optimization platform for businesses worldwide. It automates the process of optimizing HTML pages for search engines and AI answer engines like Google AI Overviews, Perplexity, and ChatGPT search. Simply paste your HTML code and receive fully optimized code with meta tags, schema markup, AEO answer blocks, health scores, and sitemaps in seconds.`
+          "text": `${BRAND_NAME} is an SEO repair engine for existing website pages. It turns real HTML into deployable, search-ready code with meta tags, schema markup, AEO answer blocks, hreflang, sitemaps, before/after health scores, and a repair receipt showing exactly what changed.`
         }
       },
       {
         "@type": "Question",
-        "name": "How does AI SEO optimization work?",
+        "name": "How does SEO page repair work?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "SEOaxe uses advanced AI to analyze your HTML code and identify optimization opportunities. The platform automatically generates optimized meta titles and descriptions, creates JSON-LD structured data schema, adds AEO (Answer Engine Optimization) answer blocks for featured snippets, generates XML sitemaps and robots.txt files, and provides an SEO health score. All optimizations follow best practices for both traditional search engines and AI answer engines."
+          "text": "SEOaxe analyzes an existing page, identifies the missing search signals, and returns repaired HTML. The platform can generate optimized meta titles and descriptions, JSON-LD structured data, AEO answer blocks, XML sitemaps, robots.txt files, and a before/after SEO health score."
         }
       },
       {
@@ -93,7 +93,7 @@ export function FAQPageSchema() {
         "name": "Is SEOaxe free?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes, SEOaxe is free to start with no credit card required. You can begin optimizing your pages immediately. We also offer premium plans with additional features like bulk optimization, competitor analysis, site monitoring, and CMS deployment to WordPress and Shopify for agencies and larger businesses."
+          "text": "Yes, SEOaxe is free to start with no credit card required. You can begin repairing your pages immediately. We also offer premium plans with additional features like bulk repair, competitor analysis, site monitoring, and CMS deployment to WordPress and Shopify for agencies and larger businesses."
         }
       },
       {
@@ -128,18 +128,14 @@ export function SoftwareApplicationSchema() {
       "price": "0",
       "priceCurrency": pricingLocale.currency
     },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "ratingCount": "127"
-    },
     "featureList": [
-      "AI-powered HTML optimization",
+      "Existing HTML repair",
       "Meta tag generation",
       "Schema markup automation",
       "AEO answer block creation",
       "XML sitemap generation",
       "Robots.txt creation",
+      "Before and after repair receipts",
       "SEO health scoring",
       "Competitor analysis",
       "Site crawling",
@@ -167,7 +163,7 @@ export function LocalBusinessSchema() {
       "name": "Worldwide"
     },
     "serviceType": [
-      "SEO Optimization",
+      "SEO Page Repair",
       "Answer Engine Optimization",
       "Technical SEO Audits",
       "Schema Markup Implementation",

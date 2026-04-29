@@ -45,7 +45,7 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
         "name": "Free Plan",
         "price": prices.free.toFixed(2),
         "priceCurrency": activeCurrency,
-        "description": "3 pages optimized per month, basic technical SEO checks",
+        "description": "3 page repairs per month with basic checks and repair receipts",
         "availability": "https://schema.org/InStock",
       },
       {
@@ -54,7 +54,7 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
         "price": prices.starter.toFixed(2),
         "priceCurrency": activeCurrency,
         "priceValidUntil": "2026-12-31",
-        "description": "20 pages optimized per month, full AEO and answer block generation",
+        "description": "20 page repairs per month with AEO answer blocks and deployable HTML",
         "availability": "https://schema.org/InStock",
       },
       {
@@ -63,15 +63,10 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
         "price": prices.agency.toFixed(2),
         "priceCurrency": activeCurrency,
         "priceValidUntil": "2026-12-31",
-        "description": "Unlimited pages optimized, white-label PDF reports",
+        "description": "Unlimited page repairs, bulk ZIP processing, and white-label proof",
         "availability": "https://schema.org/InStock",
       },
     ],
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "reviewCount": "127",
-    },
   };
 }
 
@@ -137,8 +132,8 @@ export default function Pricing() {
       metaDesc.setAttribute('name', 'description');
       document.head.appendChild(metaDesc);
     }
-    document.title = "SEOaxe Pricing — Flexible plans for every team";
-    metaDesc.setAttribute('content', 'SEOaxe pricing: Free, Starter, and Agency plans for teams that want SEO fixes, schema markup, AEO improvements, and health scoring in one workflow.');
+    document.title = "SEOaxe Pricing - SEO repair plans for live websites";
+    metaDesc.setAttribute('content', 'SEOaxe pricing: Free, Starter, and Agency plans for teams that want deployable SEO repairs, schema markup, AEO improvements, repair receipts, and health scoring in one workflow.');
   }, []);
 
   return (
@@ -153,9 +148,9 @@ export default function Pricing() {
       <main className="flex-1 py-20 px-4">
         <div className="container max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Simple, transparent pricing</h1>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Repair live pages without agency pricing</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Invest in your organic growth. Prices are shown in your local currency based on your browser locale.
+              Start with the website you already have. Prices are shown in your local currency based on your browser locale.
             </p>
           </div>
 
@@ -208,22 +203,22 @@ export default function Pricing() {
           {/* Killer Positioning Comparison */}
           <div className="mt-24 max-w-4xl mx-auto">
             <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold mb-3">Why Businesses Choose SEOaxe</h2>
-              <p className="text-muted-foreground">See how we compare to traditional content tools</p>
+              <h2 className="text-3xl font-bold mb-3">Why SEOaxe is different</h2>
+              <p className="text-muted-foreground">Most SEO tools advise or draft. SEOaxe patches existing pages and shows proof.</p>
             </div>
             
             <div className="bg-card border rounded-2xl shadow-lg overflow-hidden">
               <table className="w-full">
                 <thead>
                   <tr className="bg-muted/50 border-b">
-                    <th className="text-left py-4 px-6 font-semibold">Feature</th>
+                    <th className="text-left py-4 px-6 font-semibold">Job to be done</th>
                     <th className="text-center py-4 px-4 font-bold text-primary bg-primary/5 w-1/3">SEOaxe</th>
-                    <th className="text-center py-4 px-4 font-semibold text-muted-foreground w-1/3">Traditional Content Tools</th>
+                    <th className="text-center py-4 px-4 font-semibold text-muted-foreground w-1/3">AI Content Tools</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="border-b hover:bg-muted/20">
-                    <td className="py-4 px-6 font-medium">Fixes existing pages</td>
+                    <td className="py-4 px-6 font-medium">Repairs existing HTML pages</td>
                     <td className="py-4 px-4 bg-primary/5">
                       <div className="flex items-center justify-center">
                         <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
@@ -240,7 +235,7 @@ export default function Pricing() {
                     </td>
                   </tr>
                   <tr className="border-b hover:bg-muted/20">
-                    <td className="py-4 px-6 font-medium">Technical SEO automation</td>
+                    <td className="py-4 px-6 font-medium">Applies technical SEO patches</td>
                     <td className="py-4 px-4 bg-primary/5">
                       <div className="flex items-center justify-center">
                         <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
@@ -257,7 +252,7 @@ export default function Pricing() {
                     </td>
                   </tr>
                   <tr className="border-b hover:bg-muted/20">
-                    <td className="py-4 px-6 font-medium">AEO schema injection</td>
+                    <td className="py-4 px-6 font-medium">Adds AEO schema and answer blocks</td>
                     <td className="py-4 px-4 bg-primary/5">
                       <div className="flex items-center justify-center">
                         <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
@@ -274,7 +269,7 @@ export default function Pricing() {
                     </td>
                   </tr>
                   <tr className="border-b hover:bg-muted/20">
-                    <td className="py-4 px-6 font-medium">SEO health score (before/after)</td>
+                    <td className="py-4 px-6 font-medium">Shows a before/after repair receipt</td>
                     <td className="py-4 px-4 bg-primary/5">
                       <div className="flex items-center justify-center">
                         <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
@@ -291,7 +286,7 @@ export default function Pricing() {
                     </td>
                   </tr>
                   <tr className="border-b hover:bg-muted/20">
-                    <td className="py-4 px-6 font-medium">Competitor SEO scanner</td>
+                    <td className="py-4 px-6 font-medium">Uses competitors to find page gaps</td>
                     <td className="py-4 px-4 bg-primary/5">
                       <div className="flex items-center justify-center">
                         <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
@@ -308,7 +303,7 @@ export default function Pricing() {
                     </td>
                   </tr>
                   <tr className="border-b hover:bg-muted/20">
-                    <td className="py-4 px-6 font-medium">White label for agencies</td>
+                    <td className="py-4 px-6 font-medium">Packages proof for agencies</td>
                     <td className="py-4 px-4 bg-primary/5">
                       <div className="flex items-center justify-center">
                         <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
@@ -365,7 +360,7 @@ export default function Pricing() {
             <div className="mt-8 p-6 bg-primary/10 border border-primary/20 rounded-xl">
               <p className="font-semibold text-primary mb-2">The difference is clear</p>
               <p className="text-muted-foreground text-sm">
-                Traditional content tools create new articles. SEOaxe fixes your entire website — existing pages, technical SEO, AEO schema, and health scores. That's why our users see rankings improve faster.
+                AI content tools create more drafts. SEOaxe repairs the pages that already exist - technical SEO, AEO schema, localized tags, deployable HTML, and before/after proof in one workflow.
               </p>
             </div>
           </div>
@@ -382,8 +377,8 @@ export default function Pricing() {
                 <p className="text-muted-foreground">Absolutely. You can change your plan at any time. Prorated charges will be applied automatically.</p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-2">What constitutes a "page optimization"?</h3>
-                <p className="text-muted-foreground">One optimization counts every time you submit HTML through the Single Page Optimizer or process a file in the ZIP bulk uploader.</p>
+                <h3 className="font-semibold text-lg mb-2">What counts as a page repair?</h3>
+                <p className="text-muted-foreground">One repair counts every time you submit HTML through the Single Page Optimizer or process a file in the ZIP bulk uploader.</p>
               </div>
             </div>
           </div>

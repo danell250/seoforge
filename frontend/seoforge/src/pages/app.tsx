@@ -36,8 +36,8 @@ export default function AppWorkspace() {
 
   const tabMeta: Record<string, { title: string; description: string }> = {
     "single-page": {
-      title: "Optimize One Page",
-      description: "Paste one HTML page and get back a cleaner, more search-friendly version.",
+      title: "Repair One Page",
+      description: "Paste one HTML page and get repaired, deployable HTML with a receipt.",
     },
     "aeo-block": {
       title: "Add FAQ Answers",
@@ -48,12 +48,12 @@ export default function AppWorkspace() {
       description: "Find important questions your page is missing and add new sections to cover them.",
     },
     "site-crawler": {
-      title: "Scan a Website",
-      description: "Crawl a live site, improve each page, and download the updated files.",
+      title: "Scan and Repair a Website",
+      description: "Crawl a live site, repair each page, and download the updated files.",
     },
     "zip-upload": {
-      title: "Optimize Many Files",
-      description: "Upload a ZIP of HTML files, improve them in bulk, and download a new ZIP.",
+      title: "Repair Many Files",
+      description: "Upload a ZIP of HTML files, repair them in bulk, and download a new ZIP.",
     },
     competitor: {
       title: "Research a Competitor",
@@ -72,21 +72,21 @@ export default function AppWorkspace() {
       description: "Keep checking a live site and get alerted when pages lose important search signals.",
     },
     deploy: {
-      title: "Publish Changes",
-      description: "Send finished HTML to WordPress or Shopify when it is ready to go live.",
+      title: "Publish Repairs",
+      description: "Send repaired HTML to WordPress or Shopify when it is ready to go live.",
     },
   };
   const active = tabMeta[tab] ?? tabMeta["single-page"];
   const tabs = [
-    { value: "single-page", label: "One Page" },
-    { value: "zip-upload", label: "Many Files" },
-    { value: "site-crawler", label: "Scan Site" },
+    { value: "single-page", label: "Repair Page" },
+    { value: "zip-upload", label: "Repair Files" },
+    { value: "site-crawler", label: "Repair Site" },
     { value: "aeo-block", label: "Add FAQs" },
     { value: "content-gaps", label: "Missing Content" },
     { value: "competitor", label: "Competitor" },
     { value: "hreflang", label: "Languages" },
     { value: "sitemap", label: "Sitemap" },
-    { value: "deploy", label: "Publish" },
+    { value: "deploy", label: "Ship" },
     { value: "monitor", label: "Monitor" },
   ] as const;
 

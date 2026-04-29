@@ -26,7 +26,7 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-3">2. Description of Service</h2>
               <p className="text-muted-foreground leading-relaxed">
-                SEOaxe is an AI-powered platform that provides SEO (Search Engine Optimization) and AEO (Answer Engine Optimization) tools, including HTML optimization, meta tag generation, schema markup creation, sitemap generation, and website analysis services.
+                SEOaxe is an AI-powered SEO repair platform that provides SEO (Search Engine Optimization) and AEO (Answer Engine Optimization) tools, including HTML repair, meta tag generation, schema markup creation, sitemap generation, and website analysis services.
               </p>
             </section>
 

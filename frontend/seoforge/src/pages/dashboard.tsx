@@ -361,7 +361,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-semibold tracking-tight text-slate-950">Dashboard</h1>
-              <p className="mt-1 text-sm text-slate-500">A clean view of your optimization history, scores, and monitoring setup.</p>
+              <p className="mt-1 text-sm text-slate-500">A clean view of your repair history, scores, and monitoring setup.</p>
             </div>
             {isBooting ? <span className="text-sm text-slate-400">Loading dashboard...</span> : null}
           </div>
@@ -376,7 +376,7 @@ export default function Dashboard() {
                 </div>
                 <h2 className="text-3xl font-semibold tracking-tight">Welcome to SEOaxe</h2>
                 <p className="mt-2 text-sm text-blue-100 md:text-base">
-                  Start optimizing pages to see your scores here
+                  Start repairing pages to see your scores here
                 </p>
               </div>
               <Button
@@ -385,7 +385,7 @@ export default function Dashboard() {
                 className="min-w-[220px] bg-white text-slate-950 hover:bg-blue-50"
               >
                 <Link href="/app">
-                  Optimize Your First Page
+                  Repair Your First Page
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
