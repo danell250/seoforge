@@ -8,6 +8,7 @@ import {
 } from "../lib/african-languages";
 import { runSeoaxeJsonTask } from "../lib/seoaxe-ai";
 import { buildRulePackPrompt, inferPageType } from "../lib/page-rules";
+import { buildWorkspaceMemoryPrompt, getWorkspaceMemory } from "../lib/workspace-memory";
 
 const router: IRouter = Router();
 router.use(requireAuthenticatedUser);
@@ -71,6 +72,7 @@ router.post("/generate-blog", async (req, res) => {
     const detectedLang: AfricanLanguage = targetLanguage || detectAfricanLanguageContent(html);
     const langConfig = getAfricanLanguageConfig(detectedLang);
     const pageType = inferPageType({ html, topic });
+    const workspaceMemory = await getWorkspaceMemory();
     
     // Build enhanced prompt with African language support
     let enhancedTask = `${BLOG_GENERATION_TASK}\n\n${buildRulePackPrompt("blog", pageType)}`;
@@ -96,6 +98,7 @@ router.post("/generate-blog", async (req, res) => {
         extraParts: [
           topic ? `Page topic hint: ${topic}` : undefined,
           `Target Language: ${detectedLang} (${langConfig.name})`,
+          buildWorkspaceMemoryPrompt(workspaceMemory),
         ],
         log: req.log,
       });

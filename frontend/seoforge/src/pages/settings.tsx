@@ -70,6 +70,10 @@ export default function Settings() {
   const [primaryColor, setPrimaryColor] = useState("#2563eb");
   const [supportEmail, setSupportEmail] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
+  const [brandVoice, setBrandVoice] = useState("");
+  const [preferredMarkets, setPreferredMarkets] = useState("");
+  const [primaryCms, setPrimaryCms] = useState("custom");
+  const [optimizationStyle, setOptimizationStyle] = useState("balanced");
 
   useEffect(() => {
     if (data) {
@@ -79,6 +83,10 @@ export default function Settings() {
       setPrimaryColor(data.primaryColor);
       setSupportEmail(data.supportEmail ?? "");
       setWebsiteUrl(data.websiteUrl ?? "");
+      setBrandVoice(data.brandVoice ?? DEFAULT_AGENCY_SETTINGS.brandVoice);
+      setPreferredMarkets(data.preferredMarkets ?? DEFAULT_AGENCY_SETTINGS.preferredMarkets);
+      setPrimaryCms(data.primaryCms ?? DEFAULT_AGENCY_SETTINGS.primaryCms);
+      setOptimizationStyle(data.optimizationStyle ?? DEFAULT_AGENCY_SETTINGS.optimizationStyle);
     }
   }, [data]);
 
@@ -100,6 +108,10 @@ export default function Settings() {
           primaryColor,
           supportEmail: supportEmail.trim() || null,
           websiteUrl: websiteUrl.trim() || null,
+          brandVoice: brandVoice.trim() || null,
+          preferredMarkets: preferredMarkets.trim() || null,
+          primaryCms: primaryCms.trim() || null,
+          optimizationStyle: optimizationStyle.trim() || null,
         },
       },
       {
@@ -119,6 +131,10 @@ export default function Settings() {
     setPrimaryColor(DEFAULT_AGENCY_SETTINGS.primaryColor);
     setSupportEmail(DEFAULT_AGENCY_SETTINGS.supportEmail ?? "");
     setWebsiteUrl(DEFAULT_AGENCY_SETTINGS.websiteUrl ?? "");
+    setBrandVoice(DEFAULT_AGENCY_SETTINGS.brandVoice);
+    setPreferredMarkets(DEFAULT_AGENCY_SETTINGS.preferredMarkets);
+    setPrimaryCms(DEFAULT_AGENCY_SETTINGS.primaryCms);
+    setOptimizationStyle(DEFAULT_AGENCY_SETTINGS.optimizationStyle);
   };
 
   const handleExportExamples = async () => {
@@ -224,6 +240,49 @@ export default function Settings() {
                       onChange={(e) => setWebsiteUrl(e.target.value)}
                       placeholder="https://youragency.com"
                     />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Brand voice</label>
+                    <Input
+                      value={brandVoice}
+                      onChange={(e) => setBrandVoice(e.target.value)}
+                      placeholder="Clear, authoritative, friendly"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Preferred markets</label>
+                    <Input
+                      value={preferredMarkets}
+                      onChange={(e) => setPreferredMarkets(e.target.value)}
+                      placeholder="US SaaS, UK services, global B2B"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Primary CMS</label>
+                    <select
+                      value={primaryCms}
+                      onChange={(e) => setPrimaryCms(e.target.value)}
+                      className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="custom">Custom / Code</option>
+                      <option value="wordpress">WordPress</option>
+                      <option value="shopify">Shopify</option>
+                      <option value="webflow">Webflow</option>
+                      <option value="wix">Wix</option>
+                      <option value="squarespace">Squarespace</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Optimization style</label>
+                    <select
+                      value={optimizationStyle}
+                      onChange={(e) => setOptimizationStyle(e.target.value)}
+                      className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="conservative">Conservative</option>
+                      <option value="balanced">Balanced</option>
+                      <option value="aggressive">Aggressive</option>
+                    </select>
                   </div>
                 </CardContent>
                 <CardFooter className="bg-muted/30 border-t px-6 py-4 flex justify-between items-center">

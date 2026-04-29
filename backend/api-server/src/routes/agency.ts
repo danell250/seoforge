@@ -24,6 +24,10 @@ function toResponse(row: typeof agencySettingsTable.$inferSelect) {
     primaryColor: row.primaryColor,
     supportEmail: row.supportEmail,
     websiteUrl: row.websiteUrl,
+    brandVoice: row.brandVoice,
+    preferredMarkets: row.preferredMarkets,
+    primaryCms: row.primaryCms,
+    optimizationStyle: row.optimizationStyle,
   };
 }
 
@@ -61,6 +65,10 @@ router.put("/agency-settings", requireAuthenticatedUser, async (req, res) => {
       primaryColor: parsed.data.primaryColor,
       supportEmail: parsed.data.supportEmail ?? null,
       websiteUrl: parsed.data.websiteUrl ?? null,
+      brandVoice: parsed.data.brandVoice ?? null,
+      preferredMarkets: parsed.data.preferredMarkets ?? null,
+      primaryCms: parsed.data.primaryCms ?? null,
+      optimizationStyle: parsed.data.optimizationStyle ?? null,
       updatedAt: new Date(),
     })
     .where(eq(agencySettingsTable.id, SINGLETON_ID))

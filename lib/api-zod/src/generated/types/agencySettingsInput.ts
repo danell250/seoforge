@@ -22,4 +22,8 @@ export interface AgencySettingsInput {
   primaryColor: string;
   supportEmail?: string | null;
   websiteUrl?: string | null;
+  brandVoice?: string | null;
+  preferredMarkets?: string | null;
+  primaryCms?: string | null;
+  optimizationStyle?: string | null;
 }

@@ -3,6 +3,7 @@ import { GenerateAeoBlockBody, GenerateAeoBlockResponse } from "@workspace/api-z
 import { requireAuthenticatedUser } from "../middleware/auth";
 import { runSeoaxeJsonTask } from "../lib/seoaxe-ai";
 import { buildRulePackPrompt, inferPageType } from "../lib/page-rules";
+import { buildWorkspaceMemoryPrompt, getWorkspaceMemory } from "../lib/workspace-memory";
 
 const router: IRouter = Router();
 router.use(requireAuthenticatedUser);
@@ -34,6 +35,7 @@ router.post("/aeo-block", async (req, res) => {
   }
   const { html, topic } = parsed.data;
   const pageType = inferPageType({ html, topic });
+  const workspaceMemory = await getWorkspaceMemory();
 
   try {
     let data: GeminiAeo;
@@ -49,7 +51,10 @@ router.post("/aeo-block", async (req, res) => {
         fallbackHtmlLimit: 40_000,
         timeoutMs: 30_000,
         fallbackTimeoutMs: 15_000,
-        extraParts: [topic ? `Topic hint: ${topic}` : undefined],
+        extraParts: [
+          topic ? `Topic hint: ${topic}` : undefined,
+          buildWorkspaceMemoryPrompt(workspaceMemory),
+        ],
         log: req.log,
       });
     } catch {

@@ -283,7 +283,11 @@ export const GetAgencySettingsResponse = zod.object({
   "logoUrl": zod.string().nullish(),
   "primaryColor": zod.string(),
   "supportEmail": zod.string().nullish(),
-  "websiteUrl": zod.string().nullish()
+  "websiteUrl": zod.string().nullish(),
+  "brandVoice": zod.string().nullish(),
+  "preferredMarkets": zod.string().nullish(),
+  "primaryCms": zod.string().nullish(),
+  "optimizationStyle": zod.string().nullish()
 })
 
 
@@ -303,7 +307,11 @@ export const UpdateAgencySettingsBody = zod.object({
   "logoUrl": zod.string().nullish(),
   "primaryColor": zod.string().regex(updateAgencySettingsBodyPrimaryColorRegExp),
   "supportEmail": zod.string().nullish(),
-  "websiteUrl": zod.string().nullish()
+  "websiteUrl": zod.string().nullish(),
+  "brandVoice": zod.string().nullish(),
+  "preferredMarkets": zod.string().nullish(),
+  "primaryCms": zod.string().nullish(),
+  "optimizationStyle": zod.string().nullish()
 })
 
 export const UpdateAgencySettingsResponse = zod.object({
@@ -312,7 +320,11 @@ export const UpdateAgencySettingsResponse = zod.object({
   "logoUrl": zod.string().nullish(),
   "primaryColor": zod.string(),
   "supportEmail": zod.string().nullish(),
-  "websiteUrl": zod.string().nullish()
+  "websiteUrl": zod.string().nullish(),
+  "brandVoice": zod.string().nullish(),
+  "preferredMarkets": zod.string().nullish(),
+  "primaryCms": zod.string().nullish(),
+  "optimizationStyle": zod.string().nullish()
 })
 
 
@@ -581,4 +593,3 @@ export const GenerateBlogArticleResponse = zod.object({
   "language": zod.enum(['en', 'af', 'zu', 'xh', 'pcm', 'sw']).optional().describe('Language code of the generated blog article'),
   "languageName": zod.string().optional().describe('Human-readable language name')
 })
-

@@ -5,6 +5,10 @@ export const DEFAULT_AGENCY_SETTINGS = {
   primaryColor: "#2563eb",
   supportEmail: null,
   websiteUrl: null,
+  brandVoice: "Clear, professional, and practical",
+  preferredMarkets: "Global English-speaking markets",
+  primaryCms: "custom",
+  optimizationStyle: "balanced",
 } as const;
 
 const LEGACY_BRAND_NAMES = new Set(["SEOForge", "SEODomination"]);

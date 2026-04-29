@@ -8,6 +8,10 @@ export const agencySettingsTable = pgTable("agency_settings", {
   primaryColor: text("primary_color").notNull().default("#2563eb"),
   supportEmail: text("support_email"),
   websiteUrl: text("website_url"),
+  brandVoice: text("brand_voice"),
+  preferredMarkets: text("preferred_markets"),
+  primaryCms: text("primary_cms"),
+  optimizationStyle: text("optimization_style"),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 

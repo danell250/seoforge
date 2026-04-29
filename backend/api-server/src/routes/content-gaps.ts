@@ -3,6 +3,7 @@ import { DetectContentGapsBody, DetectContentGapsResponse } from "@workspace/api
 import { requireAuthenticatedUser } from "../middleware/auth";
 import { runSeoaxeJsonTask } from "../lib/seoaxe-ai";
 import { buildRulePackPrompt, inferPageType } from "../lib/page-rules";
+import { buildWorkspaceMemoryPrompt, getWorkspaceMemory } from "../lib/workspace-memory";
 
 const router: IRouter = Router();
 router.use(requireAuthenticatedUser);
@@ -52,6 +53,7 @@ router.post("/content-gaps", async (req, res) => {
   }
   const { html, topic, audience } = parsed.data;
   const pageType = inferPageType({ html, topic });
+  const workspaceMemory = await getWorkspaceMemory();
 
   try {
     let data: GeminiResult;
@@ -70,6 +72,7 @@ router.post("/content-gaps", async (req, res) => {
         extraParts: [
           `Topic / niche: ${topic}`,
           audience ? `Target audience: ${audience}` : undefined,
+          buildWorkspaceMemoryPrompt(workspaceMemory),
         ],
         log: req.log,
       });

@@ -14,6 +14,8 @@ import {
 import { runSeoaxeJsonTask, type AiLogger } from "../lib/seoaxe-ai";
 import { buildRulePackPrompt, inferPageType, type SeoaxePageType } from "../lib/page-rules";
 import { evaluateOptimizationOutput, type OptimizationAiReview } from "../lib/ai-evals";
+import { buildWorkspaceMemoryPrompt, getWorkspaceMemory } from "../lib/workspace-memory";
+import { buildAcceptedExamplesPrompt } from "../lib/training-patterns";
 
 const router: IRouter = Router();
 router.use(requireAuthenticatedUser);
@@ -176,7 +178,7 @@ router.post("/optimize", async (req, res) => {
   }
 
   try {
-    const optimized = await optimizeHtmlDocument(html, filename, req.log);
+    const optimized = await optimizeHtmlDocument(html, filename, user.id, req.log);
     const optimizationId = await persistOptimizationRecord(optimized, filename, user.id, req.log);
     optimized.optimizationId = optimizationId ?? undefined;
     if (optimizationId) {
@@ -193,12 +195,15 @@ router.post("/optimize", async (req, res) => {
 async function optimizeHtmlDocument(
   html: string,
   filename: string | undefined,
+  userId: number,
   log: AiLogger,
 ): Promise<OptimizationOutcome> {
   // Detect African language content
   const detectedLang = detectAfricanLanguageContent(html);
   const langConfig = getAfricanLanguageConfig(detectedLang);
   const pageType = inferPageType({ html, filename });
+  const workspaceMemory = await getWorkspaceMemory();
+  const acceptedExamplesPrompt = await buildAcceptedExamplesPrompt(userId, "optimize", pageType);
   
   // Build enhanced prompt with African language support
   let enhancedPrompt = `${TASK_INSTRUCTION}\n\n${buildRulePackPrompt("optimize", pageType)}`;
@@ -220,6 +225,8 @@ async function optimizeHtmlDocument(
     extraParts: [
       filename ? `Filename: ${filename}` : undefined,
       `Detected/Prioritized Language: ${detectedLang} (${langConfig.name})`,
+      buildWorkspaceMemoryPrompt(workspaceMemory),
+      acceptedExamplesPrompt ?? undefined,
     ],
     log,
   });
