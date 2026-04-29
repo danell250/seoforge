@@ -1,10 +1,32 @@
-import { db, agencySettingsTable } from "@workspace/db";
+import { db, agencySettingsTable, pool } from "@workspace/db";
 import { DEFAULT_AGENCY_SETTINGS, normalizeBrandName } from "@workspace/api-zod";
 import { eq } from "drizzle-orm";
 import { logger } from "./logger";
 import { isMissingRelationError } from "./db-errors";
 
 const SINGLETON_ID = 1;
+
+export async function ensureAgencySettingsSchema() {
+  try {
+    await pool.query(`
+      ALTER TABLE agency_settings
+        ADD COLUMN IF NOT EXISTS brand_voice text,
+        ADD COLUMN IF NOT EXISTS preferred_markets text,
+        ADD COLUMN IF NOT EXISTS primary_cms text,
+        ADD COLUMN IF NOT EXISTS optimization_style text,
+        ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now()
+    `);
+  } catch (error) {
+    if (isMissingRelationError(error, "agency_settings")) {
+      logger.warn(
+        { table: "agency_settings" },
+        "Agency settings table is missing. Skipping additive schema guard until the schema is pushed.",
+      );
+      return;
+    }
+    throw error;
+  }
+}
 
 export async function getAgencySettingsRow() {
   const rows = await db.select().from(agencySettingsTable).where(eq(agencySettingsTable.id, SINGLETON_ID));
