@@ -8,6 +8,13 @@ import { attachRequestAuth } from "./middleware/auth";
 import { createRateLimit, startRateLimitCleanupLoop } from "./middleware/rate-limit";
 
 const app: Express = express();
+const DEFAULT_ALLOWED_ORIGINS = [
+  "http://localhost:5173",
+  "https://seoaxe.vercel.app",
+  "https://seoforger.vercel.app",
+  "https://seoforge.app",
+  "https://www.seoforge.app",
+];
 
 function normalizeOrigin(value: string): string {
   const trimmed = value.trim().replace(/^['"`]+|['"`]+$/g, "").replace(/\/+$/, "");
@@ -26,15 +33,13 @@ function normalizeOrigin(value: string): string {
 }
 
 function allowedOrigins(): string[] {
-  const raw =
-    process.env.FRONTEND_URLS ||
-    process.env.FRONTEND_URL ||
-    process.env.CORS_ORIGIN ||
-    "http://localhost:5173";
-  return raw
-    .split(",")
-    .map(normalizeOrigin)
-    .filter(Boolean);
+  const configured = [
+    process.env.FRONTEND_URLS,
+    process.env.FRONTEND_URL,
+    process.env.CORS_ORIGIN,
+  ].flatMap((raw) => (raw ? raw.split(",") : []));
+
+  return [...new Set([...configured, ...DEFAULT_ALLOWED_ORIGINS].map(normalizeOrigin).filter(Boolean))];
 }
 
 function setSecurityHeaders(req: express.Request, res: express.Response, next: express.NextFunction) {
