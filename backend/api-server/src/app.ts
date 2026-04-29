@@ -26,7 +26,11 @@ function normalizeOrigin(value: string): string {
 }
 
 function allowedOrigins(): string[] {
-  const raw = process.env.FRONTEND_URLS || process.env.FRONTEND_URL || "http://localhost:5173";
+  const raw =
+    process.env.FRONTEND_URLS ||
+    process.env.FRONTEND_URL ||
+    process.env.CORS_ORIGIN ||
+    "http://localhost:5173";
   return raw
     .split(",")
     .map(normalizeOrigin)

@@ -23,7 +23,7 @@ services:
       - key: ADMIN_PASSWORD
         generateValue: true
       - key: CORS_ORIGIN
-        value: https://seoforger.vercel.app
+        value: https://seoaxe.vercel.app
       - key: RATE_LIMIT_WINDOW_MS
         value: 60000
       - key: RATE_LIMIT_MAX_REQUESTS
