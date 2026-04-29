@@ -1,8 +1,9 @@
 import { Router, type IRouter } from "express";
 import { OptimizeHtmlBody, OptimizeHtmlResponse } from "@workspace/api-zod";
+import { createHash } from "node:crypto";
 import { db, optimizationsTable, usersTable } from "@workspace/db";
+import { aiFeedbackTable } from "@workspace/db/schema";
 import { and, count, eq, gte } from "drizzle-orm";
-import { getModel, extractJson, generateContentWithTimeout } from "../lib/gemini";
 import { getAuthenticatedUser, requireAuthenticatedUser } from "../middleware/auth";
 import { 
   type AfricanLanguage, 
@@ -11,7 +12,9 @@ import {
   generateAfricanHreflang,
   getAfricanLanguageConfig
 } from "../lib/african-languages";
-import { prepareHtmlForModel } from "../lib/html-processor";
+import { runSeoaxeJsonTask, type AiLogger } from "../lib/seoaxe-ai";
+import { buildRulePackPrompt, inferPageType, type SeoaxePageType } from "../lib/page-rules";
+import { evaluateOptimizationOutput, type OptimizationAiReview } from "../lib/ai-evals";
 
 const router: IRouter = Router();
 router.use(requireAuthenticatedUser);
@@ -74,8 +77,11 @@ interface GeminiResult {
 }
 
 interface OptimizationOutcome {
+  optimizationId?: number;
   optimizedHtml: string;
   changes: string[];
+  pageType: SeoaxePageType;
+  aiReview: OptimizationAiReview;
   score: {
     technical: number;
     content: number;
@@ -101,10 +107,6 @@ interface OptimizationOutcome {
     config: ReturnType<typeof getAfricanLanguageConfig>;
     hreflangTags: string;
   };
-}
-
-interface RouteLogger {
-  error: (object: unknown, message?: string) => void;
 }
 
 const TASK_INSTRUCTION = `Given the HTML below, return a JSON object (no prose, no code fences) with this exact shape:
@@ -176,7 +178,11 @@ router.post("/optimize", async (req, res) => {
 
   try {
     const optimized = await optimizeHtmlDocument(html, filename, req.log);
-    await persistOptimizationRecord(optimized, filename, user.id, req.log);
+    const optimizationId = await persistOptimizationRecord(optimized, filename, user.id, req.log);
+    optimized.optimizationId = optimizationId ?? undefined;
+    if (optimizationId) {
+      await persistOptimizationFeedbackSeed(optimized, optimizationId, user.id, req.log);
+    }
     return res.json(OptimizeHtmlResponse.parse(optimized));
   } catch (err) {
     req.log.error({ err }, "Gemini optimize call failed");
@@ -187,50 +193,36 @@ router.post("/optimize", async (req, res) => {
 async function optimizeHtmlDocument(
   html: string,
   filename: string | undefined,
-  log: RouteLogger,
+  log: AiLogger,
 ): Promise<OptimizationOutcome> {
   // Detect African language content
   const detectedLang = detectAfricanLanguageContent(html);
   const langConfig = getAfricanLanguageConfig(detectedLang);
+  const pageType = inferPageType({ html, filename });
   
   // Build enhanced prompt with African language support
-  let enhancedPrompt = TASK_INSTRUCTION;
+  let enhancedPrompt = `${TASK_INSTRUCTION}\n\n${buildRulePackPrompt("optimize", pageType)}`;
   if (detectedLang !== "en") {
     enhancedPrompt += generateAfricanLanguagePrompt(detectedLang);
   }
   
-  const model = getModel();
-  const promptParts = [
-    enhancedPrompt,
-    filename ? `Filename: ${filename}` : "",
-    `Detected/Prioritized Language: ${detectedLang} (${langConfig.name})`,
-  ];
-  const primaryHtml = prepareHtmlForModel(html, 60_000);
-  const fallbackHtml = prepareHtmlForModel(html, 30_000);
-  let result;
-  try {
-    result = await generateContentWithTimeout(model, [
-      ...promptParts,
-      "HTML to optimize:\n```html\n" + primaryHtml + "\n```",
-    ], 45_000);
-  } catch (err) {
-    if (fallbackHtml === primaryHtml) {
-      throw err;
-    }
-    log.error({ err, filename }, "Primary Gemini optimize call failed, retrying with compact HTML payload");
-    result = await generateContentWithTimeout(model, [
-      ...promptParts,
-      "HTML to optimize:\n```html\n" + fallbackHtml + "\n```",
-    ], 15_000);
-  }
-  const text = result.response.text();
-  let data: GeminiResult;
-  try {
-    data = extractJson<GeminiResult>(text);
-  } catch (err) {
-    log.error({ err, text: text.slice(0, 500) }, "Failed to parse Gemini JSON");
-    throw err;
-  }
+  const data = await runSeoaxeJsonTask<GeminiResult>({
+    taskName: "optimize-html",
+    taskPrompt: enhancedPrompt,
+    systemInstruction:
+      "You are the core SEOaxe page optimizer. Transform full HTML documents safely, preserve valid markup, and return strong before-and-after scoring.",
+    html,
+    htmlLabel: "HTML to optimize",
+    primaryHtmlLimit: 60_000,
+    fallbackHtmlLimit: 30_000,
+    timeoutMs: 45_000,
+    fallbackTimeoutMs: 15_000,
+    extraParts: [
+      filename ? `Filename: ${filename}` : undefined,
+      `Detected/Prioritized Language: ${detectedLang} (${langConfig.name})`,
+    ],
+    log,
+  });
 
   if (!data.optimizedHtml || !Array.isArray(data.changes) || !data.score) {
     log.error({ data }, "Gemini response missing fields");
@@ -268,10 +260,18 @@ async function optimizeHtmlDocument(
     aeo: optimizedScores.aeo - originalScores.aeo,
     overall: optimizedScores.overall - originalScores.overall,
   };
+  const aiReview = evaluateOptimizationOutput({
+    originalHtml: html,
+    optimizedHtml: data.optimizedHtml,
+    changes: data.changes,
+    pageType,
+  });
 
   return {
     optimizedHtml: data.optimizedHtml,
     changes: data.changes,
+    pageType,
+    aiReview,
     score: optimizedScores,
     originalScore: originalScores,
     scoreImprovement: improvement,
@@ -301,11 +301,11 @@ async function persistOptimizationRecord(
   optimized: OptimizationOutcome,
   filename: string | undefined,
   userId: number,
-  log: RouteLogger,
-) {
+  log: AiLogger,
+): Promise<number | null> {
   try {
     const titleMatch = optimized.optimizedHtml.match(/<title[^>]*>([^<]*)<\/title>/i);
-    await db.insert(optimizationsTable).values({
+    const [record] = await db.insert(optimizationsTable).values({
       userId,
       filename: filename ?? null,
       title: titleMatch?.[1]?.trim() || null,
@@ -315,9 +315,34 @@ async function persistOptimizationRecord(
       scoreAeo: optimized.score.aeo,
       scoreOverall: optimized.score.overall,
       changesCount: optimized.changes.length,
-    });
+    }).returning({ id: optimizationsTable.id });
+    return record?.id ?? null;
   } catch (persistErr) {
     log.error({ err: persistErr }, "Failed to persist optimization");
+    return null;
+  }
+}
+
+async function persistOptimizationFeedbackSeed(
+  optimized: OptimizationOutcome,
+  optimizationId: number,
+  userId: number,
+  log: AiLogger,
+) {
+  try {
+    await db.insert(aiFeedbackTable).values({
+      userId,
+      optimizationId,
+      taskName: "optimize",
+      pageType: optimized.pageType,
+      verdict: "pending",
+      evaluationScore: optimized.aiReview.score,
+      evaluationSummary: optimized.aiReview.summary,
+      outputFingerprint: createHash("sha256").update(optimized.optimizedHtml).digest("hex"),
+      note: null,
+    });
+  } catch (persistErr) {
+    log.error({ err: persistErr }, "Failed to persist optimization feedback seed");
   }
 }
 

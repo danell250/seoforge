@@ -1,5 +1,4 @@
 import { Router, type IRouter } from "express";
-import { getModel, extractJson } from "../lib/gemini";
 import { requireAuthenticatedUser } from "../middleware/auth";
 import { 
   type AfricanLanguage,
@@ -7,6 +6,8 @@ import {
   getAfricanLanguageConfig,
   generateAfricanLanguagePrompt
 } from "../lib/african-languages";
+import { runSeoaxeJsonTask } from "../lib/seoaxe-ai";
+import { buildRulePackPrompt, inferPageType } from "../lib/page-rules";
 
 const router: IRouter = Router();
 router.use(requireAuthenticatedUser);
@@ -69,29 +70,36 @@ router.post("/generate-blog", async (req, res) => {
     // Detect African language if not explicitly specified
     const detectedLang: AfricanLanguage = targetLanguage || detectAfricanLanguageContent(html);
     const langConfig = getAfricanLanguageConfig(detectedLang);
+    const pageType = inferPageType({ html, topic });
     
     // Build enhanced prompt with African language support
-    let enhancedTask = BLOG_GENERATION_TASK;
+    let enhancedTask = `${BLOG_GENERATION_TASK}\n\n${buildRulePackPrompt("blog", pageType)}`;
     if (detectedLang !== "en") {
       enhancedTask += generateAfricanLanguagePrompt(detectedLang);
       enhancedTask += `\n\nCRITICAL: Write the ENTIRE blog article in ${langConfig.name} (${langConfig.nativeName}). The title, meta tags, and all content must be in this language.`;
     }
     
-    const model = getModel();
-    const result = await model.generateContent([
-      enhancedTask,
-      topic ? `Page topic hint: ${topic}` : "",
-      `Target Language: ${detectedLang} (${langConfig.name})`,
-      "Optimized HTML Content:\n```html\n" + html.slice(0, 100_000) + "\n```",
-    ]);
-    
-    const text = result.response.text();
     let data: BlogArticle;
     
     try {
-      data = extractJson<BlogArticle>(text);
-    } catch (err) {
-      req.log.error({ err, text: text.slice(0, 500) }, "Blog generation parse failed");
+      data = await runSeoaxeJsonTask<BlogArticle>({
+        taskName: "generate-blog",
+        taskPrompt: enhancedTask,
+        systemInstruction:
+          "You are the SEOaxe blog generator. Expand optimized page content into search-ready long-form articles with strong structure, valid HTML, and useful FAQ coverage.",
+        html,
+        htmlLabel: "Optimized HTML Content",
+        primaryHtmlLimit: 100_000,
+        fallbackHtmlLimit: 50_000,
+        timeoutMs: 45_000,
+        fallbackTimeoutMs: 20_000,
+        extraParts: [
+          topic ? `Page topic hint: ${topic}` : undefined,
+          `Target Language: ${detectedLang} (${langConfig.name})`,
+        ],
+        log: req.log,
+      });
+    } catch {
       return res.status(500).json({ message: "Blog generation failed, please try again." });
     }
 

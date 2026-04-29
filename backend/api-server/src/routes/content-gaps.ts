@@ -1,7 +1,8 @@
 import { Router, type IRouter } from "express";
 import { DetectContentGapsBody, DetectContentGapsResponse } from "@workspace/api-zod";
-import { getModel, extractJson } from "../lib/gemini";
 import { requireAuthenticatedUser } from "../middleware/auth";
+import { runSeoaxeJsonTask } from "../lib/seoaxe-ai";
+import { buildRulePackPrompt, inferPageType } from "../lib/page-rules";
 
 const router: IRouter = Router();
 router.use(requireAuthenticatedUser);
@@ -50,22 +51,29 @@ router.post("/content-gaps", async (req, res) => {
     return res.status(400).json({ message: "Invalid request body" });
   }
   const { html, topic, audience } = parsed.data;
+  const pageType = inferPageType({ html, topic });
 
   try {
-    const model = getModel();
-    const result = await model.generateContent([
-      TASK,
-      `Topic / niche: ${topic}`,
-      audience ? `Target audience: ${audience}` : "",
-      "Page HTML:\n```html\n" + html.slice(0, 80_000) + "\n```",
-    ]);
-    const text = result.response.text();
-
     let data: GeminiResult;
     try {
-      data = extractJson<GeminiResult>(text);
-    } catch (err) {
-      req.log.error({ err, text: text.slice(0, 500) }, "content-gap parse failed");
+      data = await runSeoaxeJsonTask<GeminiResult>({
+        taskName: "content-gaps",
+        taskPrompt: `${TASK}\n\n${buildRulePackPrompt("content-gaps", pageType)}`,
+        systemInstruction:
+          "You are the SEOaxe missing-content finder. Identify genuine topic gaps, prioritize buyer-intent and answer-engine opportunities, and return HTML sections that are ready to inject.",
+        html,
+        htmlLabel: "Page HTML",
+        primaryHtmlLimit: 80_000,
+        fallbackHtmlLimit: 40_000,
+        timeoutMs: 30_000,
+        fallbackTimeoutMs: 15_000,
+        extraParts: [
+          `Topic / niche: ${topic}`,
+          audience ? `Target audience: ${audience}` : undefined,
+        ],
+        log: req.log,
+      });
+    } catch {
       return res.status(500).json({ message: "Detection failed, please try again." });
     }
 

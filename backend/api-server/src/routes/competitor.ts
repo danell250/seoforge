@@ -2,9 +2,8 @@ import { Router, type IRouter } from "express";
 import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
 import { ScanCompetitorBody, ScanCompetitorResponse } from "@workspace/api-zod";
-import { getModel, extractJson, generateContentWithTimeout } from "../lib/gemini";
 import { requireAuthenticatedUser } from "../middleware/auth";
-import { prepareHtmlForModel } from "../lib/html-processor";
+import { runSeoaxeJsonTask } from "../lib/seoaxe-ai";
 
 const router: IRouter = Router();
 router.use(requireAuthenticatedUser);
@@ -199,20 +198,23 @@ router.post("/scan-competitor", async (req, res) => {
   }
 
   try {
-    const model = getModel(
-      "You are an elite SEO competitive intelligence analyst. You reverse-engineer SEO and AEO strategy from raw HTML with precision.",
-    );
-    const result = await generateContentWithTimeout(model, [
-      PROMPT,
-      `Competitor URL: ${url}`,
-      "HTML:\n```html\n" + prepareHtmlForModel(html, 35_000) + "\n```",
-    ], 30_000);
-    const text = result.response.text();
     let data: ScanResult;
     try {
-      data = extractJson<ScanResult>(text);
-    } catch (err) {
-      req.log.error({ err, text: text.slice(0, 500) }, "Failed to parse competitor JSON");
+      data = await runSeoaxeJsonTask<ScanResult>({
+        taskName: "competitor-scan",
+        taskPrompt: PROMPT,
+        systemInstruction:
+          "You are the SEOaxe competitor scanner. Reverse-engineer SEO and AEO positioning from raw HTML and turn it into concise competitive intelligence.",
+        html,
+        htmlLabel: "HTML",
+        primaryHtmlLimit: 35_000,
+        fallbackHtmlLimit: 20_000,
+        timeoutMs: 30_000,
+        fallbackTimeoutMs: 15_000,
+        extraParts: [`Competitor URL: ${url}`],
+        log: req.log,
+      });
+    } catch {
       return res.status(502).json({ message: "The scan response came back incomplete. Please try again." });
     }
 

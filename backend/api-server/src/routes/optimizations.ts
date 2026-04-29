@@ -1,7 +1,8 @@
 import { Router, type IRouter } from "express";
 import { db, optimizationsTable } from "@workspace/db";
+import { aiFeedbackTable } from "@workspace/db/schema";
 import { ListOptimizationsResponse, GetDashboardSummaryResponse, DeleteOptimizationResponse } from "@workspace/api-zod";
-import { desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { getAuthenticatedUser, requireAuthenticatedUser } from "../middleware/auth";
 
 const router: IRouter = Router();
@@ -53,6 +54,66 @@ router.delete("/optimizations/:id", async (req, res) => {
   }
   const safe = DeleteOptimizationResponse.parse({ success: true });
   return res.json(safe);
+});
+
+router.post("/optimizations/:id/feedback", async (req, res) => {
+  const user = getAuthenticatedUser(req);
+  if (!user) return res.status(401).json({ message: "Authentication required" });
+
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({ message: "Invalid id" });
+  }
+
+  const body = req.body;
+  const verdict = typeof body?.verdict === "string" ? body.verdict.trim().toLowerCase() : "";
+  const note = typeof body?.note === "string" ? body.note.trim().slice(0, 1000) : null;
+  if (!["accepted", "rejected"].includes(verdict)) {
+    return res.status(400).json({ message: "Invalid verdict" });
+  }
+
+  const [optimization] = await db
+    .select({ id: optimizationsTable.id })
+    .from(optimizationsTable)
+    .where(and(eq(optimizationsTable.id, id), eq(optimizationsTable.userId, user.id)))
+    .limit(1);
+
+  if (!optimization) {
+    return res.status(404).json({ message: "Optimization not found" });
+  }
+
+  try {
+    const [existing] = await db
+      .select({ id: aiFeedbackTable.id })
+      .from(aiFeedbackTable)
+      .where(and(eq(aiFeedbackTable.optimizationId, id), eq(aiFeedbackTable.userId, user.id), eq(aiFeedbackTable.taskName, "optimize")))
+      .limit(1);
+
+    if (existing) {
+      await db
+        .update(aiFeedbackTable)
+        .set({
+          verdict,
+          note,
+          updatedAt: new Date(),
+        })
+        .where(eq(aiFeedbackTable.id, existing.id));
+    } else {
+      await db.insert(aiFeedbackTable).values({
+        userId: user.id,
+        optimizationId: id,
+        taskName: "optimize",
+        verdict,
+        note,
+        updatedAt: new Date(),
+      });
+    }
+  } catch (err) {
+    req.log.error({ err, optimizationId: id }, "Failed to record optimization feedback");
+    return res.status(503).json({ message: "Feedback storage is not ready yet. Run the latest schema push and try again." });
+  }
+
+  return res.json({ success: true });
 });
 
 router.get("/dashboard-summary", async (_req, res) => {

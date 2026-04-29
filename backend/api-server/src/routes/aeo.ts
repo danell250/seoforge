@@ -1,7 +1,8 @@
 import { Router, type IRouter } from "express";
 import { GenerateAeoBlockBody, GenerateAeoBlockResponse } from "@workspace/api-zod";
-import { getModel, extractJson } from "../lib/gemini";
 import { requireAuthenticatedUser } from "../middleware/auth";
+import { runSeoaxeJsonTask } from "../lib/seoaxe-ai";
+import { buildRulePackPrompt, inferPageType } from "../lib/page-rules";
 
 const router: IRouter = Router();
 router.use(requireAuthenticatedUser);
@@ -32,20 +33,26 @@ router.post("/aeo-block", async (req, res) => {
     return res.status(400).json({ message: "Invalid request body" });
   }
   const { html, topic } = parsed.data;
+  const pageType = inferPageType({ html, topic });
 
   try {
-    const model = getModel();
-    const result = await model.generateContent([
-      TASK,
-      topic ? `Topic hint: ${topic}` : "",
-      "HTML:\n```html\n" + html.slice(0, 80_000) + "\n```",
-    ]);
-    const text = result.response.text();
     let data: GeminiAeo;
     try {
-      data = extractJson<GeminiAeo>(text);
-    } catch (err) {
-      req.log.error({ err, text: text.slice(0, 500) }, "AEO parse failed");
+      data = await runSeoaxeJsonTask<GeminiAeo>({
+        taskName: "aeo-answer-block",
+        taskPrompt: `${TASK}\n\n${buildRulePackPrompt("aeo", pageType)}`,
+        systemInstruction:
+          "You are the SEOaxe answer-block generator. Focus on direct-answer questions that can win AI overviews, answer engines, and voice search snippets.",
+        html,
+        htmlLabel: "HTML",
+        primaryHtmlLimit: 80_000,
+        fallbackHtmlLimit: 40_000,
+        timeoutMs: 30_000,
+        fallbackTimeoutMs: 15_000,
+        extraParts: [topic ? `Topic hint: ${topic}` : undefined],
+        log: req.log,
+      });
+    } catch {
       return res.status(500).json({ message: "Generation failed, please try again." });
     }
 

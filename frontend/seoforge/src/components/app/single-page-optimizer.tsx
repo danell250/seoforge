@@ -2,8 +2,8 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { useOptimizeHtml, useGenerateBlogArticle } from "@workspace/api-client-react";
-import { CheckCircle2, UploadCloud, Copy, RefreshCw, Download, Play, AlertCircle, FileCode, Globe, CheckSquare, FileDown, FileText, Sparkles, X, Languages, MapPin, Users, Volume2, TrendingUp, ArrowRight } from "lucide-react";
+import { customFetch, useOptimizeHtml, useGenerateBlogArticle } from "@workspace/api-client-react";
+import { CheckCircle2, UploadCloud, Copy, RefreshCw, Download, Play, AlertCircle, FileCode, Globe, CheckSquare, FileDown, FileText, Sparkles, X, Languages, MapPin, Users, Volume2, TrendingUp, ArrowRight, Bot, ThumbsDown, ThumbsUp } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -192,6 +192,8 @@ export function SinglePageOptimizer() {
   const [htmlInput, setHtmlInput] = useState("");
   const [sourceFilename, setSourceFilename] = useState("optimized.html");
   const [blogDialogOpen, setBlogDialogOpen] = useState(false);
+  const [feedbackVerdict, setFeedbackVerdict] = useState<"accepted" | "rejected" | null>(null);
+  const [feedbackPending, setFeedbackPending] = useState(false);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -233,6 +235,7 @@ export function SinglePageOptimizer() {
       return;
     }
     
+    setFeedbackVerdict(null);
     optimizeMutation.mutate({ data: { html: htmlInput, filename: "index.html" } }, {
       onError: () => {
         toast({
@@ -258,8 +261,38 @@ export function SinglePageOptimizer() {
 
   const handleReset = () => {
     setHtmlInput("");
+    setFeedbackVerdict(null);
     optimizeMutation.reset();
     blogMutation.reset();
+  };
+
+  const handleOptimizationFeedback = async (verdict: "accepted" | "rejected") => {
+    const optimizationId = optimizeMutation.data?.optimizationId;
+    if (!optimizationId || feedbackPending) return;
+
+    setFeedbackPending(true);
+    try {
+      await customFetch<{ success: boolean }>(`/api/optimizations/${optimizationId}/feedback`, {
+        method: "POST",
+        body: JSON.stringify({ verdict }),
+      });
+      setFeedbackVerdict(verdict);
+      toast({
+        title: verdict === "accepted" ? "Thanks for the signal" : "Feedback saved",
+        description:
+          verdict === "accepted"
+            ? "We recorded this optimization as a strong result."
+            : "We recorded that this result needs work.",
+      });
+    } catch (error) {
+      toast({
+        title: "Could not save feedback",
+        description: "The optimization finished, but the feedback signal could not be stored yet.",
+        variant: "destructive",
+      });
+    } finally {
+      setFeedbackPending(false);
+    }
   };
 
   const handleGenerateBlog = () => {
@@ -576,6 +609,92 @@ export function SinglePageOptimizer() {
               <DiffViewer original={htmlInput} optimized={optimizeMutation.data.optimizedHtml} />
             </CardContent>
           </Card>
+
+          {optimizeMutation.data.aiReview && (
+            <Card className="shadow-md border-primary/20">
+              <CardHeader className="border-b bg-muted/30">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Bot className="h-5 w-5 text-primary" />
+                  SEOaxe AI Review
+                </CardTitle>
+                <CardDescription>
+                  Auto-checks for this {optimizeMutation.data.pageType ?? "page"} optimization before it becomes training signal.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6 space-y-5">
+                <div className="flex items-center justify-between gap-4 rounded-xl border bg-muted/20 px-4 py-3">
+                  <div>
+                    <p className="text-sm font-medium">Automatic review score</p>
+                    <p className="text-sm text-muted-foreground">{optimizeMutation.data.aiReview.summary}</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-primary">{optimizeMutation.data.aiReview.score}/100</div>
+                    {optimizeMutation.data.pageType && (
+                      <div className="text-xs uppercase tracking-wide text-muted-foreground">
+                        {optimizeMutation.data.pageType}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div>
+                    <p className="mb-3 text-sm font-semibold text-foreground">Checks passed</p>
+                    <ul className="space-y-2">
+                      {optimizeMutation.data.aiReview.passedChecks.map((check: string) => (
+                        <li key={check} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
+                          <span>{check}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div>
+                    <p className="mb-3 text-sm font-semibold text-foreground">Follow-up flags</p>
+                    {optimizeMutation.data.aiReview.flags.length > 0 ? (
+                      <ul className="space-y-2">
+                        {optimizeMutation.data.aiReview.flags.map((flag: string) => (
+                          <li key={flag} className="flex items-start gap-2 text-sm text-muted-foreground">
+                            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                            <span>{flag}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No major follow-up flags were detected.</p>
+                    )}
+                  </div>
+                </div>
+
+                {optimizeMutation.data.optimizationId && (
+                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-background px-4 py-3">
+                    <p className="text-sm text-muted-foreground">
+                      Mark whether this result is good enough to learn from.
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        variant={feedbackVerdict === "accepted" ? "default" : "outline"}
+                        disabled={feedbackPending}
+                        onClick={() => void handleOptimizationFeedback("accepted")}
+                      >
+                        <ThumbsUp className="mr-2 h-4 w-4" />
+                        Helpful
+                      </Button>
+                      <Button
+                        variant={feedbackVerdict === "rejected" ? "default" : "outline"}
+                        disabled={feedbackPending}
+                        onClick={() => void handleOptimizationFeedback("rejected")}
+                      >
+                        <ThumbsDown className="mr-2 h-4 w-4" />
+                        Needs work
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>

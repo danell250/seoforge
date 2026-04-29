@@ -51,6 +51,7 @@ export const optimizeHtmlResponseOriginalScoreOverallMax = 100;
 
 
 export const OptimizeHtmlResponse = zod.object({
+  "optimizationId": zod.number().int().positive().optional().describe('Saved optimization record id'),
   "optimizedHtml": zod.string(),
   "changes": zod.array(zod.string()),
   "score": zod.object({
@@ -71,6 +72,13 @@ export const OptimizeHtmlResponse = zod.object({
   "aeo": zod.number().describe('Points gained in AEO readiness'),
   "overall": zod.number().describe('Total overall score improvement')
 }).describe('Points gained from optimization'),
+  "pageType": zod.enum(['homepage', 'landing', 'blog', 'product', 'service', 'location', 'docs', 'generic']).optional().describe('Detected page type used for SEOaxe rule packs'),
+  "aiReview": zod.object({
+  "score": zod.number().min(0).max(100),
+  "summary": zod.string(),
+  "passedChecks": zod.array(zod.string()),
+  "flags": zod.array(zod.string())
+}).optional().describe('Automatic SEOaxe review of the optimized output'),
   "detectedLanguage": zod.string().optional().describe('ISO 639-1 language code (en, af, zu, xh, pcm, sw)'),
   "languageGuidance": zod.string().optional().describe('Description of African language optimizations applied'),
   "africanLanguageSupport": zod.object({
@@ -573,5 +581,4 @@ export const GenerateBlogArticleResponse = zod.object({
   "language": zod.enum(['en', 'af', 'zu', 'xh', 'pcm', 'sw']).optional().describe('Language code of the generated blog article'),
   "languageName": zod.string().optional().describe('Human-readable language name')
 })
-
 

@@ -121,7 +121,23 @@ export interface AfricanLanguageSupport {
   hreflangTags: string;
 }
 
+export type OptimizeResponsePageType = typeof OptimizeResponsePageType[keyof typeof OptimizeResponsePageType];
+
+
+export const OptimizeResponsePageType = {
+  homepage: 'homepage',
+  landing: 'landing',
+  blog: 'blog',
+  product: 'product',
+  service: 'service',
+  location: 'location',
+  docs: 'docs',
+  generic: 'generic',
+} as const;
+
 export interface OptimizeResponse {
+  /** Saved optimization record id */
+  optimizationId?: number;
   optimizedHtml: string;
   changes: string[];
   score: SeoScore;
@@ -129,6 +145,15 @@ export interface OptimizeResponse {
   originalScore: SeoScore;
   /** Points gained from optimization */
   scoreImprovement: ScoreImprovement;
+  /** Detected page type used for SEOaxe rule packs */
+  pageType?: OptimizeResponsePageType;
+  /** Automatic SEOaxe review of the optimized output */
+  aiReview?: {
+    score: number;
+    summary: string;
+    passedChecks: string[];
+    flags: string[];
+  };
   /** ISO 639-1 language code (en, af, zu, xh, pcm, sw) */
   detectedLanguage?: string;
   /** Description of African language optimizations applied */
@@ -510,4 +535,3 @@ export interface BlogGenerationResult {
   /** Human-readable language name */
   languageName?: string;
 }
-
