@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import {
   ArrowRight,
   Bot,
@@ -23,6 +24,8 @@ import {
 } from "lucide-react";
 
 export default function Home() {
+  const { isAuthenticated } = useAuth();
+
   useEffect(() => {
     document.body.classList.add("seoaxe-home");
     document.title = "SEOaxe - SEO Repair Engine for Existing Website Pages";
@@ -64,6 +67,8 @@ export default function Home() {
       desc: "Download deployable HTML and assets with a repair receipt showing exactly what changed and how the score moved.",
     },
   ];
+  const workspaceHref = isAuthenticated ? "/app" : "/login?redirect=%2Fapp";
+
   return (
     <div className="min-h-screen flex flex-col font-sans">
       <Navbar />
@@ -100,7 +105,7 @@ export default function Home() {
               </div>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/app">
+                <Link href={workspaceHref}>
                   <Button size="lg" className="h-12 px-8 text-base gap-2">
                     Repair a page
                     <ArrowRight className="h-4 w-4" />
@@ -300,7 +305,7 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Repair one page and see the receipt.</h2>
             <p className="text-primary-foreground/80 mb-8 text-lg">Start with the website you already have. SEOaxe will show the patch, the score lift, and the deployable output.</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/app">
+              <Link href={workspaceHref}>
                 <Button size="lg" variant="secondary" className="h-12 px-8 gap-2">
                   Start free repair
                   <ChevronRight className="h-4 w-4" />

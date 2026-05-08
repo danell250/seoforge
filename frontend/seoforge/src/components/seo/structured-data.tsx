@@ -93,7 +93,7 @@ export function FAQPageSchema() {
         "name": "Is SEOaxe free?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes, SEOaxe is free to start with no credit card required. You can begin repairing your pages immediately. We also offer premium plans with additional features like bulk repair, competitor analysis, site monitoring, and CMS deployment to WordPress and Shopify for agencies and larger businesses."
+          "text": "Yes, SEOaxe is free to start with no credit card required. Create a free account to begin repairing your pages, then upgrade if you need premium features like bulk repair, competitor analysis, site monitoring, and CMS deployment to WordPress and Shopify."
         }
       },
       {

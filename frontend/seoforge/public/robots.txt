@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+Disallow: /api/
+Disallow: /app
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /checkout
+Disallow: /login
+Disallow: /signup
+Disallow: /audit
+Disallow: /intent
+
+Sitemap: https://www.seoaxe.site/sitemap.xml
