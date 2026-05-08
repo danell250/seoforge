@@ -3,7 +3,10 @@ import { Footer } from "@/components/layout/footer";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Clock, User, ChevronLeft } from "lucide-react";
-import { useState } from "react";
+import { useEffect } from "react";
+import { Link, useLocation } from "wouter";
+import { SITE_URL } from "@/lib/brand-metadata";
+import { generatedArticles } from "@/lib/generated-blog-articles";
 
 const author = {
   name: "SEOaxe Team",
@@ -11,7 +14,18 @@ const author = {
   avatar: "SF",
 };
 
-const articles = [
+export interface BlogArticle {
+  id: number;
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  date: string;
+  readTime: string;
+  content: string;
+}
+
+const originalArticles: BlogArticle[] = [
   {
     id: 1,
     slug: "what-is-aeo-answer-engine-optimization-south-africa",
@@ -2028,16 +2042,69 @@ const articles = [
   },
 ];
 
-function ArticleView({ article, onBack }: { article: typeof articles[0]; onBack: () => void }) {
+const articles: BlogArticle[] = [...originalArticles, ...generatedArticles];
+
+function setMeta(name: string, value: string) {
+  let tag = document.querySelector(`meta[name="${name}"]`);
+  if (!tag) {
+    tag = document.createElement("meta");
+    tag.setAttribute("name", name);
+    document.head.appendChild(tag);
+  }
+  tag.setAttribute("content", value);
+}
+
+function setProperty(property: string, value: string) {
+  let tag = document.querySelector(`meta[property="${property}"]`);
+  if (!tag) {
+    tag = document.createElement("meta");
+    tag.setAttribute("property", property);
+    document.head.appendChild(tag);
+  }
+  tag.setAttribute("content", value);
+}
+
+function setCanonical(url: string) {
+  let link = document.querySelector('link[rel="canonical"]');
+  if (!link) {
+    link = document.createElement("link");
+    link.setAttribute("rel", "canonical");
+    document.head.appendChild(link);
+  }
+  link.setAttribute("href", url);
+}
+
+function useBlogSeo(article: BlogArticle | null) {
+  useEffect(() => {
+    const url = article ? `${SITE_URL}/blog/${article.slug}` : `${SITE_URL}/blog`;
+    const title = article ? `${article.title} | SEOaxe Blog` : "SEOaxe Blog | SEO & AEO Repair Guides";
+    const description = article
+      ? article.excerpt
+      : "SEOaxe blog articles on SEO repair, AEO, schema, technical SEO, Search Console, and page-level optimization.";
+
+    document.title = title;
+    setMeta("description", description);
+    setMeta("robots", "index, follow");
+    setCanonical(url);
+    setProperty("og:title", title);
+    setProperty("og:description", description);
+    setProperty("og:url", url);
+    setProperty("twitter:title", title);
+    setProperty("twitter:description", description);
+    setProperty("twitter:url", url);
+  }, [article]);
+}
+
+function ArticleView({ article }: { article: BlogArticle }) {
   return (
     <div className="max-w-3xl mx-auto">
-      <button 
-        onClick={onBack}
+      <Link
+        href="/blog"
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
       >
         <ChevronLeft className="h-4 w-4" />
         Back to all articles
-      </button>
+      </Link>
 
       <article className="prose prose-slate max-w-none">
         <div className="mb-8 not-prose">
@@ -2110,15 +2177,40 @@ function ArticleView({ article, onBack }: { article: typeof articles[0]; onBack:
 }
 
 export default function Blog() {
-  const [selectedArticle, setSelectedArticle] = useState<typeof articles[0] | null>(null);
+  const [location] = useLocation();
+  const slug = location.startsWith("/blog/")
+    ? decodeURIComponent(location.slice("/blog/".length).replace(/\/$/, ""))
+    : null;
+  const selectedArticle = slug ? articles.find((article) => article.slug === slug) ?? null : null;
 
-  if (selectedArticle) {
+  useBlogSeo(selectedArticle);
+
+  if (slug && selectedArticle) {
     return (
       <div className="min-h-screen flex flex-col font-sans">
         <Navbar />
         <main className="flex-1 py-12 px-4">
           <div className="container mx-auto">
-            <ArticleView article={selectedArticle} onBack={() => setSelectedArticle(null)} />
+            <ArticleView article={selectedArticle} />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (slug && !selectedArticle) {
+    return (
+      <div className="min-h-screen flex flex-col font-sans">
+        <Navbar />
+        <main className="flex-1 py-16 px-4">
+          <div className="container max-w-2xl mx-auto text-center">
+            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">Article not found</Badge>
+            <h1 className="text-3xl font-bold mb-4">That SEOaxe article is not available</h1>
+            <p className="text-muted-foreground mb-6">Browse the blog library for SEO repair, AEO, schema, and Search Console guides.</p>
+            <Link href="/blog" className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+              Back to blog
+            </Link>
           </div>
         </main>
         <Footer />
@@ -2146,41 +2238,39 @@ export default function Blog() {
           {/* Blog Grid */}
           <div className="grid md:grid-cols-2 gap-6">
             {articles.map((article) => (
-              <Card 
-                key={article.id} 
-                className="group hover:shadow-lg transition-all cursor-pointer"
-                onClick={() => setSelectedArticle(article)}
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Badge variant="outline" className="text-xs">
-                      {article.category}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {article.readTime}
-                    </span>
-                  </div>
-                  
-                  <h2 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors leading-tight">
-                    {article.title}
-                  </h2>
-                  
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                    {article.excerpt}
-                  </p>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <User className="h-4 w-4" />
-                      {author.name}
+              <Link key={article.id} href={`/blog/${article.slug}`} className="block">
+                <Card className="group h-full hover:shadow-lg transition-all">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <Badge variant="outline" className="text-xs">
+                        {article.category}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {article.readTime}
+                      </span>
                     </div>
-                    <span className="text-sm font-medium text-primary">
-                      Read article →
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
+
+                    <h2 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors leading-tight">
+                      {article.title}
+                    </h2>
+
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+                      {article.excerpt}
+                    </p>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <User className="h-4 w-4" />
+                        {author.name}
+                      </div>
+                      <span className="text-sm font-medium text-primary">
+                        Read article →
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
 

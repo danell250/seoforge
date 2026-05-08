@@ -73,6 +73,7 @@ function Router() {
         <Route path="/checkout" component={() => <ProtectedRoute component={Checkout} />} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
+        <Route path="/blog/:slug" component={Blog} />
         <Route path="/blog" component={Blog} />
         <Route path="/privacy" component={PrivacyPolicy} />
         <Route path="/refund-policy" component={RefundPolicy} />

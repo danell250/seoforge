@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://seoforge-tpxf.onrender.com"
+API_URL="http://localhost:4000"
 OUTPUT_DIR="generated-articles"
 
 mkdir -p "$OUTPUT_DIR"
