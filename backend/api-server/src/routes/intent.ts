@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import { requireAuthenticatedUser } from "../middleware/auth";
 
 const router: IRouter = Router();
 
@@ -228,7 +229,7 @@ function scoreIntentMatch(
   };
 }
 
-router.post("/search-intent", async (req, res) => {
+router.post("/search-intent", requireAuthenticatedUser, async (req, res) => {
   const url = typeof req.body?.url === "string" ? normalizeUrl(req.body.url) : "";
   const keyword = typeof req.body?.keyword === "string" ? req.body.keyword.trim() : "";
 
@@ -236,9 +237,8 @@ router.post("/search-intent", async (req, res) => {
     return res.status(400).json({ message: "URL and keyword are required" });
   }
 
-  let origin: string;
   try {
-    origin = new URL(url).origin;
+    new URL(url);
   } catch {
     return res.status(400).json({ message: "Invalid URL" });
   }

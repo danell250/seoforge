@@ -15,7 +15,6 @@ import {
   CheckCircle2,
   FileText,
   Code2,
-  Share2,
   Link2,
   ShieldCheck,
   Loader2,
@@ -47,14 +46,6 @@ interface AuditResult {
   externalLinks: number;
   findings: AuditFinding[];
 }
-
-const categoryMeta: Record<string, { label: string; icon: typeof Globe }> = {
-  meta: { label: "Meta & Tags", icon: FileText },
-  content: { label: "Content", icon: FileText },
-  technical: { label: "Technical", icon: Code2 },
-  social: { label: "Social", icon: Share2 },
-  links: { label: "Links", icon: Link2 },
-};
 
 function scoreColorClass(score: number) {
   if (score >= 80) return "text-green-600";
@@ -332,9 +323,9 @@ export default function AuditPage() {
                         This audit shows what is wrong. SEOForge can generate the actual fixes — repaired HTML, schema markup, AEO answer blocks, and a deployable patch for every issue found.
                       </p>
                       <div className="flex flex-wrap justify-center md:justify-start gap-3">
-                        <Link href="/signup">
+                        <Link href="/app">
                           <Button>
-                            Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                            Open Workspace <ArrowRight className="ml-2 h-4 w-4" />
                           </Button>
                         </Link>
                         <Link href="/pricing">

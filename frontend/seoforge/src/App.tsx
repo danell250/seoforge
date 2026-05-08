@@ -56,7 +56,7 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/pricing" component={Pricing} />
-        <Route path="/checkout" component={Checkout} />
+        <Route path="/checkout" component={() => <ProtectedRoute component={Checkout} />} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
         <Route path="/blog" component={Blog} />
@@ -65,8 +65,8 @@ function Router() {
         <Route path="/terms" component={TermsOfService} />
         <Route path="/contact" component={Contact} />
         <Route path="/compare" component={Compare} />
-        <Route path="/audit" component={Audit} />
-        <Route path="/intent" component={Intent} />
+        <Route path="/audit" component={() => <ProtectedRoute component={Audit} />} />
+        <Route path="/intent" component={() => <ProtectedRoute component={Intent} />} />
         <Route path="/app" component={() => <ProtectedRoute component={AppWorkspace} />} />
         <Route path="/dashboard" component={() => <ProtectedRoute component={Dashboard} />} />
         <Route path="/settings" component={() => <ProtectedRoute component={Settings} />} />

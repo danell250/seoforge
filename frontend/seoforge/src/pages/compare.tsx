@@ -802,7 +802,7 @@ export default function ComparePage() {
               <h2 className="text-3xl md:text-4xl font-bold">Start Free. No Credit Card. No Risk.</h2>
               <p className="text-lg text-muted-foreground max-w-xl mx-auto">
                 SEOaxe has a free tier. Paste your first page right now and see your SEO health score 
-                in 30 seconds. No signup required to try the optimizer.
+                in 30 seconds. Create an account first and start using the optimizer right away.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link href="/app">

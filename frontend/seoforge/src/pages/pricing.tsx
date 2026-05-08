@@ -114,8 +114,10 @@ export default function Pricing() {
           plan.slug === "free"
             ? isAuthenticated
               ? "/app"
-              : "/signup?redirect=%2Fapp"
-            : `/checkout?plan=${plan.slug}`,
+              : "/login?redirect=%2Fapp"
+            : isAuthenticated
+              ? `/checkout?plan=${plan.slug}`
+              : `/login?redirect=${encodeURIComponent(`/checkout?plan=${plan.slug}`)}`,
       })),
     [displayLocale, isAuthenticated, pricingContext],
   );

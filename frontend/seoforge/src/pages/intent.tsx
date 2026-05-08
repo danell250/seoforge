@@ -317,9 +317,9 @@ export default function IntentPage() {
                         SEOForge can rewrite your title, meta, headings, and body to better match this search intent — then deliver deployable HTML.
                       </p>
                       <div className="flex flex-wrap justify-center md:justify-start gap-3">
-                        <Link href="/signup">
+                        <Link href="/app">
                           <Button>
-                            Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                            Open Workspace <ArrowRight className="ml-2 h-4 w-4" />
                           </Button>
                         </Link>
                         <Link href="/audit">

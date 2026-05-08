@@ -3,8 +3,8 @@ services:
     name: seoforge-api
     runtime: node
     plan: standard
-    buildCommand: "corepack enable && corepack prepare pnpm@latest --activate && pnpm install && cd backend/api-server && pnpm run build:prod"
-    startCommand: cd backend/api-server && pnpm start:prod
+    buildCommand: "corepack enable && corepack prepare pnpm@10.33.0 --activate && pnpm install --frozen-lockfile && pnpm --filter @workspace/api-server run build:prod"
+    startCommand: cd backend/api-server && node --enable-source-maps ./dist/index.mjs
     envVars:
       - key: NODE_ENV
         value: production

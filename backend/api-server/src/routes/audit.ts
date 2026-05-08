@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import { requireAuthenticatedUser } from "../middleware/auth";
 
 const router: IRouter = Router();
 
@@ -345,7 +346,7 @@ function runAudit(url: string, html: string, origin: string): AuditResult {
   };
 }
 
-router.post("/audit", async (req, res) => {
+router.post("/audit", requireAuthenticatedUser, async (req, res) => {
   const url = typeof req.body?.url === "string" ? normalizeUrl(req.body.url) : "";
   if (!url) {
     return res.status(400).json({ message: "URL is required" });
