@@ -142,7 +142,7 @@ export default function TermsOfService() {
                 If you have any questions about these Terms, please contact us:
               </p>
               <p className="text-muted-foreground mt-2">
-                Email: legal@seoforge.app
+                Email: legal@seoaxe.site
               </p>
             </section>
           </div>

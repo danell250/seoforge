@@ -18,6 +18,8 @@ import TermsOfService from "@/pages/terms";
 import Contact from "@/pages/contact";
 import Blog from "@/pages/blog";
 import Compare from "@/pages/compare";
+import Audit from "@/pages/audit";
+import Intent from "@/pages/intent";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { GlobalSEO } from "@/components/seo";
 import { ScrollToTop } from "@/components/scroll-to-top";
@@ -63,6 +65,8 @@ function Router() {
         <Route path="/terms" component={TermsOfService} />
         <Route path="/contact" component={Contact} />
         <Route path="/compare" component={Compare} />
+        <Route path="/audit" component={Audit} />
+        <Route path="/intent" component={Intent} />
         <Route path="/app" component={() => <ProtectedRoute component={AppWorkspace} />} />
         <Route path="/dashboard" component={() => <ProtectedRoute component={Dashboard} />} />
         <Route path="/settings" component={() => <ProtectedRoute component={Settings} />} />

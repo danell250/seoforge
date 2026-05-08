@@ -21,9 +21,13 @@
    | `DATABASE_URL` | (your postgres) | Postgres connection string |
    | `GEMINI_API_KEY` | (your key) | Google Gemini API |
    | `BREVO_API_KEY` | (your key) | Email service (brevo.com) |
+   | `STITCH_EXPRESS_CLIENT_ID` | (your Stitch client ID) | Server-side Stitch Express API client ID |
+   | `STITCH_EXPRESS_CLIENT_SECRET` | (your Stitch client secret) | Server-side Stitch Express API secret |
+   | `STITCH_EXPRESS_WEBHOOK_SECRET` | (your webhook signing secret) | Svix signing secret returned when registering the webhook |
+   | `STITCH_EXPRESS_REDIRECT_URL` | `https://www.seoaxe.site/checkout?payment=return` | Registered Stitch redirect URL after checkout |
    | `ADMIN_EMAIL` | `you@example.com` | **Your admin login email** |
    | `ADMIN_PASSWORD` | (your password) | **Your admin login password** |
-   | `CORS_ORIGIN` | `https://your-frontend.vercel.app` | Frontend URL |
+   | `CORS_ORIGIN` | `https://www.seoaxe.site` | Frontend URL |
 
    ⚠️ **Important:** Set `ADMIN_EMAIL` to your actual email and `ADMIN_PASSWORD` to a strong password (min 8 chars). These are your login credentials.
 
@@ -51,7 +55,7 @@
 
 ### 3. Domain Setup (Optional)
 
-- Add custom domain on Vercel
+- Add `www.seoaxe.site` as the custom domain on Vercel
 - Update `CORS_ORIGIN` on Render to match
 - Update `REPLIT_DEV_DOMAIN` references in email templates
 
@@ -59,6 +63,9 @@
 
 - [ ] Admin user created (auto on first boot)
 - [ ] Test login flow
+- [ ] Test Stitch checkout from `/checkout?plan=starter`
+- [ ] Register Stitch webhook URL: `https://your-render-service.onrender.com/api/payments/stitch/webhook`
+- [ ] Replay or complete a test payment and confirm the webhook returns 200
 - [ ] Test page optimization
 - [ ] Test dashboard stats
 - [ ] Domain monitoring (if paid plans active)

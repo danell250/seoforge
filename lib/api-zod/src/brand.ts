@@ -1,6 +1,6 @@
 export const DEFAULT_AGENCY_SETTINGS = {
   brandName: "SEOaxe",
-  tagline: "AI-Powered SEO and Answer Engine Optimization",
+  tagline: "SEO Repair Engine for Existing Website Pages",
   logoUrl: null,
   primaryColor: "#2563eb",
   supportEmail: null,

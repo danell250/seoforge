@@ -1,4 +1,4 @@
-export const FROM_ADDRESS = process.env["BREVO_FROM"] || process.env["RESEND_FROM"] || "SEOaxe <noreply@seoforge.app>";
+export const FROM_ADDRESS = process.env["BREVO_FROM"] || process.env["RESEND_FROM"] || "SEOaxe <noreply@seoaxe.site>";
 
 function getApiKey(): string | null {
   return process.env["BREVO_API_KEY"] || process.env["RESEND_API_KEY"] || null;

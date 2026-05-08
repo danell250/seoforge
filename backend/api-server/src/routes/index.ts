@@ -14,6 +14,9 @@ import contentGapsRouter from "./content-gaps";
 import siteMonitorRouter from "./site-monitor";
 import blogGeneratorRouter from "./blog-generator";
 import pricingRouter from "./pricing";
+import paymentsRouter from "./payments";
+import auditRouter from "./audit";
+import intentRouter from "./intent";
 
 const router: IRouter = Router();
 
@@ -32,5 +35,8 @@ router.use(contentGapsRouter);
 router.use(siteMonitorRouter);
 router.use(blogGeneratorRouter);
 router.use(pricingRouter);
+router.use(paymentsRouter);
+router.use(auditRouter);
+router.use(intentRouter);
 
 export default router;

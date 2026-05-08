@@ -220,8 +220,8 @@ export function SinglePageOptimizer() {
     toast({
       title: "Help prompt ready",
       description: copied
-        ? "We copied a support prompt. Paste it into live chat or email support@seoforge.app if you still need a hand."
-        : "Use this prompt in live chat or email support@seoforge.app if you still need a hand.",
+        ? "We copied a support prompt. Paste it into live chat or email support@seoaxe.site if you still need a hand."
+        : "Use this prompt in live chat or email support@seoaxe.site if you still need a hand.",
     });
   };
 

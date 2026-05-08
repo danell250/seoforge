@@ -175,3 +175,29 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 }
+
+@media (max-width: 640px) {
+  body.seoaxe-home .chatway--trigger-container {
+    left: 12px !important;
+    right: auto !important;
+    bottom: 12px !important;
+  }
+
+  body.seoaxe-home #chatway_widget_trigger {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  body.seoaxe-home .launcher-icon {
+    width: 44px !important;
+    height: 44px !important;
+    box-shadow: 0 10px 24px rgb(37 99 235 / 0.25) !important;
+  }
+
+  body.seoaxe-home iframe[src*="chatway.app"] {
+    left: 10px !important;
+    right: auto !important;
+    bottom: 74px !important;
+    max-width: calc(100vw - 20px) !important;
+  }
+}

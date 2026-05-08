@@ -21,6 +21,8 @@ export function Navbar() {
         { href: "/settings", label: "Settings" },
       ]
     : [
+        { href: "/audit", label: "Audit" },
+        { href: "/intent", label: "Intent" },
         { href: "/pricing", label: "Pricing" },
         { href: "/compare", label: "Compare" },
       ];

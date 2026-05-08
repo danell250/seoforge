@@ -112,7 +112,7 @@ export default function PrivacyPolicy() {
                 If you have any questions about this Privacy Policy or our data practices, please contact us at:
               </p>
               <p className="text-muted-foreground mt-2">
-                Email: privacy@seoforge.app
+                Email: privacy@seoaxe.site
               </p>
             </section>
           </div>

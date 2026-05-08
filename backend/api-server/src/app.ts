@@ -8,12 +8,14 @@ import { attachRequestAuth } from "./middleware/auth";
 import { createRateLimit, startRateLimitCleanupLoop } from "./middleware/rate-limit";
 
 const app: Express = express();
+type RequestWithRawBody = express.Request & {
+  rawBody?: Buffer;
+};
+
 const DEFAULT_ALLOWED_ORIGINS = [
   "http://localhost:5173",
-  "https://seoaxe.vercel.app",
-  "https://seoforger.vercel.app",
-  "https://seoforge.app",
-  "https://www.seoforge.app",
+  "https://seoaxe.site",
+  "https://www.seoaxe.site",
 ];
 
 function normalizeOrigin(value: string): string {
@@ -100,7 +102,12 @@ app.use(
 app.use(cors(corsOptions));
 app.use(setSecurityHeaders);
 app.use(cookieParser());
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json({
+  limit: "10mb",
+  verify(req, _res, buf) {
+    (req as RequestWithRawBody).rawBody = Buffer.from(buf);
+  },
+}));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 startRateLimitCleanupLoop();
 app.use(createRateLimit({ key: "api", max: 300, windowMs: 1000 * 60 * 15 }));

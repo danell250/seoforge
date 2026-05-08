@@ -34,7 +34,7 @@ async function fetchHtml(url: string): Promise<string | null> {
     const res = await fetch(url, {
       signal: ctrl.signal,
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; SEOaxeBot/1.0; +https://seoforge.app)",
+        "User-Agent": "Mozilla/5.0 (compatible; SEOaxeBot/1.0; +https://www.seoaxe.site)",
         Accept: "text/html,application/xhtml+xml",
       },
       redirect: "follow",
@@ -254,7 +254,7 @@ export async function runMonitorForSite(
   let emailedTo: string | null = null;
   let emailedAt: Date | null = null;
   if (opts.sendEmail) {
-    const appUrl = `https://${process.env["REPLIT_DEV_DOMAIN"] || "seoforge.app"}/app#monitor`;
+    const appUrl = `https://${process.env["REPLIT_DEV_DOMAIN"] || "www.seoaxe.site"}/app#monitor`;
     const html = renderReportEmail({
       domain: site.domain,
       summary,
@@ -280,7 +280,7 @@ export async function runMonitorForSite(
     // Send low score alerts for pages below 60
     const lowScorePages = diffs.filter(d => d.currentScore !== null && d.currentScore < 60);
     if (lowScorePages.length > 0) {
-      const appUrl = `https://${process.env["REPLIT_DEV_DOMAIN"] || "seoforge.app"}/app`;
+      const appUrl = `https://${process.env["REPLIT_DEV_DOMAIN"] || "www.seoaxe.site"}/app`;
       for (const page of lowScorePages.slice(0, 3)) { // Alert on up to 3 pages per run
         const alertHtml = renderLowScoreAlertEmail({
           domain: site.domain,

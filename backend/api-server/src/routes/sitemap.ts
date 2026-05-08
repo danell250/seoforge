@@ -83,7 +83,7 @@ router.delete("/sitemap-urls/:id", requireAuthenticatedUser, async (req, res) =>
 
 router.get("/sitemap.xml", async (_req, res) => {
   const [settings] = await db.select().from(agencySettingsTable).limit(1);
-  const baseUrl = settings?.websiteUrl?.replace(/\/$/, "") || "https://seoforge.app";
+  const baseUrl = settings?.websiteUrl?.replace(/\/$/, "") || "https://www.seoaxe.site";
   const lastmod = new Date().toISOString().slice(0, 10);
   
   // Static pages with their priorities (only indexable, public pages)
@@ -120,7 +120,7 @@ ${allUrls
 
 router.get("/robots.txt", async (_req, res) => {
   const [settings] = await db.select().from(agencySettingsTable).limit(1);
-  const baseUrl = settings?.websiteUrl?.replace(/\/$/, "") || "https://seoforge.app";
+  const baseUrl = settings?.websiteUrl?.replace(/\/$/, "") || "https://www.seoaxe.site";
   const sitemapUrl = `${baseUrl}/api/sitemap.xml`;
   
   const body = `# SEOaxe robots.txt

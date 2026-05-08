@@ -33,10 +33,10 @@ export default function Contact() {
                         For general inquiries and support
                       </p>
                       <a 
-                        href="mailto:support@seoforge.app" 
+                        href="mailto:support@seoaxe.site" 
                         className="text-primary hover:underline text-sm"
                       >
-                        support@seoforge.app
+                        support@seoaxe.site
                       </a>
                     </div>
                   </div>

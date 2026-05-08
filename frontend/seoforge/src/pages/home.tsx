@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import {
   ArrowRight,
   Bot,
@@ -22,6 +23,21 @@ import {
 } from "lucide-react";
 
 export default function Home() {
+  useEffect(() => {
+    document.body.classList.add("seoaxe-home");
+    document.title = "SEOaxe - SEO Repair Engine for Existing Website Pages";
+    const description =
+      "Repair the website pages you already have. Get deployable HTML patches, schema, AEO answer blocks, sitemaps, before-and-after scores, and a clear repair receipt.";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    metaDesc?.setAttribute("content", description);
+    document.querySelector('meta[name="title"]')?.setAttribute("content", document.title);
+    document.querySelector('meta[property="og:title"]')?.setAttribute("content", "SEOaxe - SEO Repair Engine");
+    document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
+    document.querySelector('meta[property="twitter:title"]')?.setAttribute("content", "SEOaxe - SEO Repair Engine");
+    document.querySelector('meta[property="twitter:description"]')?.setAttribute("content", description);
+    return () => document.body.classList.remove("seoaxe-home");
+  }, []);
+
   const features = [
     { icon: FileCode2, title: "Repair Real HTML", desc: "Paste, upload, or crawl existing pages and get production-ready HTML back." },
     { icon: ShieldCheck, title: "Get a Repair Receipt", desc: "See every meta, schema, heading, answer block, and language patch applied." },
@@ -54,14 +70,14 @@ export default function Home() {
       
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative overflow-hidden px-4 pb-16 pt-16 md:pb-24 md:pt-24">
+        <section className="relative overflow-hidden px-4 pb-10 pt-12 md:pb-24 md:pt-24">
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_rgba(37,99,235,0.08),transparent_50%)]" />
           <div className="container mx-auto max-w-5xl">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="text-center space-y-8"
+              className="text-center space-y-6 md:space-y-8"
             >
               <div className="flex items-center justify-center gap-2">
                 <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">
@@ -107,7 +123,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="mt-16"
+              className="mt-10 md:mt-16"
             >
               <div className="rounded-xl border bg-card shadow-2xl overflow-hidden">
                 <div className="flex items-center gap-2 px-4 py-3 border-b bg-muted/50">
@@ -121,7 +137,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="grid md:grid-cols-[1fr_280px] divide-y md:divide-y-0 md:divide-x">
-                  <div className="p-6 space-y-4">
+                  <div className="p-4 space-y-3 md:p-6 md:space-y-4">
                     <div className="flex items-center gap-3 pb-4 border-b">
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm">Upload Page</Button>
@@ -143,7 +159,7 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                  <div className="p-5 space-y-4 bg-muted/30">
+                  <div className="p-4 space-y-4 bg-muted/30 md:p-5">
                     <div>
                       <p className="text-sm font-medium mb-3 flex items-center gap-2">
                         <TrendingUp className="h-4 w-4 text-primary" />
@@ -182,22 +198,18 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="py-20 bg-muted/30 border-y">
+        <section id="features" className="py-12 bg-muted/30 border-y md:py-20">
           <div className="container max-w-5xl mx-auto px-4">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8 md:mb-12">
               <h2 className="text-3xl font-bold mb-3">Not another AI writing tool</h2>
               <p className="text-muted-foreground max-w-xl mx-auto">SEOaxe is built for the messy middle after a website is already live: inspect it, patch it, prove it, and ship it.</p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {features.map((feature, i) => (
-                <motion.div 
+                <div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                  className="group p-5 rounded-lg bg-card border hover:border-primary/30 hover:shadow-sm transition-all"
+                  className="group p-4 rounded-lg bg-card border hover:border-primary/30 hover:shadow-sm transition-all md:p-5"
                 >
                   <div className="flex items-start gap-3">
                     <div className="p-2 rounded-md bg-primary/10 text-primary shrink-0">
@@ -208,21 +220,21 @@ export default function Home() {
                       <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
         {/* How it Works */}
-        <section className="py-20">
+        <section className="py-12 md:py-20">
           <div className="container max-w-5xl mx-auto px-4">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8 md:mb-12">
               <h2 className="text-3xl font-bold mb-3">How the repair engine works</h2>
               <p className="text-muted-foreground">From live page to patched HTML with evidence</p>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid gap-5 md:grid-cols-3 md:gap-6">
               {workflow.map((step, index) => (
                 <div key={step.title} className="relative">
                   <div className="flex items-center gap-3 mb-4">
@@ -242,9 +254,9 @@ export default function Home() {
         </section>
 
         {/* Differentiation Section */}
-        <section className="py-20 bg-muted/30">
+        <section className="py-12 bg-muted/30 md:py-20">
           <div className="container max-w-5xl mx-auto px-4">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8 md:mb-12">
               <h2 className="text-3xl font-bold mb-3">The unique angle buyers can remember</h2>
               <p className="text-muted-foreground max-w-xl mx-auto">SEOaxe owns the practical job most SEO tools leave unfinished: turning existing pages into repaired, deployable, evidence-backed pages.</p>
             </div>
@@ -267,27 +279,23 @@ export default function Home() {
                   icon: Zap
                 }
               ].map((testimonial, i) => (
-                <motion.div
+                <div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="p-6 bg-card border rounded-xl shadow-sm"
+                  className="p-4 bg-card border rounded-xl shadow-sm md:p-6"
                 >
                   <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
                     <testimonial.icon className="h-5 w-5" />
                   </div>
                   <h3 className="mb-2 font-semibold">{testimonial.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{testimonial.desc}</p>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-primary text-primary-foreground">
+        <section className="py-12 bg-primary text-primary-foreground md:py-20">
           <div className="container max-w-3xl mx-auto px-4 text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Repair one page and see the receipt.</h2>
             <p className="text-primary-foreground/80 mb-8 text-lg">Start with the website you already have. SEOaxe will show the patch, the score lift, and the deployable output.</p>
