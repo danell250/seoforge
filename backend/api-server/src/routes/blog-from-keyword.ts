@@ -1,10 +1,10 @@
 import { Router, type IRouter } from "express";
-import { requireAuthenticatedUser } from "../middleware/auth";
 import { runSeoaxeJsonTask } from "../lib/seoaxe-ai";
 import { getWorkspaceMemory, type WorkspaceMemory } from "../lib/workspace-memory";
 
 const router: IRouter = Router();
-router.use(requireAuthenticatedUser);
+// Temporarily public for bulk article generation
+// router.use(requireAuthenticatedUser);
 
 interface BlogFromKeyword {
   title: string;
