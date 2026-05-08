@@ -10,6 +10,7 @@ import { SitemapGenerator } from "@/components/app/sitemap-generator";
 import { HreflangTool } from "@/components/app/hreflang-tool";
 import { ContentGapDetector } from "@/components/app/content-gap-detector";
 import { SiteMonitor } from "@/components/app/site-monitor";
+import { BlogGenerator } from "@/components/app/blog-generator";
 import { useEffect, useState } from "react";
 
 export default function AppWorkspace() {
@@ -75,6 +76,10 @@ export default function AppWorkspace() {
       title: "Publish Repairs",
       description: "Send repaired HTML to WordPress or Shopify when it is ready to go live.",
     },
+    "blog-gen": {
+      title: "Blog Generator",
+      description: "Generate 20-50 SEO-optimized blog posts fast from long-tail keywords.",
+    },
   };
   const active = tabMeta[tab] ?? tabMeta["single-page"];
   const tabs = [
@@ -88,6 +93,7 @@ export default function AppWorkspace() {
     { value: "sitemap", label: "Sitemap" },
     { value: "deploy", label: "Ship" },
     { value: "monitor", label: "Monitor" },
+    { value: "blog-gen", label: "Blog Gen" },
   ] as const;
 
   return (
@@ -156,6 +162,10 @@ export default function AppWorkspace() {
 
             <TabsContent value="deploy" className="m-0">
               <DeployPanel />
+            </TabsContent>
+
+            <TabsContent value="blog-gen" className="m-0">
+              <BlogGenerator />
             </TabsContent>
           </Tabs>
         </div>
