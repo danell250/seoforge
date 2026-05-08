@@ -20,6 +20,20 @@ import Blog from "@/pages/blog";
 import Compare from "@/pages/compare";
 import Audit from "@/pages/audit";
 import Intent from "@/pages/intent";
+import {
+  AeoOptimizerPage,
+  AnswerEngineOptimizationPage,
+  HtmlSeoOptimizerPage,
+  LocalSeoSouthAfricaPage,
+  RobotsTxtGeneratorPage,
+  SchemaMarkupGeneratorPage,
+  SeoHealthScorePage,
+  SeoRepairEnginePage,
+  ShopifySeoRepairPage,
+  SitemapGeneratorLandingPage,
+  TechnicalSeoAuditPage,
+  WordpressSeoRepairPage,
+} from "@/pages/seo-library";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { GlobalSEO } from "@/components/seo";
 import { ScrollToTop } from "@/components/scroll-to-top";
@@ -65,6 +79,18 @@ function Router() {
         <Route path="/terms" component={TermsOfService} />
         <Route path="/contact" component={Contact} />
         <Route path="/compare" component={Compare} />
+        <Route path="/seo-repair-engine" component={SeoRepairEnginePage} />
+        <Route path="/html-seo-optimizer" component={HtmlSeoOptimizerPage} />
+        <Route path="/aeo-optimizer" component={AeoOptimizerPage} />
+        <Route path="/answer-engine-optimization" component={AnswerEngineOptimizationPage} />
+        <Route path="/schema-markup-generator" component={SchemaMarkupGeneratorPage} />
+        <Route path="/technical-seo-audit" component={TechnicalSeoAuditPage} />
+        <Route path="/sitemap-generator" component={SitemapGeneratorLandingPage} />
+        <Route path="/robots-txt-generator" component={RobotsTxtGeneratorPage} />
+        <Route path="/wordpress-seo-repair" component={WordpressSeoRepairPage} />
+        <Route path="/shopify-seo-repair" component={ShopifySeoRepairPage} />
+        <Route path="/local-seo-south-africa" component={LocalSeoSouthAfricaPage} />
+        <Route path="/seo-health-score" component={SeoHealthScorePage} />
         <Route path="/audit" component={() => <ProtectedRoute component={Audit} />} />
         <Route path="/intent" component={() => <ProtectedRoute component={Intent} />} />
         <Route path="/app" component={() => <ProtectedRoute component={AppWorkspace} />} />

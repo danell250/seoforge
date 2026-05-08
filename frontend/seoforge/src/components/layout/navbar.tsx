@@ -21,6 +21,7 @@ export function Navbar() {
         { href: "/settings", label: "Settings" },
       ]
     : [
+        { href: "/seo-repair-engine", label: "SEO Repair" },
         { href: "/pricing", label: "Pricing" },
         { href: "/compare", label: "Compare" },
       ];

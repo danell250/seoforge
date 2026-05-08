@@ -1,7 +1,6 @@
 import { Link } from "wouter";
 import { useAgencySettings } from "@/hooks/use-agency-settings";
 import { useAuth } from "@/hooks/use-auth";
-import { BarChart3, Sparkles, Settings2, Mail, Shield, FileText } from "lucide-react";
 import logoUrl from "@/assets/logo.png";
 
 export function Footer() {
@@ -18,6 +17,15 @@ export function Footer() {
     { href: "/compare", label: "SEOaxe vs Competitors" },
     { href: "/blog", label: "Blog" },
     { href: "/login", label: "Login" },
+  ];
+
+  const seoLinks = [
+    { href: "/seo-repair-engine", label: "SEO Repair Engine" },
+    { href: "/html-seo-optimizer", label: "HTML SEO Optimizer" },
+    { href: "/aeo-optimizer", label: "AEO Optimizer" },
+    { href: "/schema-markup-generator", label: "Schema Markup Generator" },
+    { href: "/technical-seo-audit", label: "Technical SEO Audit" },
+    { href: "/local-seo-south-africa", label: "South Africa Local SEO" },
   ];
 
   const legalLinks = [
@@ -39,7 +47,7 @@ export function Footer() {
     <footer className="mt-auto bg-[#0F172A] border-t border-slate-800">
       <div className="container px-4 py-16 sm:px-6 md:py-20">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-10 md:gap-8">
           {/* Brand Column */}
           <div className="md:col-span-1 pl-1 sm:pl-2">
             {/* Logo matching navbar style */}
@@ -87,6 +95,23 @@ export function Footer() {
                 <li key={item.href}>
                   <Link 
                     href={item.href} 
+                    className="text-slate-400 hover:text-blue-400 transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* SEO Pages Column */}
+          <div>
+            <p className="text-sm font-semibold text-white mb-4 tracking-wide">SEO Pages</p>
+            <ul className="space-y-3 text-sm">
+              {seoLinks.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
                     className="text-slate-400 hover:text-blue-400 transition-colors"
                   >
                     {item.label}
