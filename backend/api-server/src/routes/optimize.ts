@@ -115,48 +115,18 @@ interface OptimizationOutcome {
   };
 }
 
-const TASK_INSTRUCTION = `Given the code below (HTML, TS, or TSX), return a JSON object (no prose, no code fences) with this exact shape:
+const TASK_INSTRUCTION = `Return a JSON object (no prose, no code fences) with this shape:
 
 {
-  "optimizedHtml": "<full optimized code, production-ready, every SEO and AEO improvement applied. If the input was TS or TSX, maintain that format but optimize any HTML/JSX content within it: title, meta description, canonical, Open Graph, Twitter card, JSON-LD schema (Organization/WebSite/WebPage/FAQPage where appropriate), hreflang for African multilingual targets when relevant, semantic HTML5, alt text on every image, descriptive heading hierarchy, AEO answer blocks, FAQ section if missing>",
-  "changes": ["bullet list of every concrete change made, one short sentence each"],
-  "originalScore": {
-    "technical": <0-100, assess the ORIGINAL code's technical SEO before optimization>,
-    "content": <0-100, assess the ORIGINAL code's content SEO before optimization>,
-    "aeo": <0-100, assess the ORIGINAL code's AEO readiness before optimization>,
-    "overall": <0-100, weighted overall score of original>
-  },
-  "score": {
-    "technical": <0-100, how strong technical SEO now is after optimization>,
-    "content": <0-100, how strong content SEO now is after optimization>,
-    "aeo": <0-100, AEO readiness for Google AI Overviews / Perplexity / voice after optimization>,
-    "overall": <0-100, weighted overall score after optimization>
-  },
-  "detectedLanguage": "<detected language code: en, af, zu, xh, pcm, sw>",
-  "languageGuidance": "<brief description of African language optimizations applied, if any>"
+  "optimizedHtml": "<full optimized code, every SEO and AEO improvement applied. Optimize: title, meta, canonical, OG, Twitter, JSON-LD schema (Org/WebSite/FAQ), hreflang, semantic HTML, alt text, heading hierarchy, AEO answer blocks. If TS/TSX, maintain code but optimize HTML/JSX strings.>",
+  "changes": ["list of concrete changes made"],
+  "originalScore": { "technical": 0-100, "content": 0-100, "aeo": 0-100, "overall": 0-100 },
+  "score": { "technical": 0-100, "content": 0-100, "aeo": 0-100, "overall": 0-100 },
+  "detectedLanguage": "en|af|zu|xh|pcm|sw",
+  "languageGuidance": "brief description of language optimizations"
 }
 
-SCORING INSTRUCTIONS - CRITICAL:
-Analyze the ORIGINAL code and score it BEFORE applying optimizations:
-- Technical SEO: Check meta tags, schema markup, heading hierarchy, alt text, canonical, Open Graph
-- Content SEO: Check title quality, description, keyword usage, content structure
-- AEO: Check for FAQ sections, answer blocks, question-based headers, schema for AI
-- Overall: Weighted average (Technical 30%, Content 40%, AEO 30%)
-
-Then apply all optimizations and score the result. Show the dramatic improvement.
-
-AFRICAN LANGUAGE SUPPORT - CRITICAL:
-- Detect if content is in Afrikaans (af), Zulu (zu), Xhosa (xh), Nigerian Pidgin (pcm), or Swahili (sw)
-- If African language detected, apply language-specific optimizations:
-  * Afrikaans: 50-55 char titles, LocalBusiness schema for SA, target "hoe om" queries
-  * Zulu: 40-50 char titles, HowTo schema, KZN context, "kanjani" pattern targeting
-  * Xhosa: 40-50 char titles, Eastern Cape context, video schema preference
-  * Nigerian Pidgin: Conversational tone, "wetin be" patterns, slang-aware keywords
-  * Swahili: "jinsi ya" query targeting, East African context, hospitality tone
-- Add hreflang tags for all supported African languages
-- Include lang="[code]" attribute on html element or within the appropriate JSX structure
-
-Return ONLY valid JSON. The optimizedHtml field must contain the FULL document code, not a fragment.`;
+CRITICAL: Return ONLY valid JSON. optimizedHtml must contain the FULL document code.`;
 
 router.post("/optimize", async (req, res) => {
   if (!process.env.GEMINI_API_KEY) {
@@ -273,8 +243,8 @@ async function optimizeHtmlDocument(
         "You are the core SEOaxe page optimizer. Transform full HTML/TS/TSX documents safely. RETURN ONLY VALID JSON. IMPORTANT: Do not use backticks (```) inside the optimizedHtml JSON field, as this breaks the JSON parser. Use single quotes or escaped double quotes for internal code.",
       html,
       htmlLabel: "Code to optimize",
-      primaryHtmlLimit: 60_000,
-      fallbackHtmlLimit: 30_000,
+      primaryHtmlLimit: 40_000,
+      fallbackHtmlLimit: 20_000,
       timeoutMs: 28_000,
       fallbackTimeoutMs: 12_000,
       extraParts: [

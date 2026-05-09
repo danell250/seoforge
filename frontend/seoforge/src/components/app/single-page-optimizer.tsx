@@ -238,12 +238,19 @@ export function SinglePageOptimizer() {
     setFeedbackVerdict(null);
     optimizeMutation.mutate({ data: { html: htmlInput, filename: "index.html" } }, {
       onError: (err: any) => {
-        const errorMessage = err?.data?.message || err?.message || "Optimization failed, please try again.";
+        const errorMessage = err?.data?.message || err?.message || "Optimization failed";
+        const errorDetail = err?.data?.error || "";
         const errorCode = err?.data?.code || "";
         
         toast({
           title: "Repair Failed",
-          description: `${errorMessage} ${errorCode ? `(Code: ${errorCode})` : ""}`,
+          description: (
+            <div className="space-y-1">
+              <p>{errorMessage}</p>
+              {errorDetail && <p className="text-xs opacity-80 font-mono">Detail: {errorDetail}</p>}
+              {errorCode && <p className="text-xs opacity-80">Code: {errorCode}</p>}
+            </div>
+          ),
           variant: "destructive"
         });
       }
