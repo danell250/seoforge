@@ -490,24 +490,67 @@ function fallbackOptimizeWithoutAi({
 }
 
 function estimateScoreFromHtml(html: string) {
-  const title = /<title[^>]*>[\s\S]*?<\/title>/i.test(html);
-  const description = /<meta[^>]*name=["']description["'][^>]*>/i.test(html);
-  const h1 = /<h1[^>]*>[\s\S]*?<\/h1>/i.test(html);
+  const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  const title = titleMatch ? titleMatch[1].trim() : "";
+  const descriptionMatch = html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i);
+  const description = descriptionMatch ? descriptionMatch[1] : "";
+  const h1Match = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+  const h1 = h1Match ? h1Match[1].trim() : "";
   const schema = /application\/ld\+json/i.test(html);
   const productSchema = /"@type"\s*:\s*"Product"/i.test(html);
   const returnPolicy = /"hasMerchantReturnPolicy"\s*:/i.test(html);
   const canonical = /<link[^>]*rel=["']canonical["'][^>]*>/i.test(html);
-  const technical = clamp(
-    30 +
-      (title ? 15 : 0) +
-      (description ? 15 : 0) +
-      (canonical ? 10 : 0) +
-      (productSchema && returnPolicy ? 12 : 0),
-  );
-  const content = clamp(35 + (h1 ? 20 : 0));
-  const aeo = clamp(20 + (schema ? 20 : 0) + (productSchema && returnPolicy ? 20 : 0));
+  const h2Count = (html.match(/<h2[^>]*>/gi) || []).length;
+  const imgTags = html.match(/<img\b[^>]*>/gi) || [];
+  const imagesWithAlt = imgTags.filter((tag) => /\balt=["'][^"']*["']/i.test(tag));
+  const ogTags = (html.match(/<meta[^>]*property=["']og:/gi) || []).length;
+  const twitterTags = (html.match(/<meta[^>]*name=["']twitter:/gi) || []).length;
+  const faqSchema = /"@type"\s*:\s*"FAQPage"/i.test(html);
+  const orgSchema = /"@type"\s*:\s*"Organization"/i.test(html);
+  const websiteSchema = /"@type"\s*:\s*"WebSite"/i.test(html);
+
+  // Technical score - more granular
+  let technical = 30;
+  if (title.length >= 10 && title.length <= 60) technical += 15;
+  else if (title.length > 0) technical += 8;
+  
+  if (description.length >= 50 && description.length <= 170) technical += 15;
+  else if (description.length > 0) technical += 8;
+  
+  if (canonical) technical += 10;
+  technical += Math.min(10, ogTags * 2);
+  technical += Math.min(5, twitterTags);
+  if (/<html[^>]+\blang=["'][a-z-]+["']/i.test(html)) technical += 5;
+  if (/<meta[^>]*name=["']viewport["'][^>]*>/i.test(html)) technical += 5;
+  if (productSchema && returnPolicy) technical += 12;
+
+  // Content score - more granular
+  let content = 35;
+  if (h1.length >= 10) content += 20;
+  else if (h1.length > 0) content += 10;
+  
+  content += Math.min(15, h2Count * 3);
+  const bodyText = html.replace(/<[^>]+>/g, "").trim();
+  if (bodyText.length > 500) content += 5;
+  if (bodyText.length > 1000) content += 5;
+  
+  // Image alt text
+  if (imgTags.length > 0) {
+    const altRatio = imagesWithAlt.length / imgTags.length;
+    content += Math.round(altRatio * 10);
+  }
+
+  // AEO score - more granular
+  let aeo = 20;
+  if (schema) aeo += 20;
+  if (faqSchema) aeo += 15;
+  if (orgSchema) aeo += 10;
+  if (websiteSchema) aeo += 10;
+  if (productSchema && returnPolicy) aeo += 20;
+  if (/<h[23][^>]*>[^<]*\?/i.test(html)) aeo += 5;
+
   const overall = clamp(Math.round((technical + content + aeo) / 3));
-  return { technical, content, aeo, overall };
+  return { technical: clamp(technical), content: clamp(content), aeo: clamp(aeo), overall };
 }
 
 function blendScores(

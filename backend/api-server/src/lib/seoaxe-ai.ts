@@ -1,10 +1,14 @@
 import { extractJson, generateContentWithTimeout, getModel } from "./gemini";
+import { generateSeoaxeOptimization, isGroqAvailable, extractJson as groqExtractJson } from "./groq";
 import { prepareHtmlForModel } from "./html-processor";
 
 export interface AiLogger {
   error: (object: unknown, message?: string) => void;
   info: (object: unknown, message?: string) => void;
 }
+
+// Prefer Groq if available, otherwise fallback to Gemini
+const USE_GROQ = isGroqAvailable();
 
 interface RunSeoaxeJsonTaskOptions {
   taskName: string;
@@ -55,11 +59,9 @@ export async function runSeoaxeJsonTask<T>({
 }: RunSeoaxeJsonTaskOptions): Promise<T> {
   const filename = extraParts.find(p => p?.startsWith("Filename: "))?.split(": ")[1];
   
-  const model = getModel(
-    systemInstruction
-      ? `${SEOAXE_CORE_SYSTEM_PROMPT}\n\nTask specialization:\n${systemInstruction}`
-      : SEOAXE_CORE_SYSTEM_PROMPT,
-  );
+  const systemPrompt = systemInstruction
+    ? `${SEOAXE_CORE_SYSTEM_PROMPT}\n\nTask specialization:\n${systemInstruction}`
+    : SEOAXE_CORE_SYSTEM_PROMPT;
 
   const promptParts = [
     taskPrompt,
@@ -69,28 +71,57 @@ export async function runSeoaxeJsonTask<T>({
   const primaryHtml = html ? prepareHtmlForModel(html, primaryHtmlLimit) : null;
   const fallbackHtml = html ? prepareHtmlForModel(html, fallbackHtmlLimit) : null;
 
-  let result;
-  try {
-    result = await generateContentWithTimeout(
-      model,
-      appendHtml(promptParts, htmlLabel, primaryHtml, filename),
-      timeoutMs,
-    );
-  } catch (err) {
-    if (!fallbackHtml || fallbackHtml === primaryHtml) {
-      throw err;
+  let text: string;
+
+  if (USE_GROQ) {
+    log?.info({ taskName }, "Using Groq (Llama 3.1 70B) for optimization");
+    try {
+      text = await generateSeoaxeOptimization(
+        systemPrompt,
+        promptParts.join("\n\n"),
+        primaryHtml,
+        timeoutMs,
+      );
+    } catch (err) {
+      if (!fallbackHtml || fallbackHtml === primaryHtml) {
+        throw err;
+      }
+      log?.error({ err, taskName }, `${taskName} Groq primary call failed, retrying with compact HTML payload`);
+      text = await generateSeoaxeOptimization(
+        systemPrompt,
+        promptParts.join("\n\n"),
+        fallbackHtml,
+        fallbackTimeoutMs,
+      );
     }
-    log?.error({ err, taskName }, `${taskName} primary model call failed, retrying with compact HTML payload`);
-    result = await generateContentWithTimeout(
-      model,
-      appendHtml(promptParts, htmlLabel, fallbackHtml, filename),
-      fallbackTimeoutMs,
-    );
+  } else {
+    // Fallback to Gemini
+    log?.info({ taskName }, "Using Gemini for optimization (Groq not available)");
+    const model = getModel(systemPrompt);
+
+    let result;
+    try {
+      result = await generateContentWithTimeout(
+        model,
+        appendHtml(promptParts, htmlLabel, primaryHtml, filename),
+        timeoutMs,
+      );
+    } catch (err) {
+      if (!fallbackHtml || fallbackHtml === primaryHtml) {
+        throw err;
+      }
+      log?.error({ err, taskName }, `${taskName} primary model call failed, retrying with compact HTML payload`);
+      result = await generateContentWithTimeout(
+        model,
+        appendHtml(promptParts, htmlLabel, fallbackHtml, filename),
+        fallbackTimeoutMs,
+      );
+    }
+    text = result.response.text();
   }
 
-  const text = result.response.text();
   try {
-    return extractJson<T>(text);
+    return USE_GROQ ? groqExtractJson<T>(text) : extractJson<T>(text);
   } catch (err) {
     log?.error({ err, taskName, text: text.slice(0, 500) }, `${taskName} JSON parse failed`);
     throw err;
