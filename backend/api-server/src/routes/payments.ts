@@ -16,7 +16,15 @@ import {
 import { verifySvixSignature } from "../lib/svix";
 import crypto from "crypto";
 
+import { ordersController } from "../lib/paypal";
+import { CheckoutPaymentIntent } from "@paypal/paypal-server-sdk";
+
 const router: IRouter = Router();
+
+const PAYPAL_PLAN_PRICES: Record<string, string> = {
+  starter: "4.99",
+  agency: "9.99",
+};
 
 type RequestWithRawBody = Request & {
   rawBody?: Buffer;
@@ -265,6 +273,82 @@ router.post("/payments/stitch/checkout", requireAuthenticatedUser, async (req, r
 
     req.log.error({ err }, "Failed to create Stitch Express checkout");
     return res.status(500).json({ message: "Could not start secure payment. Please try again." });
+  }
+});
+
+router.post("/payments/paypal/create-order", requireAuthenticatedUser, async (req, res) => {
+  const user = getAuthenticatedUser(req);
+  if (!user) return res.status(401).json({ message: "Authentication required" });
+
+  const planSlug = req.body?.plan;
+  if (!isPaidPlanSlug(planSlug)) {
+    return res.status(400).json({ message: "Choose Starter or Agency to continue to payment." });
+  }
+
+  const price = PAYPAL_PLAN_PRICES[planSlug];
+  if (!price) {
+    return res.status(400).json({ message: "Invalid plan selected." });
+  }
+
+  try {
+    const { result } = await ordersController.createOrder({
+      body: {
+        intent: CheckoutPaymentIntent.Capture,
+        purchaseUnits: [
+          {
+            amount: {
+              currencyCode: "USD",
+              value: price,
+            },
+            description: `SEOaxe ${planSlug.charAt(0).toUpperCase() + planSlug.slice(1)} Plan`,
+            customId: planSlug,
+          },
+        ],
+      },
+    });
+
+    return res.json(result);
+  } catch (err) {
+    req.log.error({ err }, "Failed to create PayPal order");
+    return res.status(500).json({ message: "Could not start PayPal payment." });
+  }
+});
+
+router.post("/payments/paypal/capture-order", requireAuthenticatedUser, async (req, res) => {
+  const user = getAuthenticatedUser(req);
+  if (!user) return res.status(401).json({ message: "Authentication required" });
+
+  const { orderId } = req.body;
+  if (!orderId) {
+    return res.status(400).json({ message: "Order ID is required." });
+  }
+
+  try {
+    const { result } = await ordersController.captureOrder({
+      id: orderId,
+    });
+
+    if (result.status === "COMPLETED") {
+      const purchaseUnit = result.purchaseUnits?.[0];
+      const planSlug = purchaseUnit?.customId;
+
+      if (planSlug && isPaidPlanSlug(planSlug)) {
+        await db
+          .update(usersTable)
+          .set({
+            plan: planSlug,
+            updatedAt: new Date(),
+          })
+          .where(eq(usersTable.id, user.id));
+
+        req.log.info({ userId: user.id, plan: planSlug }, "Applied paid PayPal plan after capture");
+      }
+    }
+
+    return res.json(result);
+  } catch (err) {
+    req.log.error({ err }, "Failed to capture PayPal order");
+    return res.status(500).json({ message: "Could not complete PayPal payment." });
   }
 });
 

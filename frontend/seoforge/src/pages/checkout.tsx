@@ -1,6 +1,6 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { ArrowRight, Check, CreditCard, LockKeyhole, ShieldCheck } from "lucide-react";
+import { ArrowRight, Check, CreditCard, LockKeyhole, ShieldCheck, Loader2 } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useAuth } from "@/hooks/use-auth";
 import { getPlanDefinition, PLAN_DEFINITIONS } from "@/lib/plans";
 import { detectPricingLocale, formatLocalPrice } from "@/lib/local-pricing";
+import { PayPalButtons } from "@paypal/react-paypal-js";
+import { customFetch } from "@workspace/api-client-react";
+import { useToast } from "@/hooks/use-toast";
 
 const PLAN_PRICES_USD: Record<string, number> = {
   starter: 4.99,
@@ -18,18 +21,11 @@ function buildAuthRedirect(path: string) {
   return encodeURIComponent(path);
 }
 
-function buildPayPalUrl(planSlug: string, planName: string, amount: number, userEmail: string | undefined): string {
-  const business = "danelloosthuizen3@gmail.com";
-  const itemName = `SEOaxe ${planName} Plan`;
-  const returnUrl = encodeURIComponent(`https://www.seoaxe.site/checkout?plan=${planSlug}&payment=return`);
-  const cancelUrl = encodeURIComponent(`https://www.seoaxe.site/checkout?plan=${planSlug}&payment=cancel`);
-  
-  return `https://www.paypal.com/paypalme/danelloosthuizen3/${amount}USD`;
-}
-
 export default function Checkout() {
-  const { isAuthenticated, user } = useAuth();
-  const [location] = useLocation();
+  const { isAuthenticated, user, refreshSession } = useAuth();
+  const [location, navigate] = useLocation();
+  const { toast } = useToast();
+  const [isProcessing, setIsProcessing] = useState(false);
   const search = typeof window !== "undefined" ? window.location.search : "";
   const params = new URLSearchParams(search);
   const planParam = params.get("plan");
@@ -40,6 +36,52 @@ export default function Checkout() {
     if (typeof window === "undefined") return location;
     return `${window.location.pathname}${window.location.search}${window.location.hash}`;
   }, [location]);
+
+  const createPayPalOrder = async () => {
+    try {
+      const response = await customFetch<{ id: string }>("/api/payments/paypal/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: selectedPlan?.slug }),
+      });
+      return response.id;
+    } catch (err) {
+      toast({
+        title: "Payment error",
+        description: "Could not start PayPal checkout. Please try again.",
+        variant: "destructive",
+      });
+      throw err;
+    }
+  };
+
+  const onPayPalApprove = async (data: { orderID: string }) => {
+    setIsProcessing(true);
+    try {
+      await customFetch("/api/payments/paypal/capture-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: data.orderID }),
+      });
+      
+      await refreshSession();
+      
+      toast({
+        title: "Success!",
+        description: `Your ${selectedPlan?.name} plan is now active.`,
+      });
+      
+      navigate("/app");
+    } catch (err) {
+      toast({
+        title: "Payment capture failed",
+        description: "Your payment was successful but we couldn't activate your plan. Please contact support.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const priceLabel = selectedPlan
     ? formatLocalPrice(selectedPlan.amountZar, pricingLocale)
@@ -71,9 +113,6 @@ export default function Checkout() {
   const signupHref = `/signup?redirect=${buildAuthRedirect(currentPath)}`;
   const loginHref = `/login?redirect=${buildAuthRedirect(currentPath)}`;
   const planPrice = selectedPlan.slug ? PLAN_PRICES_USD[selectedPlan.slug] : null;
-  const paypalUrl = planPrice && selectedPlan.slug
-    ? buildPayPalUrl(selectedPlan.slug, selectedPlan.name, planPrice, user?.email)
-    : null;
 
   return (
     <div className="min-h-screen flex flex-col bg-muted/20">
@@ -140,7 +179,7 @@ export default function Checkout() {
                     </Button>
                   </CardFooter>
                 </Card>
-              ) : planPrice && paypalUrl ? (
+              ) : planPrice ? (
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-xl">
@@ -155,18 +194,28 @@ export default function Checkout() {
                     <div className="rounded-lg border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
                       Signed in as <span className="font-medium text-foreground">{user?.email}</span>
                     </div>
+                    
+                    {isProcessing ? (
+                      <div className="flex flex-col items-center justify-center py-8 space-y-4">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        <p className="text-sm font-medium">Processing your payment...</p>
+                        <p className="text-xs text-muted-foreground">Please don&apos;t close this window.</p>
+                      </div>
+                    ) : (
+                      <div className="py-2">
+                        <PayPalButtons
+                          style={{ layout: "vertical", label: "pay" }}
+                          createOrder={createPayPalOrder}
+                          onApprove={onPayPalApprove}
+                          disabled={alreadyOnPlan}
+                        />
+                      </div>
+                    )}
+
                     <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
-                      After payment, your plan will be activated within 5 minutes.
+                      After payment, your plan will be activated immediately.
                     </div>
                   </CardContent>
-                  <CardFooter>
-                    <Button className="w-full" size="lg" asChild disabled={alreadyOnPlan}>
-                      <a href={paypalUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
-                        <span>Pay ${planPrice.toFixed(2)} USD with PayPal</span>
-                        <ArrowRight className="h-4 w-4" />
-                      </a>
-                    </Button>
-                  </CardFooter>
                 </Card>
               ) : (
                 <Card>

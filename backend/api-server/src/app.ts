@@ -8,40 +8,13 @@ import { attachRequestAuth } from "./middleware/auth";
 import { createRateLimit, startRateLimitCleanupLoop } from "./middleware/rate-limit";
 
 const app: Express = express();
-type RequestWithRawBody = express.Request & {
-  rawBody?: Buffer;
-};
-
-const DEFAULT_ALLOWED_ORIGINS = [
-  "http://localhost:5173",
-  "https://seoaxe.site",
-  "https://www.seoaxe.site",
-];
-
-function normalizeOrigin(value: string): string {
-  const trimmed = value.trim().replace(/^['"`]+|['"`]+$/g, "").replace(/\/+$/, "");
-  try {
-    return new URL(trimmed).origin;
-  } catch {
-    if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed) && trimmed) {
-      try {
-        return new URL(`https://${trimmed}`).origin;
-      } catch {
-        return trimmed;
-      }
-    }
-    return trimmed;
-  }
-}
 
 function allowedOrigins(): string[] {
-  const configured = [
-    process.env.FRONTEND_URLS,
-    process.env.FRONTEND_URL,
-    process.env.CORS_ORIGIN,
-  ].flatMap((raw) => (raw ? raw.split(",") : []));
-
-  return [...new Set([...configured, ...DEFAULT_ALLOWED_ORIGINS].map(normalizeOrigin).filter(Boolean))];
+  const raw = process.env.FRONTEND_URLS || process.env.FRONTEND_URL || "http://localhost:5173";
+  return raw
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
 }
 
 function setSecurityHeaders(req: express.Request, res: express.Response, next: express.NextFunction) {
@@ -61,18 +34,11 @@ function setSecurityHeaders(req: express.Request, res: express.Response, next: e
 
 const corsOptions: CorsOptions = {
   origin(origin, callback) {
-    if (!origin || allowedOrigins().includes(normalizeOrigin(origin))) {
+    if (!origin || allowedOrigins().includes(origin)) {
       callback(null, true);
       return;
     }
-    logger.warn(
-      {
-        origin,
-        allowedOrigins: allowedOrigins(),
-      },
-      "Origin rejected by CORS policy",
-    );
-    callback(null, false);
+    callback(new Error("Origin not allowed by CORS"));
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -102,12 +68,7 @@ app.use(
 app.use(cors(corsOptions));
 app.use(setSecurityHeaders);
 app.use(cookieParser());
-app.use(express.json({
-  limit: "10mb",
-  verify(req, _res, buf) {
-    (req as RequestWithRawBody).rawBody = Buffer.from(buf);
-  },
-}));
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 startRateLimitCleanupLoop();
 app.use(createRateLimit({ key: "api", max: 300, windowMs: 1000 * 60 * 15 }));

@@ -37,8 +37,15 @@ import {
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { GlobalSEO } from "@/components/seo";
 import { ScrollToTop } from "@/components/scroll-to-top";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 const queryClient = new QueryClient();
+
+const PAYPAL_OPTIONS = {
+  clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || "test",
+  currency: "USD",
+  intent: "capture",
+};
 
 function ProtectedRoute({ component: Component }: { component: ComponentType }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -107,13 +114,15 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <GlobalSEO />
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <Router />
-          </WouterRouter>
-          <Toaster />
-        </TooltipProvider>
+        <PayPalScriptProvider options={PAYPAL_OPTIONS}>
+          <TooltipProvider>
+            <GlobalSEO />
+            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+              <Router />
+            </WouterRouter>
+            <Toaster />
+          </TooltipProvider>
+        </PayPalScriptProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
