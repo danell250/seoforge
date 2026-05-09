@@ -3,6 +3,7 @@ import {
   bootstrapAuth,
   buildClearedSessionCookie,
   buildSessionCookie,
+  createSessionForGoogleLogin,
   createSessionForLogin,
   getSessionCookieName,
   registerUserAccount,
@@ -44,6 +45,32 @@ function validateRegistrationInput(input: { email: string; password: string }) {
   if (input.password.length < 8) return "Password must be at least 8 characters.";
   return null;
 }
+
+function parseGoogleLoginBody(body: unknown) {
+  if (!body || typeof body !== "object") return null;
+  const idToken = typeof (body as Record<string, unknown>).idToken === "string"
+    ? (body as Record<string, string>).idToken.trim()
+    : "";
+  if (!idToken) return null;
+  return { idToken };
+}
+
+function resolveGoogleClientIds(): string[] {
+  const raw = process.env.GOOGLE_CLIENT_ID?.trim() || "";
+  return raw
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
+type GoogleTokenInfo = {
+  email?: string;
+  email_verified?: string;
+  aud?: string;
+  name?: string;
+  given_name?: string;
+  family_name?: string;
+};
 
 router.get("/auth/session", async (req, res) => {
   try {
@@ -116,6 +143,60 @@ router.post("/auth/register", registerRateLimit, async (req, res) => {
     authenticated: true,
     user: result.user,
   });
+});
+
+router.post("/auth/google", loginRateLimit, async (req, res) => {
+  const body = parseGoogleLoginBody(req.body);
+  if (!body) {
+    return res.status(400).json({ message: "Google ID token is required." });
+  }
+
+  const configuredClientIds = resolveGoogleClientIds();
+  if (configuredClientIds.length === 0) {
+    return res.status(503).json({ message: "Google login is not configured yet." });
+  }
+
+  let tokenInfo: GoogleTokenInfo | null = null;
+
+  try {
+    const response = await fetch(
+      `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(body.idToken)}`,
+    );
+    if (!response.ok) {
+      return res.status(401).json({ message: "Google token verification failed." });
+    }
+    tokenInfo = (await response.json()) as GoogleTokenInfo;
+  } catch (err) {
+    req.log.error({ err }, "Google token verification request failed");
+    return res.status(502).json({ message: "Google login service is temporarily unavailable." });
+  }
+
+  const audience = tokenInfo?.aud?.trim();
+  if (!audience || !configuredClientIds.includes(audience)) {
+    return res.status(401).json({ message: "Google token audience mismatch." });
+  }
+
+  const email = tokenInfo?.email?.trim().toLowerCase();
+  if (!email || tokenInfo?.email_verified !== "true") {
+    return res.status(401).json({ message: "Google account email is not verified." });
+  }
+
+  const displayName = tokenInfo?.name?.trim()
+    || [tokenInfo?.given_name, tokenInfo?.family_name].filter(Boolean).join(" ").trim()
+    || null;
+
+  try {
+    const session = await createSessionForGoogleLogin({ email, displayName });
+    res.setHeader("Cache-Control", "no-store");
+    res.append("Set-Cookie", buildSessionCookie(session.token, session.expiresAt));
+    return res.json({
+      authenticated: true,
+      user: session.user,
+    });
+  } catch (err) {
+    req.log.error({ err }, "Google auth login failed");
+    return res.status(500).json({ message: "Google login failed." });
+  }
 });
 
 router.post("/auth/logout", async (req, res) => {

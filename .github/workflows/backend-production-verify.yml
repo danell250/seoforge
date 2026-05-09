@@ -37,6 +37,20 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Create backend .env compatibility file
+        run: |
+          cat > backend/api-server/.env <<'EOF'
+          PORT=10000
+          DATABASE_URL=postgresql://postgres:postgres@localhost:5432/seoforge_ci
+          ADMIN_EMAIL=ci-admin@example.com
+          ADMIN_PASSWORD=ci-admin-password
+          PAYPAL_CLIENT_ID=ci-paypal-client-id
+          PAYPAL_CLIENT_SECRET=ci-paypal-client-secret
+          PAYPAL_WEBHOOK_SECRET=ci-paypal-webhook-secret
+          GEMINI_API_KEY=ci-gemini-key
+          FRONTEND_URLS=http://localhost:5173
+          EOF
+
       - name: Verify backend production readiness
         env:
           PORT: "10000"

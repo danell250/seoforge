@@ -116,7 +116,7 @@ export function buildPricingContext(inputLocale?: string) {
   return {
     ...resolved,
     plans: {
-      free: convertFromZar(0, resolved.currency),
+      free: convertFromZar(16.38, resolved.currency),
       starter: convertFromZar(299, resolved.currency),
       agency: convertFromZar(999, resolved.currency),
     },

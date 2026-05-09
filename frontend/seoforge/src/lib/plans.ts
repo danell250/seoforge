@@ -15,9 +15,9 @@ export const PLAN_DEFINITIONS: readonly PlanDefinition[] = [
   {
     slug: "free",
     name: "Free",
-    amountZar: 0,
-    period: "forever",
-    description: "Test the repair engine on real pages.",
+    amountZar: 16.38,
+    period: "month",
+    description: "Entry plan priced at about $1/month.",
     features: [
       "3 page repairs per month",
       "Basic technical SEO checks",
@@ -25,7 +25,7 @@ export const PLAN_DEFINITIONS: readonly PlanDefinition[] = [
       "Repair receipt for every page",
       "Community support",
     ],
-    cta: "Get Started",
+    cta: "Start $1 Plan",
     popular: false,
   },
   {

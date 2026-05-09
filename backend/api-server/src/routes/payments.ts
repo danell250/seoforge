@@ -30,6 +30,7 @@ const paymentWriteRateLimit = createRateLimit({
 });
 
 const ZAR_PRICES: Record<string, number> = {
+  free: 16.38,
   starter: 299,
   agency: 999,
 };
@@ -153,7 +154,8 @@ router.post("/payments/paypal/webhook", async (req, res) => {
   // Parse plan from description or custom_id
   let planSlug: string | null = null;
   if (description) {
-    if (description.includes("Starter")) planSlug = "starter";
+    if (description.includes("Free")) planSlug = "free";
+    else if (description.includes("Starter")) planSlug = "starter";
     else if (description.includes("Agency")) planSlug = "agency";
   }
 
@@ -249,7 +251,7 @@ router.post("/payments/stitch/checkout", paymentWriteRateLimit, requireAuthentic
 
   const planSlug = req.body?.plan;
   if (!isPaidPlanSlug(planSlug)) {
-    return res.status(400).json({ message: "Choose Starter or Agency to continue to payment." });
+    return res.status(400).json({ message: "Choose a valid plan to continue to payment." });
   }
 
   const plan = STITCH_PAYMENT_PLANS[planSlug];
@@ -294,7 +296,7 @@ router.post("/payments/paypal/create-order", paymentWriteRateLimit, requireAuthe
 
   const planSlug = req.body?.plan;
   if (!isPaidPlanSlug(planSlug)) {
-    return res.status(400).json({ message: "Choose Starter or Agency to continue to payment." });
+    return res.status(400).json({ message: "Choose a valid plan to continue to payment." });
   }
 
   const zarPrice = ZAR_PRICES[planSlug];

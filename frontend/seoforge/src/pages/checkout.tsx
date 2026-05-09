@@ -13,6 +13,7 @@ import { customFetch } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
 
 const PLAN_PRICES_USD: Record<string, number> = {
+  free: 1.0,
   starter: 4.99,
   agency: 9.99,
 };
@@ -136,12 +137,10 @@ export default function Checkout() {
               <div className="space-y-3">
                 <p className="text-sm font-medium text-primary">Checkout</p>
                 <h1 className="text-3xl font-bold tracking-tight">
-                  {selectedPlan.slug === "free" ? "Start your workspace" : `Complete your ${selectedPlan.name} plan`}
+                  {`Complete your ${selectedPlan.name} plan`}
                 </h1>
                 <p className="text-muted-foreground max-w-2xl">
-                  {selectedPlan.slug === "free"
-                    ? "Create your account and repair your first page right away."
-                    : "We use your account to attach the subscription to the right workspace, then send you to payment."}
+                  {"We use your account to attach the subscription to the right workspace, then send you to payment."}
                 </p>
               </div>
 
@@ -169,26 +168,6 @@ export default function Checkout() {
                       </Button>
                     </div>
                   </CardContent>
-                </Card>
-              ) : selectedPlan.slug === "free" ? (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-xl">
-                      <ShieldCheck className="h-5 w-5 text-primary" />
-                      You&apos;re ready to go
-                    </CardTitle>
-                    <CardDescription>
-                      Your account is signed in. Open the workspace and start repairing pages.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardFooter>
-                    <Button asChild className="w-full sm:w-auto">
-                      <Link href="/app">
-                        Open workspace
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </CardFooter>
                 </Card>
               ) : planPrice ? (
                 <Card>

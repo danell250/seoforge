@@ -204,6 +204,49 @@ export async function createSessionForLogin(email: string, password: string) {
   };
 }
 
+export async function createSessionForGoogleLogin(input: {
+  email: string;
+  displayName?: string | null;
+}) {
+  await bootstrapAuth();
+
+  const normalizedEmail = normalizeEmail(input.email);
+  let [user] = await db.select().from(usersTable).where(eq(usersTable.email, normalizedEmail)).limit(1);
+
+  if (!user) {
+    const syntheticPassword = randomBytes(32).toString("base64url");
+    const passwordHash = await hashPassword(syntheticPassword);
+    const [created] = await db
+      .insert(usersTable)
+      .values({
+        email: normalizedEmail,
+        passwordHash,
+        displayName: input.displayName?.trim() || buildDisplayName(normalizedEmail),
+        role: "user",
+        plan: "free",
+      })
+      .returning();
+    user = created;
+  }
+
+  const rawToken = randomBytes(32).toString("base64url");
+  const hashedToken = hashSessionToken(rawToken);
+  const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
+
+  await db.insert(sessionsTable).values({
+    id: hashedToken,
+    userId: user.id,
+    expiresAt,
+    lastSeenAt: new Date(),
+  });
+
+  return {
+    token: rawToken,
+    expiresAt,
+    user: toSessionUser(user),
+  };
+}
+
 export async function registerUserAccount(email: string, password: string) {
   await bootstrapAuth();
 

@@ -103,6 +103,7 @@ export function formatLocalPrice(amount: number, pricingLocale: PricingLocale): 
   return new Intl.NumberFormat(pricingLocale.locale, {
     style: "currency",
     currency: pricingLocale.currency,
-    maximumFractionDigits: 0,
+    minimumFractionDigits: amount % 1 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
   }).format(amount);
 }

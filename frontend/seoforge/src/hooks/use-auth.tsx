@@ -33,6 +33,7 @@ interface AuthContextValue {
   isLogoutPending: boolean;
   errorMessage: string | null;
   login: (input: LoginInput) => Promise<SessionResponse>;
+  loginWithGoogle: (idToken: string) => Promise<SessionResponse>;
   signup: (input: LoginInput) => Promise<SessionResponse>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<SessionResponse>;
@@ -74,6 +75,14 @@ async function signupRequest(input: LoginInput): Promise<SessionResponse> {
   });
 }
 
+async function googleLoginRequest(idToken: string): Promise<SessionResponse> {
+  return customFetch<SessionResponse>("/api/auth/google", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ idToken }),
+  });
+}
+
 async function logoutRequest(): Promise<void> {
   await customFetch<{ success: boolean }>("/api/auth/logout", {
     method: "POST",
@@ -103,6 +112,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
     },
   });
 
+  const googleLoginMutation = useMutation({
+    mutationFn: googleLoginRequest,
+    onSuccess: (data) => {
+      queryClient.setQueryData(AUTH_SESSION_QUERY_KEY, data);
+    },
+  });
+
   const logoutMutation = useMutation({
     mutationFn: logoutRequest,
     onSuccess: () => {
@@ -127,6 +143,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     isLogoutPending: logoutMutation.isPending,
     errorMessage: getErrorMessage(sessionQuery.error),
     login: (input) => loginMutation.mutateAsync(input),
+    loginWithGoogle: (idToken) => googleLoginMutation.mutateAsync(idToken),
     signup: (input) => signupMutation.mutateAsync(input),
     logout: async () => {
       await logoutMutation.mutateAsync();

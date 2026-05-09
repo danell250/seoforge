@@ -10,7 +10,7 @@ import { AlertCircle, LoaderCircle, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
 export default function Login() {
-  const { login, isAuthenticated, isLoading, isLoginPending, errorMessage } = useAuth();
+  const { login, loginWithGoogle, isAuthenticated, isLoading, isLoginPending, errorMessage } = useAuth();
   const [, navigate] = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,6 +20,81 @@ export default function Login() {
       ? new URLSearchParams(window.location.search).get("redirect")
       : null;
   const isReturningToCheckout = redirect?.startsWith("/checkout") ?? false;
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
+
+  useEffect(() => {
+    if (!googleClientId) return;
+
+    type GoogleCredentialResponse = { credential?: string };
+    type GoogleWindow = Window & {
+      google?: {
+        accounts: {
+          id: {
+            initialize: (config: {
+              client_id: string;
+              callback: (response: GoogleCredentialResponse) => void;
+            }) => void;
+            renderButton: (
+              parent: HTMLElement,
+              options: Record<string, string | number | boolean>,
+            ) => void;
+          };
+        };
+      };
+    };
+
+    const scriptId = "google-identity-services";
+    const existing = document.getElementById(scriptId) as HTMLScriptElement | null;
+    const mount = document.getElementById("google-login-button");
+    if (!mount) return;
+
+    const setupButton = () => {
+      const g = (window as GoogleWindow).google;
+      if (!g || !mount) return;
+      mount.innerHTML = "";
+      g.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: async (response) => {
+          if (!response.credential) {
+            setSubmitError("Google login did not return a credential.");
+            return;
+          }
+          try {
+            setSubmitError(null);
+            const session = await loginWithGoogle(response.credential);
+            if (session.authenticated) {
+              const params = new URLSearchParams(window.location.search);
+              const redirect = params.get("redirect");
+              const next = redirect && redirect.startsWith("/") ? redirect : "/app";
+              navigate(next);
+            }
+          } catch (error) {
+            setSubmitError(error instanceof Error ? error.message : "Google login failed.");
+          }
+        },
+      });
+      g.accounts.id.renderButton(mount, {
+        theme: "outline",
+        size: "large",
+        shape: "rectangular",
+        text: "signin_with",
+        width: 360,
+      });
+    };
+
+    if (existing) {
+      setupButton();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.id = scriptId;
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = setupButton;
+    document.head.appendChild(script);
+  }, [googleClientId, loginWithGoogle, navigate]);
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
@@ -121,6 +196,19 @@ export default function Login() {
                 )}
               </Button>
             </form>
+            {googleClientId && (
+              <>
+                <div className="relative py-1">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">or</span>
+                  </div>
+                </div>
+                <div id="google-login-button" className="flex justify-center" />
+              </>
+            )}
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <div className="text-center text-sm text-muted-foreground">

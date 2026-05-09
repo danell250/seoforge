@@ -32,7 +32,7 @@ type TokenCache = {
   expiresAt: number;
 };
 
-export type PaidPlanSlug = "starter" | "agency";
+export type PaidPlanSlug = "free" | "starter" | "agency";
 
 export type StitchPaymentPlan = {
   slug: PaidPlanSlug;
@@ -69,6 +69,11 @@ export class StitchApiError extends Error {
 let tokenCache: TokenCache | null = null;
 
 export const STITCH_PAYMENT_PLANS: Record<PaidPlanSlug, StitchPaymentPlan> = {
+  free: {
+    slug: "free",
+    name: "Free",
+    amountCents: 1638,
+  },
   starter: {
     slug: "starter",
     name: "Starter",
@@ -190,7 +195,7 @@ async function stitchFetch(path: string, init: RequestInit, retry = true): Promi
 }
 
 export function isPaidPlanSlug(value: unknown): value is PaidPlanSlug {
-  return value === "starter" || value === "agency";
+  return value === "free" || value === "starter" || value === "agency";
 }
 
 export function buildStitchMerchantReference(plan: PaidPlanSlug, userId: number): string {
@@ -200,7 +205,7 @@ export function buildStitchMerchantReference(plan: PaidPlanSlug, userId: number)
 export function parseStitchMerchantReference(reference: unknown): { plan: PaidPlanSlug; userId: number } | null {
   if (typeof reference !== "string") return null;
 
-  const match = /^SEOaxe\s+(starter|agency)\s+u(\d+)\b/i.exec(reference.trim());
+  const match = /^SEOaxe\s+(free|starter|agency)\s+u(\d+)\b/i.exec(reference.trim());
   if (!match) return null;
 
   const plan = match[1]?.toLowerCase();

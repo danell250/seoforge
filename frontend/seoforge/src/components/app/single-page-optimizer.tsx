@@ -336,6 +336,54 @@ export function SinglePageOptimizer() {
     });
   };
 
+  const schemaFixedIssues = (optimizeMutation.data?.changes ?? [])
+    .filter((line) => line.startsWith("Fixed structured data issue:"))
+    .map((line) => line.replace("Fixed structured data issue:", "").trim().replace(/\.$/, ""));
+  const schemaRemainingIssues = (optimizeMutation.data?.changes ?? [])
+    .filter((line) => line.startsWith("Still needs manual fix:"))
+    .map((line) => line.replace("Still needs manual fix:", "").trim().replace(/\.$/, ""));
+
+  const copyRetestChecklist = async () => {
+    if (!optimizeMutation.data) return;
+
+    const fixedLines =
+      schemaFixedIssues.length > 0
+        ? schemaFixedIssues.map((issue) => `- Fixed: ${issue}`)
+        : ["- Fixed: No auto-fixed schema issues detected in this run."];
+    const remainingLines =
+      schemaRemainingIssues.length > 0
+        ? schemaRemainingIssues.map((issue) => `- Needs manual data: ${issue}`)
+        : ["- Needs manual data: None detected."];
+
+    const checklist = [
+      "Search Console Re-test Checklist",
+      "",
+      "1) Deploy the optimized HTML to production.",
+      "2) Open Google Search Console -> URL Inspection for this page.",
+      "3) Click 'Test Live URL' and confirm rich result fields are updated.",
+      "4) Validate fixed schema items:",
+      ...fixedLines,
+      "5) Resolve any remaining manual items:",
+      ...remainingLines,
+      "6) Click 'Request Indexing'.",
+      "7) Re-check Enhancements/Rich Results report in 24-72 hours.",
+    ].join("\n");
+
+    try {
+      await navigator.clipboard.writeText(checklist);
+      toast({
+        title: "Checklist copied",
+        description: "Search Console re-test checklist is in your clipboard.",
+      });
+    } catch {
+      toast({
+        title: "Copy failed",
+        description: "Could not copy checklist. Try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
@@ -739,7 +787,7 @@ export function SinglePageOptimizer() {
             </Card>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -761,6 +809,45 @@ export function SinglePageOptimizer() {
                     </li>
                   )}
                 </ul>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CheckSquare className="h-5 w-5 text-primary" />
+                  Google Schema Issues
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Auto-fixed</p>
+                  <ul className="mt-2 space-y-2">
+                    {schemaFixedIssues.map((issue, i) => (
+                      <li key={`fixed-${i}`} className="text-sm flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 shrink-0" />
+                        <span>{issue}</span>
+                      </li>
+                    ))}
+                    {schemaFixedIssues.length === 0 && (
+                      <li className="text-sm text-muted-foreground">No auto-fixable schema issues were detected.</li>
+                    )}
+                  </ul>
+                </div>
+                <div className="pt-3 border-t">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Needs manual data</p>
+                  <ul className="mt-2 space-y-2">
+                    {schemaRemainingIssues.map((issue, i) => (
+                      <li key={`remaining-${i}`} className="text-sm flex items-start gap-2">
+                        <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
+                        <span>{issue}</span>
+                      </li>
+                    ))}
+                    {schemaRemainingIssues.length === 0 && (
+                      <li className="text-sm text-muted-foreground">No unresolved schema issues detected.</li>
+                    )}
+                  </ul>
+                </div>
               </CardContent>
             </Card>
 
@@ -809,6 +896,13 @@ export function SinglePageOptimizer() {
                       </li>
                     ))}
                   </ul>
+                  <Button
+                    variant="outline"
+                    className="w-full mb-2"
+                    onClick={() => void copyRetestChecklist()}
+                  >
+                    <Copy className="h-4 w-4 mr-2" /> Copy Re-test Checklist
+                  </Button>
                   <Button className="w-full" onClick={() => window.open("https://search.google.com/search-console", "_blank")}>
                     Open Search Console
                   </Button>

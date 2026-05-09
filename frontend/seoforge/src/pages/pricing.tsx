@@ -29,7 +29,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api"
 
 function buildProductSchema(pricingContext: PricingContextResponse | null) {
   const activeCurrency = pricingContext?.currency ?? "ZAR";
-  const prices = pricingContext?.plans ?? { free: 0, starter: 299, agency: 999 };
+  const prices = pricingContext?.plans ?? { free: 16.38, starter: 299, agency: 999 };
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -112,11 +112,7 @@ export default function Pricing() {
           displayLocale,
         ),
         href:
-          plan.slug === "free"
-            ? isAuthenticated
-              ? "/app"
-              : "/login?redirect=%2Fapp"
-            : isAuthenticated
+          isAuthenticated
               ? `/checkout?plan=${plan.slug}`
               : `/login?redirect=${encodeURIComponent(`/checkout?plan=${plan.slug}`)}`,
       })),
