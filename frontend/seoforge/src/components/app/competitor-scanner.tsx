@@ -31,12 +31,13 @@ export function CompetitorScanner() {
 
   const handleScan = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url) return;
+    if (!url.trim()) return;
     
     // Basic URL validation
-    let validUrl = url;
-    if (!/^https?:\/\//i.test(url)) {
-      validUrl = 'https://' + url;
+    const trimmedUrl = url.trim();
+    let validUrl = trimmedUrl;
+    if (!/^https?:\/\//i.test(trimmedUrl)) {
+      validUrl = 'https://' + trimmedUrl;
     }
     
     scanMutation.mutate({ data: { url: validUrl } }, {

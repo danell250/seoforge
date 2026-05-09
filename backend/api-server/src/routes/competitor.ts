@@ -49,12 +49,13 @@ async function lookupWithTimeout(hostname: string, timeoutMs = 3_000) {
 }
 
 async function validateCompetitorUrl(rawUrl: string): Promise<URL> {
+  const trimmedUrl = rawUrl.trim();
   let parsed: URL;
   try {
-    parsed = new URL(rawUrl);
+    parsed = new URL(trimmedUrl);
   } catch {
     try {
-      parsed = new URL(`https://${rawUrl}`);
+      parsed = new URL(`https://${trimmedUrl}`);
     } catch {
       throw new CompetitorScanError("Please enter a valid website URL.", 400);
     }
