@@ -212,12 +212,6 @@ export default function Checkout() {
                     </div>
                     <div ref={paypalContainerRef} id="paypal-button-container" />
                   </CardContent>
-                  <CardFooter>
-                    <Button className="w-full sm:w-auto" disabled={alreadyOnPlan}>
-                      Pay with PayPal
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </CardFooter>
                 </Card>
               ) : (
                 <Card>
