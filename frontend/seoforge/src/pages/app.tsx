@@ -1,5 +1,5 @@
 import { Navbar } from "@/components/layout/navbar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { SinglePageOptimizer } from "@/components/app/single-page-optimizer";
 import { ZipUpload } from "@/components/app/zip-upload";
 import { CompetitorScanner } from "@/components/app/competitor-scanner";
@@ -11,7 +11,8 @@ import { HreflangTool } from "@/components/app/hreflang-tool";
 import { ContentGapDetector } from "@/components/app/content-gap-detector";
 import { SiteMonitor } from "@/components/app/site-monitor";
 import { BlogGenerator } from "@/components/app/blog-generator";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
+import { Bot, FileCode2, FolderArchive, Globe, Languages, Search, Ship, ShieldCheck, Sparkles, Radar, FileQuestion } from "lucide-react";
 
 export default function AppWorkspace() {
   const initial = typeof window !== "undefined" && window.location.hash
@@ -82,92 +83,102 @@ export default function AppWorkspace() {
     },
   };
   const active = tabMeta[tab] ?? tabMeta["single-page"];
-  const tabs = [
-    { value: "single-page", label: "Repair Page" },
-    { value: "zip-upload", label: "Repair Files" },
-    { value: "site-crawler", label: "Repair Site" },
-    { value: "aeo-block", label: "Add FAQs" },
-    { value: "content-gaps", label: "Missing Content" },
-    { value: "competitor", label: "Competitor" },
-    { value: "hreflang", label: "Languages" },
-    { value: "sitemap", label: "Sitemap" },
-    { value: "deploy", label: "Ship" },
-    { value: "monitor", label: "Monitor" },
-    { value: "blog-gen", label: "Blog Gen" },
+  const groups = [
+    {
+      title: "Repair",
+      items: [
+        { value: "single-page", label: "Repair Page", icon: FileCode2 },
+        { value: "zip-upload", label: "Repair Files", icon: FolderArchive },
+        { value: "site-crawler", label: "Repair Site", icon: Globe },
+      ],
+    },
+    {
+      title: "Growth",
+      items: [
+        { value: "competitor", label: "Competitor", icon: Search },
+        { value: "content-gaps", label: "Missing Content", icon: FileQuestion },
+        { value: "blog-gen", label: "Blog Generator", icon: Sparkles },
+      ],
+    },
+    {
+      title: "Technical",
+      items: [
+        { value: "aeo-block", label: "Add FAQs", icon: Bot },
+        { value: "hreflang", label: "Languages", icon: Languages },
+        { value: "sitemap", label: "Sitemap", icon: ShieldCheck },
+      ],
+    },
+    {
+      title: "Operations",
+      items: [
+        { value: "deploy", label: "Publish", icon: Ship },
+        { value: "monitor", label: "Monitor", icon: Radar },
+      ],
+    },
   ] as const;
+
+  const contentByTab: Record<string, ReactNode> = {
+    "single-page": <SinglePageOptimizer />,
+    "site-crawler": <SiteCrawler />,
+    "zip-upload": <ZipUpload />,
+    "aeo-block": <AeoAnswerBlock />,
+    "content-gaps": <ContentGapDetector />,
+    competitor: <CompetitorScanner />,
+    hreflang: <HreflangTool />,
+    sitemap: <SitemapGenerator />,
+    monitor: <SiteMonitor />,
+    deploy: <DeployPanel />,
+    "blog-gen": <BlogGenerator />,
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-muted/20">
       <Navbar />
       <main className="flex-1 px-4 py-6">
         <div className="container mx-auto max-w-7xl">
-          <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
-            <div className="mb-4">
-              <h1 className="text-sm font-semibold tracking-tight text-foreground">Workspace</h1>
-            </div>
+          <div className="grid gap-5 md:grid-cols-[240px_minmax(0,1fr)]">
+            <aside className="rounded-xl border bg-background p-3 h-fit md:sticky md:top-20">
+              <div className="mb-3 px-2">
+                <h1 className="text-sm font-semibold tracking-tight text-foreground">Workspace</h1>
+                <p className="text-xs text-muted-foreground mt-1">Choose one tool and focus.</p>
+              </div>
+              <nav className="space-y-3">
+                {groups.map((group) => (
+                  <div key={group.title}>
+                    <p className="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      {group.title}
+                    </p>
+                    <div className="space-y-1">
+                      {group.items.map((item) => {
+                        const Icon = item.icon;
+                        const activeItem = tab === item.value;
+                        return (
+                          <Button
+                            key={item.value}
+                            variant={activeItem ? "default" : "ghost"}
+                            className="w-full justify-start gap-2"
+                            onClick={() => handleTabChange(item.value)}
+                          >
+                            <Icon className="h-4 w-4" />
+                            {item.label}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </nav>
+            </aside>
 
-            <TabsList className="mb-3 flex h-auto w-full flex-wrap justify-start gap-2 rounded-none bg-transparent p-0">
-              {tabs.map((item) => (
-                <TabsTrigger
-                  key={item.value}
-                  value={item.value}
-                  className="h-9 rounded-md border border-border bg-background px-3 text-sm font-medium text-muted-foreground data-[state=active]:border-primary/40 data-[state=active]:bg-primary/10 data-[state=active]:text-foreground"
-                >
-                  {item.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            <div className="mb-4 border-b border-border/70 pb-2 text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">{active.title}</span>
-              <span className="mx-2 text-border">/</span>
-              <span>{active.description}</span>
-            </div>
-
-            <TabsContent value="single-page" className="m-0">
-              <SinglePageOptimizer />
-            </TabsContent>
-
-            <TabsContent value="site-crawler" className="m-0">
-              <SiteCrawler />
-            </TabsContent>
-
-            <TabsContent value="zip-upload" className="m-0">
-              <ZipUpload />
-            </TabsContent>
-
-            <TabsContent value="aeo-block" className="m-0">
-              <AeoAnswerBlock />
-            </TabsContent>
-
-            <TabsContent value="content-gaps" className="m-0">
-              <ContentGapDetector />
-            </TabsContent>
-
-            <TabsContent value="competitor" className="m-0">
-              <CompetitorScanner />
-            </TabsContent>
-
-            <TabsContent value="hreflang" className="m-0">
-              <HreflangTool />
-            </TabsContent>
-
-            <TabsContent value="sitemap" className="m-0">
-              <SitemapGenerator />
-            </TabsContent>
-
-            <TabsContent value="monitor" className="m-0">
-              <SiteMonitor />
-            </TabsContent>
-
-            <TabsContent value="deploy" className="m-0">
-              <DeployPanel />
-            </TabsContent>
-
-            <TabsContent value="blog-gen" className="m-0">
-              <BlogGenerator />
-            </TabsContent>
-          </Tabs>
+            <section className="min-w-0">
+              <div className="mb-4 border-b border-border/70 pb-2 text-sm text-muted-foreground">
+                <span className="font-medium text-foreground">{active.title}</span>
+                <span className="mx-2 text-border">/</span>
+                <span>{active.description}</span>
+              </div>
+              {contentByTab[tab] ?? contentByTab["single-page"]}
+            </section>
+          </div>
         </div>
       </main>
     </div>

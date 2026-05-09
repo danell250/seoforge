@@ -332,7 +332,7 @@ export function SiteCrawler() {
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                We only follow pages on the same domain and skip images, PDFs, and other assets.
+                We only crawl same-domain HTML pages and skip assets like images/PDFs.
               </p>
             </div>
 
@@ -357,19 +357,8 @@ export function SiteCrawler() {
               <p className="text-xs text-muted-foreground">Hard cap is 50.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
-              <Feature
-                title="Find pages"
-                body="We follow internal links on the same domain and collect each HTML page we can reach."
-              />
-              <Feature
-                title="Improve each page"
-                body="Every discovered page gets rewritten with better metadata, structure, and FAQ-ready formatting."
-              />
-              <Feature
-                title="Download everything"
-                body="Get one ZIP file with every updated page when the run is finished."
-              />
+            <div className="rounded-md border bg-muted/30 p-3 text-sm text-muted-foreground">
+              One click flow: scan pages -&gt; repair pages -&gt; download a clean ZIP.
             </div>
           </CardContent>
         </Card>
@@ -394,7 +383,7 @@ export function SiteCrawler() {
                 </Button>
               )}
               <Button variant="outline" onClick={reset} disabled={isBusy}>
-                Scan Another Site
+                New Scan
               </Button>
             </div>
           </CardHeader>
@@ -607,15 +596,6 @@ export function SiteCrawler() {
           </CardContent>
         </Card>
       )}
-    </div>
-  );
-}
-
-function Feature({ title, body }: { title: string; body: string }) {
-  return (
-    <div className="rounded-lg border bg-muted/30 p-4">
-      <div className="font-semibold text-sm mb-1">{title}</div>
-      <div className="text-xs text-muted-foreground">{body}</div>
     </div>
   );
 }
