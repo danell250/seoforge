@@ -214,8 +214,12 @@ router.post("/scan-competitor", async (req, res) => {
         extraParts: [`Competitor URL: ${url}`],
         log: req.log,
       });
-    } catch {
-      return res.status(502).json({ message: "The scan response came back incomplete. Please try again." });
+    } catch (err) {
+      req.log.error({ err, url, htmlLength: html.length }, "Competitor scan AI task failed");
+      return res.status(502).json({ 
+        message: "The scan response came back incomplete. Please try again.",
+        error: err instanceof Error ? err.message : "Unknown error"
+      });
     }
 
     const safe = ScanCompetitorResponse.parse({

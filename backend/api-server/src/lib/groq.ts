@@ -60,6 +60,7 @@ export async function generateContentWithGroq(
         messages,
         temperature,
         max_tokens: maxTokens,
+        response_format: { type: "json_object" },
       }),
       signal: controller.signal,
     });
