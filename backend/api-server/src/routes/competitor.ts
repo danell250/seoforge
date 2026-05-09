@@ -208,32 +208,32 @@ const PROMPT = `You are scanning a competitor's web page for SEO and AEO intelli
 Return ONLY valid JSON.`;
 
 router.post("/scan-competitor", async (req, res) => {
-  const parsed = ScanCompetitorBody.safeParse(req.body);
-  if (!parsed.success) {
-    return res.status(400).json({ message: "Invalid request body" });
-  }
-  let competitorUrl: URL;
   try {
-    competitorUrl = await validateCompetitorUrl(parsed.data.url);
-  } catch (err) {
-    return res.status(err instanceof CompetitorScanError ? err.statusCode : 400).json({
-      message: err instanceof CompetitorScanError ? err.message : "Invalid competitor URL.",
-    });
-  }
-  const url = competitorUrl.toString();
+    const parsed = ScanCompetitorBody.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ message: "Invalid request body" });
+    }
+    let competitorUrl: URL;
+    try {
+      competitorUrl = await validateCompetitorUrl(parsed.data.url);
+    } catch (err) {
+      return res.status(err instanceof CompetitorScanError ? err.statusCode : 400).json({
+        message: err instanceof CompetitorScanError ? err.message : "Invalid competitor URL.",
+      });
+    }
+    const url = competitorUrl.toString();
 
-  let fetchResult: { html: string; finalUrl: string };
-  try {
-    fetchResult = await fetchPage(url);
-  } catch (err) {
-    req.log.warn({ err, url }, "Failed to fetch competitor page");
-    return res.status(err instanceof CompetitorScanError ? err.statusCode : 500).json({
-      message: err instanceof CompetitorScanError ? err.message : "Scan failed, please try again.",
-    });
-  }
-  const { html, finalUrl } = fetchResult;
+    let fetchResult: { html: string; finalUrl: string };
+    try {
+      fetchResult = await fetchPage(url);
+    } catch (err) {
+      (req.log as any).warn?.({ err, url }, "Failed to fetch competitor page");
+      return res.status(err instanceof CompetitorScanError ? err.statusCode : 500).json({
+        message: err instanceof CompetitorScanError ? err.message : "Scan failed, please try again.",
+      });
+    }
+    const { html, finalUrl } = fetchResult;
 
-  try {
     let data: ScanResult;
     try {
       data = await runSeoaxeJsonTask<ScanResult>({
@@ -248,7 +248,7 @@ router.post("/scan-competitor", async (req, res) => {
         timeoutMs: 30_000,
         fallbackTimeoutMs: 15_000,
         extraParts: [`Competitor URL: ${finalUrl}`],
-        log: req.log,
+        log: req.log as any,
       });
     } catch (err) {
       req.log.error({ err, url: finalUrl, htmlLength: html.length }, "Competitor scan AI task failed");
@@ -296,7 +296,7 @@ router.post("/scan-competitor", async (req, res) => {
     });
     return res.json(safe);
   } catch (err) {
-    req.log.error({ err }, "Gemini competitor scan failed");
+    req.log.error({ err }, "Competitor scan failed");
     return res.status(502).json({ message: "The competitor analysis service is having trouble right now. Please try again." });
   }
 });
