@@ -194,15 +194,22 @@ router.post("/optimize", async (req, res) => {
     req.log.info({ filename, htmlLength: html.length }, "Starting optimization request");
     
     const optimized = await optimizeHtmlDocument(html, filename, user.id, req.log);
-    req.log.info("AI optimization complete, persisting results");
+    req.log.info("AI optimization complete");
 
-    const optimizationId = await persistOptimizationRecord(optimized, filename, user.id, req.log);
-    optimized.optimizationId = optimizationId ?? undefined;
-    
-    if (optimizationId) {
-      req.log.info({ optimizationId }, "Persisting feedback and training seeds");
-      await persistOptimizationFeedbackSeed(optimized, optimizationId, user.id, req.log);
-      await persistTrainingExampleSeed(html, optimized, optimizationId, user.id, req.log);
+    // "Safe-to-Fail" Persistence: If DB saving fails, we still want to return the result to the user!
+    try {
+      req.log.info("Attempting to persist results to database");
+      const optimizationId = await persistOptimizationRecord(optimized, filename, user.id, req.log);
+      optimized.optimizationId = optimizationId ?? undefined;
+      
+      if (optimizationId) {
+        req.log.info({ optimizationId }, "Persisting feedback and training seeds");
+        // These are non-critical, so we don't await them or we wrap them tightly
+        persistOptimizationFeedbackSeed(optimized, optimizationId, user.id, req.log).catch(e => req.log.error(e, "Feedback seed failed"));
+        persistTrainingExampleSeed(html, optimized, optimizationId, user.id, req.log).catch(e => req.log.error(e, "Training seed failed"));
+      }
+    } catch (dbErr) {
+      req.log.error({ err: dbErr }, "Non-critical persistence failure - continuing to return result to user");
     }
     
     try {
