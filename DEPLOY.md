@@ -8,7 +8,7 @@
 2. Connect your GitHub repo
 3. Configure:
    - **Runtime:** Node
-   - **Build Command:** `npm install -g pnpm && pnpm install && cd backend/api-server && pnpm run build:prod`
+   - **Build Command:** `corepack enable && corepack prepare pnpm@10.33.0 --activate && pnpm install --frozen-lockfile && pnpm --filter @workspace/api-server run build:prod`
    - **Start Command:** `cd backend/api-server && node --enable-source-maps ./dist/index.mjs`
    - **Plan:** Standard ($7/month minimum for always-on)
 
@@ -25,9 +25,12 @@
    | `STITCH_EXPRESS_CLIENT_SECRET` | (your Stitch client secret) | Server-side Stitch Express API secret |
    | `STITCH_EXPRESS_WEBHOOK_SECRET` | (your webhook signing secret) | Svix signing secret returned when registering the webhook |
    | `STITCH_EXPRESS_REDIRECT_URL` | `https://www.seoaxe.site/checkout?payment=return` | Registered Stitch redirect URL after checkout |
+   | `PAYPAL_CLIENT_ID` | (your key) | PayPal API client ID |
+   | `PAYPAL_CLIENT_SECRET` | (your key) | PayPal API client secret |
+   | `PAYPAL_WEBHOOK_SECRET` | (your key) | PayPal webhook HMAC secret |
    | `ADMIN_EMAIL` | `you@example.com` | **Your admin login email** |
    | `ADMIN_PASSWORD` | (your password) | **Your admin login password** |
-   | `CORS_ORIGIN` | `https://www.seoaxe.site` | Frontend URL |
+   | `FRONTEND_URLS` | `https://www.seoaxe.site,https://seoaxe.site` | Allowed frontend origins |
 
    ⚠️ **Important:** Set `ADMIN_EMAIL` to your actual email and `ADMIN_PASSWORD` to a strong password (min 8 chars). These are your login credentials.
 
@@ -36,6 +39,10 @@
    - Run migrations (manual for now):
      ```bash
      cd lib/db && npx drizzle-kit migrate
+     ```
+   - Run backend production preflight locally before deploy:
+     ```bash
+     pnpm --filter @workspace/api-server run verify:production
      ```
 
 ### 2. Frontend (Vercel)
@@ -56,7 +63,7 @@
 ### 3. Domain Setup (Optional)
 
 - Add `www.seoaxe.site` as the custom domain on Vercel
-- Update `CORS_ORIGIN` on Render to match
+- Update `FRONTEND_URLS` on Render to match your frontend domains
 - Update `REPLIT_DEV_DOMAIN` references in email templates
 
 ### 4. Post-Deploy Checklist
@@ -66,7 +73,8 @@
 - [ ] Test Stitch checkout from `/checkout?plan=starter`
 - [ ] Register Stitch webhook URL: `https://your-render-service.onrender.com/api/payments/stitch/webhook`
 - [ ] Replay or complete a test payment and confirm the webhook returns 200
-- [ ] Test page optimization
+- [ ] Test page optimization (`/api/optimize`)
+- [ ] Confirm readiness endpoint returns ready (`/api/readyz`)
 - [ ] Test dashboard stats
 - [ ] Domain monitoring (if paid plans active)
 
@@ -105,7 +113,7 @@ Get your Brevo API key:
 
 ## Troubleshooting
 
-**CORS errors:** Check `CORS_ORIGIN` matches your frontend URL exactly
+**CORS errors:** Check `FRONTEND_URLS` contains every frontend origin exactly (including protocol)
 
 **Database connection:** Verify `DATABASE_URL` format: `postgresql://user:pass@host:5432/dbname`
 

@@ -19,8 +19,15 @@ import crypto from "crypto";
 import { ordersController } from "../lib/paypal";
 import { CheckoutPaymentIntent } from "@paypal/paypal-server-sdk";
 import { convertFromZar } from "../lib/pricing";
+import { createRateLimit } from "../middleware/rate-limit";
 
 const router: IRouter = Router();
+const paymentWriteRateLimit = createRateLimit({
+  key: "payments-write",
+  max: 30,
+  windowMs: 1000 * 60 * 15,
+  failOpen: false,
+});
 
 const ZAR_PRICES: Record<string, number> = {
   starter: 299,
@@ -236,7 +243,7 @@ router.post("/payments/stitch/webhook", async (req, res) => {
   return res.json({ received: true, processed: true });
 });
 
-router.post("/payments/stitch/checkout", requireAuthenticatedUser, async (req, res) => {
+router.post("/payments/stitch/checkout", paymentWriteRateLimit, requireAuthenticatedUser, async (req, res) => {
   const user = getAuthenticatedUser(req);
   if (!user) return res.status(401).json({ message: "Authentication required" });
 
@@ -281,7 +288,7 @@ router.post("/payments/stitch/checkout", requireAuthenticatedUser, async (req, r
   }
 });
 
-router.post("/payments/paypal/create-order", requireAuthenticatedUser, async (req, res) => {
+router.post("/payments/paypal/create-order", paymentWriteRateLimit, requireAuthenticatedUser, async (req, res) => {
   const user = getAuthenticatedUser(req);
   if (!user) return res.status(401).json({ message: "Authentication required" });
 
@@ -322,7 +329,7 @@ router.post("/payments/paypal/create-order", requireAuthenticatedUser, async (re
   }
 });
 
-router.post("/payments/paypal/capture-order", requireAuthenticatedUser, async (req, res) => {
+router.post("/payments/paypal/capture-order", paymentWriteRateLimit, requireAuthenticatedUser, async (req, res) => {
   const user = getAuthenticatedUser(req);
   if (!user) return res.status(401).json({ message: "Authentication required" });
 

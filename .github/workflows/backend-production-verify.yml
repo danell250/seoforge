@@ -1,0 +1,51 @@
+name: backend-production-verify
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - "release/**"
+  pull_request:
+    branches:
+      - main
+      - staging
+      - "release/**"
+
+jobs:
+  verify-backend-production:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify backend production readiness
+        env:
+          PORT: "10000"
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/seoforge_ci
+          ADMIN_EMAIL: ci-admin@example.com
+          ADMIN_PASSWORD: ci-admin-password
+          PAYPAL_CLIENT_ID: ci-paypal-client-id
+          PAYPAL_CLIENT_SECRET: ci-paypal-client-secret
+          PAYPAL_WEBHOOK_SECRET: ci-paypal-webhook-secret
+          GEMINI_API_KEY: ci-gemini-key
+          FRONTEND_URLS: http://localhost:5173
+        run: pnpm --filter @workspace/api-server run verify:production

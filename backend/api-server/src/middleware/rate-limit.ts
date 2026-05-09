@@ -7,6 +7,7 @@ interface RateLimitOptions {
   key: string;
   max: number;
   windowMs: number;
+  failOpen?: boolean;
 }
 
 const CLEANUP_INTERVAL_MS = 1000 * 60 * 10;
@@ -14,6 +15,7 @@ let cleanupStarted = false;
 let cleanupTimer: ReturnType<typeof setInterval> | null = null;
 let rateLimitStoreAvailable = true;
 let warnedAboutMissingTable = false;
+const memoryBuckets = new Map<string, { count: number; resetAt: number }>();
 
 export function startRateLimitCleanupLoop() {
   if (cleanupStarted) return;
@@ -39,8 +41,42 @@ export function startRateLimitCleanupLoop() {
 }
 
 export function createRateLimit(options: RateLimitOptions): RequestHandler {
+  function applyMemoryRateLimit(req: Parameters<RequestHandler>[0], res: Parameters<RequestHandler>[1], next: Parameters<RequestHandler>[2]) {
+    const ip = req.ip || req.socket.remoteAddress || "unknown";
+    const bucketKey = `${options.key}:${ip}`;
+    const nowMs = Date.now();
+    const current = memoryBuckets.get(bucketKey);
+
+    if (!current || current.resetAt <= nowMs) {
+      memoryBuckets.set(bucketKey, { count: 1, resetAt: nowMs + options.windowMs });
+      res.setHeader("X-RateLimit-Limit", String(options.max));
+      res.setHeader("X-RateLimit-Remaining", String(Math.max(0, options.max - 1)));
+      res.setHeader("X-RateLimit-Reset", String(Math.ceil((nowMs + options.windowMs) / 1000)));
+      next();
+      return;
+    }
+
+    current.count += 1;
+    memoryBuckets.set(bucketKey, current);
+    const remaining = Math.max(0, options.max - current.count);
+    res.setHeader("X-RateLimit-Limit", String(options.max));
+    res.setHeader("X-RateLimit-Remaining", String(remaining));
+    res.setHeader("X-RateLimit-Reset", String(Math.ceil(current.resetAt / 1000)));
+
+    if (current.count > options.max) {
+      res.status(429).json({ message: "Too many requests. Please try again shortly." });
+      return;
+    }
+
+    next();
+  }
+
   return async (req, res, next) => {
     if (!rateLimitStoreAvailable) {
+      if (options.failOpen === false) {
+        applyMemoryRateLimit(req, res, next);
+        return;
+      }
       next();
       return;
     }
@@ -94,6 +130,10 @@ export function createRateLimit(options: RateLimitOptions): RequestHandler {
             { table: "rate_limit_buckets" },
             "Rate limiting disabled because the database table is missing. Run the latest schema push.",
           );
+        }
+        if (options.failOpen === false) {
+          applyMemoryRateLimit(req, res, next);
+          return;
         }
         next();
         return;

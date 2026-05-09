@@ -38,6 +38,7 @@ import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { GlobalSEO } from "@/components/seo";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { Analytics } from "@vercel/analytics/react";
 
 const queryClient = new QueryClient();
 
@@ -121,6 +122,7 @@ function App() {
               <Router />
             </WouterRouter>
             <Toaster />
+            <Analytics />
           </TooltipProvider>
         </PayPalScriptProvider>
       </AuthProvider>

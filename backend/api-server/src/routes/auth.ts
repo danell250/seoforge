@@ -16,11 +16,13 @@ const loginRateLimit = createRateLimit({
   key: "auth-login",
   max: 10,
   windowMs: 1000 * 60 * 15,
+  failOpen: false,
 });
 const registerRateLimit = createRateLimit({
   key: "auth-register",
   max: 10,
   windowMs: 1000 * 60 * 15,
+  failOpen: false,
 });
 
 function parseLoginBody(body: unknown) {

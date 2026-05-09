@@ -78,6 +78,7 @@
     "zod": "catalog:"
   },
   "dependencies": {
-    "@paypal/react-paypal-js": "^9.2.0"
+    "@paypal/react-paypal-js": "^9.2.0",
+    "@vercel/analytics": "^2.0.1"
   }
 }

@@ -9,7 +9,9 @@
     "build:prod": "node ./build.mjs",
     "start": "node --env-file=.env --enable-source-maps ./dist/index.mjs",
     "start:prod": "node --enable-source-maps ./dist/index.mjs",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "preflight": "node --env-file=.env ./scripts/preflight.mjs",
+    "verify:production": "pnpm run preflight && pnpm run typecheck && pnpm run build"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
