@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Link, useLocation } from "wouter";
 import { AlertCircle, LoaderCircle, UserPlus } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { getGoogleCredentialEventName, renderGoogleButton } from "@/lib/google-identity";
 
 export default function Signup() {
   const { signup, loginWithGoogle, isAuthenticated, isLoading, isSignupPending } = useAuth();
@@ -24,76 +25,38 @@ export default function Signup() {
 
   useEffect(() => {
     if (!googleClientId) return;
-
-    type GoogleCredentialResponse = { credential?: string };
-    type GoogleWindow = Window & {
-      google?: {
-        accounts: {
-          id: {
-            initialize: (config: {
-              client_id: string;
-              callback: (response: GoogleCredentialResponse) => void;
-            }) => void;
-            renderButton: (
-              parent: HTMLElement,
-              options: Record<string, string | number | boolean>,
-            ) => void;
-          };
-        };
-      };
-    };
-
-    const scriptId = "google-identity-services";
-    const existing = document.getElementById(scriptId) as HTMLScriptElement | null;
     const mount = document.getElementById("google-signup-button");
     if (!mount) return;
-
-    const setupButton = () => {
-      const g = (window as GoogleWindow).google;
-      if (!g || !mount) return;
-      mount.innerHTML = "";
-      g.accounts.id.initialize({
-        client_id: googleClientId,
-        callback: async (response) => {
-          if (!response.credential) {
-            setSubmitError("Google signup did not return a credential.");
-            return;
-          }
-          try {
-            setSubmitError(null);
-            const session = await loginWithGoogle(response.credential);
-            if (session.authenticated) {
-              const params = new URLSearchParams(window.location.search);
-              const redirect = params.get("redirect");
-              const next = redirect && redirect.startsWith("/") ? redirect : "/app";
-              navigate(next);
-            }
-          } catch (error) {
-            setSubmitError(error instanceof Error ? error.message : "Google signup failed.");
-          }
-        },
-      });
-      g.accounts.id.renderButton(mount, {
-        theme: "outline",
-        size: "large",
-        shape: "rectangular",
-        text: "signup_with",
-        width: 360,
-      });
+    const handler = async (event: Event) => {
+      const detail = (event as CustomEvent<{ credential?: string }>).detail;
+      if (!detail?.credential) {
+        setSubmitError("Google signup did not return a credential.");
+        return;
+      }
+      try {
+        setSubmitError(null);
+        const session = await loginWithGoogle(detail.credential);
+        if (session.authenticated) {
+          const params = new URLSearchParams(window.location.search);
+          const redirect = params.get("redirect");
+          const next = redirect && redirect.startsWith("/") ? redirect : "/app";
+          navigate(next);
+        }
+      } catch (error) {
+        setSubmitError(error instanceof Error ? error.message : "Google signup failed.");
+      }
     };
-
-    if (existing) {
-      setupButton();
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.id = scriptId;
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    script.onload = setupButton;
-    document.head.appendChild(script);
+    window.addEventListener(getGoogleCredentialEventName(), handler as EventListener);
+    void renderGoogleButton(mount, googleClientId, {
+      theme: "outline",
+      size: "large",
+      shape: "rectangular",
+      text: "signup_with",
+      width: 360,
+    });
+    return () => {
+      window.removeEventListener(getGoogleCredentialEventName(), handler as EventListener);
+    };
   }, [googleClientId, loginWithGoogle, navigate]);
 
   useEffect(() => {

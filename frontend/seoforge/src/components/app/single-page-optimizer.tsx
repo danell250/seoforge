@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HtmlGuide } from "@/components/app/html-guide";
 import {
   extractCanonicalUrl,
@@ -452,21 +453,6 @@ export function SinglePageOptimizer() {
             </h2>
             <div className="flex gap-2 flex-wrap">
               <Button
-                onClick={handleGenerateBlog}
-                disabled={blogMutation.isPending}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
-              >
-                {blogMutation.isPending ? (
-                  <>
-                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> Generating Blog...
-                  </>
-                ) : (
-                <>
-                    <Sparkles className="h-4 w-4 mr-2" /> Create Blog Draft
-                  </>
-                )}
-              </Button>
-              <Button
                 variant="outline"
                 onClick={() => {
                   const contentType = sourceFilename.endsWith(".ts") || sourceFilename.endsWith(".tsx") 
@@ -519,15 +505,19 @@ export function SinglePageOptimizer() {
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card className="lg:col-span-1 border-primary/20 shadow-md">
-              <CardHeader className="bg-muted/30 pb-4 border-b">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-primary" />
-                  Before and After Scores
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-6">
+          <Accordion type="single" collapsible defaultValue="performance" className="rounded-xl border bg-background px-4">
+            <AccordionItem value="performance">
+              <AccordionTrigger className="text-base font-semibold">Performance Insights</AccordionTrigger>
+              <AccordionContent>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
+                  <Card className="lg:col-span-1 border-primary/20 shadow-md">
+                    <CardHeader className="bg-muted/30 pb-4 border-b">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5 text-primary" />
+                        Before and After Scores
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-6">
                 {/* Before/After Overall Score */}
                 <div className="flex justify-center mb-6">
                   <div className="flex items-center gap-4">
@@ -595,22 +585,22 @@ export function SinglePageOptimizer() {
                     +{optimizeMutation.data.scoreImprovement.overall} points
                   </p>
                 </div>
-              </CardContent>
-            </Card>
+                    </CardContent>
+                  </Card>
 
-            {/* African Language Support Card */}
-            {optimizeMutation.data.africanLanguageSupport && (
-              <Card className="lg:col-span-1 border-amber-200 dark:border-amber-800 shadow-md bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/20">
-                <CardHeader className="bg-amber-100/50 dark:bg-amber-900/20 pb-4 border-b border-amber-200 dark:border-amber-800">
-                  <CardTitle className="text-lg flex items-center gap-2 text-amber-900 dark:text-amber-100">
-                    <Languages className="h-5 w-5 text-amber-600" />
-                    African Language Support
-                  </CardTitle>
-                  <CardDescription className="text-amber-700 dark:text-amber-300">
-                    {optimizeMutation.data.languageGuidance}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-4 space-y-4">
+                  {/* African Language Support Card */}
+                  {optimizeMutation.data.africanLanguageSupport && (
+                    <Card className="lg:col-span-1 border-amber-200 dark:border-amber-800 shadow-md bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/20">
+                      <CardHeader className="bg-amber-100/50 dark:bg-amber-900/20 pb-4 border-b border-amber-200 dark:border-amber-800">
+                        <CardTitle className="text-lg flex items-center gap-2 text-amber-900 dark:text-amber-100">
+                          <Languages className="h-5 w-5 text-amber-600" />
+                          African Language Support
+                        </CardTitle>
+                        <CardDescription className="text-amber-700 dark:text-amber-300">
+                          {optimizeMutation.data.languageGuidance}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="pt-4 space-y-4">
                   <div className="flex items-center gap-3 p-3 bg-white/60 dark:bg-black/20 rounded-lg">
                     <div className="h-10 w-10 rounded-full bg-amber-500/20 flex items-center justify-center">
                       <span className="text-lg font-bold text-amber-700 dark:text-amber-300">
@@ -660,7 +650,7 @@ export function SinglePageOptimizer() {
                     </ul>
                   </div>
 
-                  <Button
+                        <Button
                     variant="outline"
                     size="sm"
                     className="w-full border-amber-300 hover:bg-amber-100 dark:border-amber-700 dark:hover:bg-amber-900/30"
@@ -670,49 +660,54 @@ export function SinglePageOptimizer() {
                     }}
                   >
                     <Copy className="h-4 w-4 mr-2" /> Copy Hreflang Tags
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  )}
 
-            <Card className={`border-primary/20 shadow-md ${optimizeMutation.data.africanLanguageSupport ? 'lg:col-span-1' : 'lg:col-span-2'}`}>
-              <CardHeader className="bg-muted/30 pb-4 border-b">
-                <CardTitle className="text-lg flex justify-between items-center">
-                  <span>Google AI Overview Preview</span>
-                  <span className="text-xs font-normal text-muted-foreground bg-background px-2 py-1 rounded-md border">Simulated Result</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-6 bg-gray-50/50 dark:bg-zinc-950/50">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <GooglePreview html={htmlInput} label="Original" />
-                  <GooglePreview html={optimizeMutation.data.optimizedHtml} label="Optimized" />
+                  <Card className={`border-primary/20 shadow-md ${optimizeMutation.data.africanLanguageSupport ? 'lg:col-span-1' : 'lg:col-span-2'}`}>
+                    <CardHeader className="bg-muted/30 pb-4 border-b">
+                      <CardTitle className="text-lg flex justify-between items-center">
+                        <span>Google AI Overview Preview</span>
+                        <span className="text-xs font-normal text-muted-foreground bg-background px-2 py-1 rounded-md border">Simulated Result</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-6 bg-gray-50/50 dark:bg-zinc-950/50">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <GooglePreview html={htmlInput} label="Original" />
+                        <GooglePreview html={optimizeMutation.data.optimizedHtml} label="Optimized" />
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              </AccordionContent>
+            </AccordionItem>
 
-          <Card className="shadow-md">
-            <CardHeader className="border-b bg-muted/30">
-              <CardTitle>Code Comparison</CardTitle>
-              <CardDescription>Review the exact changes made to your source code.</CardDescription>
-            </CardHeader>
-            <CardContent className="p-0">
-              <DiffViewer original={htmlInput} optimized={optimizeMutation.data.optimizedHtml} />
-            </CardContent>
-          </Card>
+            <AccordionItem value="validation">
+              <AccordionTrigger className="text-base font-semibold">Technical Validation</AccordionTrigger>
+              <AccordionContent>
+                <Card className="shadow-md">
+                  <CardHeader className="border-b bg-muted/30">
+                    <CardTitle>Code Comparison</CardTitle>
+                    <CardDescription>Review the exact changes made to your source code.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <DiffViewer original={htmlInput} optimized={optimizeMutation.data.optimizedHtml} />
+                  </CardContent>
+                </Card>
 
-          {optimizeMutation.data.aiReview && (
-            <Card className="shadow-md border-primary/20">
-              <CardHeader className="border-b bg-muted/30">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Bot className="h-5 w-5 text-primary" />
-                  SEOaxe AI Review
-                </CardTitle>
-                <CardDescription>
-                  Auto-checks for this {optimizeMutation.data.pageType ?? "page"} optimization before it becomes training signal.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-6 space-y-5">
+                {optimizeMutation.data.aiReview && (
+                  <Card className="shadow-md border-primary/20 mt-6">
+                    <CardHeader className="border-b bg-muted/30">
+                      <CardTitle className="flex items-center gap-2 text-lg">
+                        <Bot className="h-5 w-5 text-primary" />
+                        SEOaxe AI Review
+                      </CardTitle>
+                      <CardDescription>
+                        Auto-checks for this {optimizeMutation.data.pageType ?? "page"} optimization before it becomes training signal.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-6 space-y-5">
                 <div className="flex items-center justify-between gap-4 rounded-xl border bg-muted/20 px-4 py-3">
                   <div>
                     <p className="text-sm font-medium">Automatic review score</p>
@@ -783,19 +778,41 @@ export function SinglePageOptimizer() {
                     </div>
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          )}
+                    </CardContent>
+                  </Card>
+                )}
+              </AccordionContent>
+            </AccordionItem>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckSquare className="h-5 w-5 text-primary" />
-                  Repair Receipt Details
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+            <AccordionItem value="deploy">
+              <AccordionTrigger className="text-base font-semibold">Deploy, Proof, and Search Console</AccordionTrigger>
+              <AccordionContent>
+                <div className="mb-4">
+                  <Button
+                    onClick={handleGenerateBlog}
+                    disabled={blogMutation.isPending}
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                  >
+                    {blogMutation.isPending ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> Generating Blog...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4 mr-2" /> Create Blog Draft
+                      </>
+                    )}
+                  </Button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <CheckSquare className="h-5 w-5 text-primary" />
+                        Repair Receipt Details
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
                 <ul className="space-y-3">
                   {optimizeMutation.data.changes.map((change, i) => (
                     <li key={i} className="flex items-start gap-3">
@@ -809,17 +826,17 @@ export function SinglePageOptimizer() {
                     </li>
                   )}
                 </ul>
-              </CardContent>
-            </Card>
+                    </CardContent>
+                  </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckSquare className="h-5 w-5 text-primary" />
-                  Google Schema Issues
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <CheckSquare className="h-5 w-5 text-primary" />
+                        Google Schema Issues
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Auto-fixed</p>
                   <ul className="mt-2 space-y-2">
@@ -848,17 +865,17 @@ export function SinglePageOptimizer() {
                     )}
                   </ul>
                 </div>
-              </CardContent>
-            </Card>
+                    </CardContent>
+                  </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Globe className="h-5 w-5 text-primary" />
-                  Deploy Repair Pack
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Globe className="h-5 w-5 text-primary" />
+                        Deploy Repair Pack
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
                 <div className="flex gap-3">
                   <Button variant="outline" className="flex-1" onClick={() => {
                     const pageUrl = extractCanonicalUrl(optimizeMutation.data.optimizedHtml);
@@ -907,9 +924,12 @@ export function SinglePageOptimizer() {
                     Open Search Console
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       )}
 
