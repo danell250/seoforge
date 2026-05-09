@@ -2,11 +2,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDetectContentGaps } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowRight, Copy, Download, Play, RefreshCw, Rocket, Search, TrendingUp, UploadCloud } from "lucide-react";
+import { ArrowRight, Copy, Play, RefreshCw, Search, TrendingUp, Globe } from "lucide-react";
 
 const IMPACT_STYLE: Record<string, string> = {
   high: "bg-red-50 text-red-700 border-red-200",
@@ -15,37 +14,40 @@ const IMPACT_STYLE: Record<string, string> = {
 };
 
 export function ContentGapDetector() {
-  const [html, setHtml] = useState("");
+  const [url, setUrl] = useState("");
   const [topic, setTopic] = useState("");
   const [audience, setAudience] = useState("");
   const { toast } = useToast();
   const mutation = useDetectContentGaps();
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => setHtml(ev.target?.result as string);
-    reader.readAsText(file);
-  };
-
-  const handleRun = () => {
-    if (!html.trim()) {
-      toast({ title: "HTML required", description: "Paste the page HTML first.", variant: "destructive" });
+  const handleRun = async () => {
+    if (!url.trim()) {
+      toast({ title: "URL required", description: "Enter a live page URL first.", variant: "destructive" });
       return;
     }
     if (!topic.trim()) {
       toast({ title: "Topic required", description: "Tell us what niche this page targets.", variant: "destructive" });
       return;
     }
-    mutation.mutate(
-      { data: { html, topic: topic.trim(), audience: audience.trim() || undefined } },
-      { onError: () => toast({ title: "Error", description: "Detection failed, please try again.", variant: "destructive" }) },
-    );
+    try {
+      const html = await fetchPageHtml(url);
+      mutation.mutate(
+        { data: { html, topic: topic.trim(), audience: audience.trim() || undefined } },
+        { onError: () => toast({ title: "Error", description: "Detection failed, please try again.", variant: "destructive" }) },
+      );
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to fetch page. Please check the URL.", variant: "destructive" });
+    }
+  };
+
+  const fetchPageHtml = async (url: string): Promise<string> => {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to fetch');
+    return await response.text();
   };
 
   const reset = () => {
-    setHtml("");
+    setUrl("");
     setTopic("");
     setAudience("");
     mutation.reset();
@@ -54,16 +56,6 @@ export function ContentGapDetector() {
   const copy = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
     toast({ title: "Copied", description: `${label} copied.` });
-  };
-
-  const download = (text: string, name: string, mime: string) => {
-    const blob = new Blob([text], { type: mime });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = name;
-    a.click();
-    URL.revokeObjectURL(url);
   };
 
   return (
@@ -76,11 +68,19 @@ export function ContentGapDetector() {
               Missing Content Finder
             </CardTitle>
             <CardDescription>
-              Paste in your page HTML and this tool finds important questions or topics the page is missing, writes the
-              extra sections for you, and adds them into the page HTML.
+              Enter a live page URL to find missing content. SEOaxe scans your page directly and gives you copyable sections to review.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Live page URL</label>
+              <Input
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://example.com/page"
+                className="font-mono"
+              />
+            </div>
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">What is this page about? *</label>
@@ -99,28 +99,12 @@ export function ContentGapDetector() {
                 />
               </div>
             </div>
-            <div className="relative">
-              <Textarea
-                value={html}
-                onChange={(e) => setHtml(e.target.value)}
-                placeholder="Paste your page HTML here..."
-                className="min-h-[320px] font-mono text-sm resize-y p-4 bg-muted/30 focus-visible:ring-primary"
-              />
-              <div className="absolute top-4 right-4">
-                <Button variant="outline" size="sm" className="bg-background/80 backdrop-blur-sm shadow-sm" asChild>
-                  <label className="cursor-pointer flex items-center gap-2">
-                    <UploadCloud className="h-4 w-4" /> Upload HTML
-                    <input type="file" accept=".html,.htm" className="hidden" onChange={handleFile} />
-                  </label>
-                </Button>
-              </div>
-            </div>
           </CardContent>
           <CardFooter className="bg-muted/30 border-t px-6 py-4 flex justify-between items-center">
             <span className="text-sm text-muted-foreground">
-              {html.length > 0 ? `${(html.length / 1024).toFixed(1)} KB loaded` : "No HTML loaded yet"}
+              {url.length > 0 ? "URL ready to scan" : "No URL provided"}
             </span>
-            <Button size="lg" onClick={handleRun} disabled={mutation.isPending} className="gap-2 px-8">
+            <Button size="lg" onClick={handleRun} disabled={mutation.isPending || !url.trim()} className="gap-2 px-8">
               {mutation.isPending ? (
                 <>
                   <RefreshCw className="h-5 w-5 animate-spin" /> Analyzing...
@@ -141,18 +125,6 @@ export function ContentGapDetector() {
               {mutation.data.gaps.length} Content Gaps Found
             </h2>
             <div className="flex gap-2">
-              <Button
-                variant="default"
-                onClick={() => {
-                  sessionStorage.setItem("seoforge:deploy-html", mutation.data.augmentedHtml);
-                  window.location.hash = "deploy";
-                  window.dispatchEvent(new Event("seoforge:deploy-html-updated"));
-                  toast({ title: "Sent to Deploy", description: "Open the Deploy tab to push it live." });
-                }}
-                className="gap-2"
-              >
-                <Rocket className="h-4 w-4" /> Send to Deploy
-              </Button>
               <Button variant="outline" onClick={reset}>
                 <RefreshCw className="h-4 w-4 mr-2" /> Start Over
               </Button>
@@ -227,26 +199,19 @@ export function ContentGapDetector() {
 
           <Tabs defaultValue="html" className="w-full">
             <TabsList>
-              <TabsTrigger value="html">Augmented HTML</TabsTrigger>
+              <TabsTrigger value="html">Suggested HTML</TabsTrigger>
               <TabsTrigger value="sections">All Section HTML</TabsTrigger>
             </TabsList>
             <TabsContent value="html" className="m-0 mt-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between border-b bg-muted/30">
                   <div>
-                    <CardTitle className="text-base">Page with all gaps filled</CardTitle>
-                    <CardDescription>Drop straight into your site.</CardDescription>
+                    <CardTitle className="text-base">Suggested page sections in context</CardTitle>
+                    <CardDescription>Review these suggestions before adding them to your site.</CardDescription>
                   </div>
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" onClick={() => copy(mutation.data.augmentedHtml, "HTML")}>
                       <Copy className="h-3 w-3 mr-1" /> Copy
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => download(mutation.data.augmentedHtml, "page-gaps-filled.html", "text/html")}
-                    >
-                      <Download className="h-3 w-3 mr-1" /> Download
                     </Button>
                   </div>
                 </CardHeader>

@@ -1,42 +1,46 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGenerateAeoBlock } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, Copy, Download, MessageSquareQuote, Play, RefreshCw, Sparkles, UploadCloud } from "lucide-react";
+import { CheckCircle2, Copy, MessageSquareQuote, Play, RefreshCw, Sparkles, Globe } from "lucide-react";
+import { useFetchPage } from "@workspace/api-client-react";
 
 export function AeoAnswerBlock() {
-  const [html, setHtml] = useState("");
+  const [url, setUrl] = useState("");
   const [topic, setTopic] = useState("");
   const { toast } = useToast();
   const mutation = useGenerateAeoBlock();
+  const fetchMutation = useFetchPage();
 
-  const handleRun = () => {
-    if (!html.trim()) {
-      toast({ title: "Input required", description: "Paste the page HTML first.", variant: "destructive" });
+  const handleRun = async () => {
+    if (!url.trim()) {
+      toast({ title: "Input required", description: "Enter a live page URL first.", variant: "destructive" });
       return;
     }
-    mutation.mutate(
-      { data: { html, topic: topic.trim() || undefined } },
-      {
-        onError: () => toast({ title: "Error", description: "Generation failed, please try again.", variant: "destructive" }),
-      },
-    );
+    try {
+      const html = await fetchPageHtml(url);
+      mutation.mutate(
+        { data: { html, topic: topic.trim() || undefined } },
+        {
+          onError: () => toast({ title: "Error", description: "Generation failed, please try again.", variant: "destructive" }),
+        },
+      );
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to fetch page. Please check the URL.", variant: "destructive" });
+    }
   };
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => setHtml(ev.target?.result as string);
-    reader.readAsText(file);
+  const fetchPageHtml = async (url: string): Promise<string> => {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to fetch');
+    return await response.text();
   };
 
   const handleReset = () => {
-    setHtml("");
+    setUrl("");
     setTopic("");
     mutation.reset();
   };
@@ -44,16 +48,6 @@ export function AeoAnswerBlock() {
   const copy = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
     toast({ title: "Copied", description: `${label} copied to clipboard.` });
-  };
-
-  const download = (text: string, filename: string, mime: string) => {
-    const blob = new Blob([text], { type: mime });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
   };
 
   return (
@@ -66,11 +60,19 @@ export function AeoAnswerBlock() {
               FAQ and Answer Block Generator
             </CardTitle>
             <CardDescription>
-              Paste in your page HTML and this tool adds a ready-to-use FAQ section, short answer blocks, and the schema markup
-              needed to help Google and AI tools understand the page.
+              Enter a live page URL to generate copyable FAQ and schema suggestions. SEOaxe scans your page directly—no file uploads needed.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Live page URL</label>
+              <Input
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://example.com/page"
+                className="font-mono"
+              />
+            </div>
             <div>
               <label className="text-sm font-medium mb-2 block">Page topic (optional)</label>
               <Input
@@ -79,28 +81,12 @@ export function AeoAnswerBlock() {
                 placeholder="e.g. call centers"
               />
             </div>
-            <div className="relative">
-              <Textarea
-                value={html}
-                onChange={(e) => setHtml(e.target.value)}
-                placeholder="Paste your page HTML here..."
-                className="min-h-[360px] font-mono text-sm resize-y p-4 bg-muted/30 focus-visible:ring-primary"
-              />
-              <div className="absolute top-4 right-4">
-                <Button variant="outline" size="sm" className="bg-background/80 backdrop-blur-sm shadow-sm" asChild>
-                  <label className="cursor-pointer flex items-center gap-2">
-                    <UploadCloud className="h-4 w-4" /> Upload HTML
-                    <input type="file" accept=".html,.htm" className="hidden" onChange={handleFile} />
-                  </label>
-                </Button>
-              </div>
-            </div>
           </CardContent>
           <CardFooter className="bg-muted/30 border-t px-6 py-4 flex justify-between items-center">
             <span className="text-sm text-muted-foreground">
-              {html.length > 0 ? `${(html.length / 1024).toFixed(1)} KB loaded` : "No HTML loaded yet"}
+              {url.length > 0 ? "URL ready to scan" : "No URL provided"}
             </span>
-            <Button size="lg" onClick={handleRun} disabled={mutation.isPending || !html.trim()} className="gap-2 px-8">
+            <Button size="lg" onClick={handleRun} disabled={mutation.isPending || !url.trim()} className="gap-2 px-8">
               {mutation.isPending ? (
                 <>
                   <RefreshCw className="h-5 w-5 animate-spin" /> Generating...
@@ -155,26 +141,19 @@ export function AeoAnswerBlock() {
 
           <Tabs defaultValue="full" className="w-full">
             <TabsList>
-              <TabsTrigger value="full">Augmented HTML</TabsTrigger>
+              <TabsTrigger value="full">Suggested HTML</TabsTrigger>
               <TabsTrigger value="schema">FAQPage Schema</TabsTrigger>
             </TabsList>
             <TabsContent value="full" className="m-0 mt-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between border-b bg-muted/30">
                   <div>
-                    <CardTitle className="text-base">Full HTML with FAQ section + JSON-LD</CardTitle>
-                    <CardDescription>Drop straight into your page.</CardDescription>
+                    <CardTitle className="text-base">Suggested FAQ section + JSON-LD</CardTitle>
+                    <CardDescription>Review the snippet before adding it to your site.</CardDescription>
                   </div>
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" onClick={() => copy(mutation.data.html, "HTML")}>
                       <Copy className="h-3 w-3 mr-1" /> Copy
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => download(mutation.data.html, "page-with-aeo.html", "text/html")}
-                    >
-                      <Download className="h-3 w-3 mr-1" /> Download
                     </Button>
                   </div>
                 </CardHeader>

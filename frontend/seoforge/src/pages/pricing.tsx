@@ -65,7 +65,7 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
         "name": "Free Plan",
         "price": prices.free.toFixed(2),
         "priceCurrency": activeCurrency,
-        "description": "3 page repairs per month with basic checks and repair receipts",
+        "description": "3 live page audits per month with basic checks and audit receipts",
         "availability": "https://schema.org/InStock",
         "hasMerchantReturnPolicy": {
           "@type": "MerchantReturnPolicy",
@@ -109,7 +109,7 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
         "price": prices.starter.toFixed(2),
         "priceCurrency": activeCurrency,
         "priceValidUntil": "2026-12-31",
-        "description": "20 page repairs per month with AEO answer blocks and deployable HTML",
+        "description": "20 live page audits per month with AEO answer blocks and copyable snippets",
         "availability": "https://schema.org/InStock",
         "hasMerchantReturnPolicy": {
           "@type": "MerchantReturnPolicy",
@@ -153,7 +153,7 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
         "price": prices.agency.toFixed(2),
         "priceCurrency": activeCurrency,
         "priceValidUntil": "2026-12-31",
-        "description": "Unlimited page repairs, bulk ZIP processing, and white-label proof",
+        "description": "Unlimited live page audits, multi-page crawling, and white-label proof",
         "availability": "https://schema.org/InStock",
         "hasMerchantReturnPolicy": {
           "@type": "MerchantReturnPolicy",
@@ -256,8 +256,8 @@ export default function Pricing() {
       metaDesc.setAttribute('name', 'description');
       document.head.appendChild(metaDesc);
     }
-    document.title = "SEOaxe Pricing - SEO repair plans for live websites";
-    metaDesc.setAttribute('content', 'SEOaxe pricing: Free, Starter, and Agency plans for teams that want deployable SEO repairs, schema markup, AEO improvements, repair receipts, and health scoring in one workflow.');
+    document.title = "SEOaxe Pricing - Live SEO audit plans";
+    metaDesc.setAttribute('content', 'SEOaxe pricing: Free, Starter, and Agency plans for teams that want live URL audits, schema guidance, AEO improvements, audit receipts, and health scoring in one workflow.');
   }, []);
 
   return (
@@ -272,7 +272,7 @@ export default function Pricing() {
       <main className="flex-1 py-20 px-4">
         <div className="container max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Repair live pages without agency pricing</h1>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Audit live pages without agency pricing</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Start with the website you already have. Prices are shown in your local currency based on your browser locale.
             </p>
@@ -328,7 +328,7 @@ export default function Pricing() {
           <div className="mt-24 max-w-4xl mx-auto">
             <div className="text-center mb-10">
               <h2 className="text-3xl font-bold mb-3">Why SEOaxe is different</h2>
-              <p className="text-muted-foreground">Most SEO tools advise or draft. SEOaxe patches existing pages and shows proof.</p>
+              <p className="text-muted-foreground">Most SEO tools advise or draft. SEOaxe audits live pages and shows proof.</p>
             </div>
             
             <div className="bg-card border rounded-2xl shadow-lg overflow-hidden">
@@ -342,7 +342,7 @@ export default function Pricing() {
                 </thead>
                 <tbody>
                   <tr className="border-b hover:bg-muted/20">
-                    <td className="py-4 px-6 font-medium">Repairs existing HTML pages</td>
+                    <td className="py-4 px-6 font-medium">Audits existing live pages</td>
                     <td className="py-4 px-4 bg-primary/5">
                       <div className="flex items-center justify-center">
                         <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
@@ -359,7 +359,7 @@ export default function Pricing() {
                     </td>
                   </tr>
                   <tr className="border-b hover:bg-muted/20">
-                    <td className="py-4 px-6 font-medium">Applies technical SEO patches</td>
+                    <td className="py-4 px-6 font-medium">Prioritizes technical SEO fixes</td>
                     <td className="py-4 px-4 bg-primary/5">
                       <div className="flex items-center justify-center">
                         <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
@@ -393,7 +393,7 @@ export default function Pricing() {
                     </td>
                   </tr>
                   <tr className="border-b hover:bg-muted/20">
-                    <td className="py-4 px-6 font-medium">Shows a before/after repair receipt</td>
+                    <td className="py-4 px-6 font-medium">Shows a before/after audit receipt</td>
                     <td className="py-4 px-4 bg-primary/5">
                       <div className="flex items-center justify-center">
                         <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
@@ -484,7 +484,7 @@ export default function Pricing() {
             <div className="mt-8 p-6 bg-primary/10 border border-primary/20 rounded-xl">
               <p className="font-semibold text-primary mb-2">The difference is clear</p>
               <p className="text-muted-foreground text-sm">
-                AI content tools create more drafts. SEOaxe repairs the pages that already exist - technical SEO, AEO schema, localized tags, deployable HTML, and before/after proof in one workflow.
+                AI content tools create more drafts. SEOaxe audits the pages that already exist: technical SEO, AEO schema, localized tags, content gaps, and before/after proof in one workflow.
               </p>
             </div>
           </div>
@@ -501,8 +501,8 @@ export default function Pricing() {
                 <p className="text-muted-foreground">Absolutely. You can change your plan at any time. Prorated charges will be applied automatically.</p>
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-2">What counts as a page repair?</h3>
-                <p className="text-muted-foreground">One repair counts every time you submit HTML through the Single Page Optimizer or process a file in the ZIP bulk uploader.</p>
+                <h3 className="font-semibold text-lg mb-2">What counts as a page audit?</h3>
+                <p className="text-muted-foreground">One audit counts every time SEOaxe reviews a live URL and generates a score, findings, and guided recommendations.</p>
               </div>
             </div>
           </div>

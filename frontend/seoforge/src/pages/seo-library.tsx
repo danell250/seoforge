@@ -54,21 +54,21 @@ type SeoPage = {
 const pages: Record<PageSlug, SeoPage> = {
   "seo-repair-engine": {
     slug: "seo-repair-engine",
-    eyebrow: "SEO repair engine",
-    title: "Repair existing website pages instead of rewriting from scratch",
+    eyebrow: "Live SEO audit",
+    title: "Audit existing website pages from any live URL",
     description:
-      "SEOaxe turns an existing page into a deployable repair plan: metadata, schema, answer blocks, headings, internal-link prompts, sitemap entries, and before/after proof.",
+      "SEOaxe scans live pages and delivers an audit plan: metadata, schema, answer blocks, headings, internal-link prompts, sitemap entries, and before/after proof.",
     icon: Sparkles,
-    intent: "For teams searching for a practical SEO repair engine that improves live pages without a long agency retainer.",
+    intent: "For teams searching for a practical SEO audit engine that improves live pages without a long agency retainer.",
     outcomes: [
-      "Repaired title tags and descriptions tied to the page's actual offer.",
+      "Audit findings for title tags and descriptions tied to the page's actual offer.",
       "Structured data and answer sections that help search and AI systems understand the page.",
-      "A repair receipt that shows what changed and why it matters.",
+      "An audit receipt that shows what to fix and why it matters.",
     ],
     workflow: [
-      "Paste the current HTML or crawl the page you want to improve.",
-      "Review SEOaxe's score, missing signals, and generated HTML patch.",
-      "Deploy the repaired output and submit the updated URL for indexing.",
+      "Enter the live URL of the page you want to improve.",
+      "Review SEOaxe's score, missing signals, and prioritized fix list.",
+      "Apply the recommended changes and submit the updated URL for indexing.",
     ],
     proof: [
       "Built around before/after scoring, not vague content suggestions.",
@@ -88,21 +88,21 @@ const pages: Record<PageSlug, SeoPage> = {
   },
   "html-seo-optimizer": {
     slug: "html-seo-optimizer",
-    eyebrow: "HTML SEO optimizer",
-    title: "Optimize raw HTML for search-ready deployment",
+    eyebrow: "Live page analyzer",
+    title: "Analyze live pages for search-ready improvements",
     description:
-      "Paste existing HTML and get cleaner titles, descriptions, headings, Open Graph tags, schema, alt text guidance, and a deployable output you can hand to a developer.",
+      "Enter any live URL and get cleaner titles, descriptions, headings, Open Graph tags, schema, alt text guidance, and copyable guidance you can hand to a developer.",
     icon: FileCode2,
-    intent: "For people searching for an HTML SEO optimizer that returns usable code instead of a generic checklist.",
+    intent: "For people searching for an SEO analyzer that returns actionable guidance instead of a generic checklist.",
     outcomes: [
-      "Production-ready head tags and semantic page structure.",
+      "Production-ready recommendations for head tags and semantic page structure.",
       "JSON-LD schema matched to the page type and business context.",
-      "Copyable HTML repairs for WordPress, Shopify, custom sites, and static pages.",
+      "Copyable guidance for WordPress, Shopify, custom sites, and static pages.",
     ],
     workflow: [
-      "Paste the page source into the optimizer.",
+      "Enter the live page URL into the analyzer.",
       "Let SEOaxe detect missing search signals and weak answer structure.",
-      "Copy the repaired HTML or download the generated files.",
+      "Copy the recommended snippets and apply the changes to your site.",
     ],
     proof: [
       "Shows the repaired code directly in the workspace.",
@@ -115,8 +115,8 @@ const pages: Record<PageSlug, SeoPage> = {
         answer: "It can repair metadata, schema, headings, answer blocks, alt guidance, sitemap outputs, and robots.txt guidance.",
       },
       {
-        question: "Can I paste HTML from any CMS?",
-        answer: "Yes. The workflow is CMS-agnostic because it starts from the page HTML rather than a platform plugin.",
+        question: "Does SEOaxe work with any CMS?",
+        answer: "Yes. The workflow is CMS-agnostic because it scans live URLs rather than requiring platform plugins.",
       },
     ],
   },
@@ -134,12 +134,12 @@ const pages: Record<PageSlug, SeoPage> = {
       "FAQPage or WebPage schema where it fits the page intent.",
     ],
     workflow: [
-      "Submit the page and target topic.",
+      "Enter your live page URL and target topic.",
       "Generate direct answers, supporting FAQs, and structured data.",
-      "Add the answer block to the live page and monitor visibility.",
+      "Copy the answer snippets to your live page and monitor visibility.",
     ],
     proof: [
-      "Built into the same workflow as technical SEO repair.",
+      "Built into the same workflow as technical SEO audit.",
       "Targets answer clarity, entity coverage, and schema together.",
       "Designed for existing service, product, and location pages.",
     ],
@@ -170,7 +170,7 @@ const pages: Record<PageSlug, SeoPage> = {
     workflow: [
       "Identify the question the page should answer.",
       "Generate a short answer block and supporting details.",
-      "Deploy the repair and keep the page's original conversion path intact.",
+      "Apply the guidance and keep the page's original conversion path intact.",
     ],
     proof: [
       "Focuses on useful answers, not keyword stuffing.",
@@ -202,13 +202,13 @@ const pages: Record<PageSlug, SeoPage> = {
       "Schema recommendations included alongside metadata and heading repairs.",
     ],
     workflow: [
-      "Paste or crawl the target page.",
+      "Enter the live URL of the target page.",
       "Let SEOaxe infer the right schema candidates.",
-      "Validate and deploy the generated JSON-LD in the page head or body.",
+      "Validate and apply the generated JSON-LD in the page head or body.",
     ],
     proof: [
       "Schema is generated from the page context, not a blank template.",
-      "Pairs schema with meta and answer-block repairs.",
+      "Pairs schema with meta and answer-block recommendations.",
       "Useful for agencies that need repeatable client deliverables.",
     ],
     faq: [
@@ -233,22 +233,22 @@ const pages: Record<PageSlug, SeoPage> = {
     outcomes: [
       "A page-level score across technical SEO, content SEO, and AEO readiness.",
       "Prioritized findings instead of a long undifferentiated checklist.",
-      "Repair suggestions that map directly to code and content changes.",
+      "Guidance that maps directly to code and content changes.",
     ],
     workflow: [
-      "Enter a page URL or paste HTML.",
+      "Enter a live page URL to scan.",
       "Review missing, weak, and healthy SEO signals.",
-      "Generate a repair pass and compare the before/after state.",
+      "Get prioritized guidance and compare the before/after state.",
     ],
     proof: [
       "The audit is connected to an optimizer, so findings can become fixes.",
       "Highlights deployable improvements for non-technical teams.",
-      "Works at page level, where SEO problems are easiest to repair.",
+      "Works at page level, where SEO problems are easiest to identify.",
     ],
     faq: [
       {
         question: "Is this a full enterprise crawler?",
-        answer: "SEOaxe is focused on page repair. It is best for improving important pages one by one or in agency batches.",
+        answer: "SEOaxe is focused on page audits. It is best for improving important pages one by one or in agency batches.",
       },
       {
         question: "What score should I aim for?",
@@ -272,7 +272,7 @@ const pages: Record<PageSlug, SeoPage> = {
     workflow: [
       "Collect the public pages that should appear in search.",
       "Generate sitemap.xml and robots.txt outputs.",
-      "Upload them to the domain root and resubmit in Search Console.",
+      "Place them at the domain root and resubmit in Search Console.",
     ],
     proof: [
       "This SEOaxe site ships a root sitemap.xml as proof of the same workflow.",
@@ -306,7 +306,7 @@ const pages: Record<PageSlug, SeoPage> = {
     workflow: [
       "Decide which routes should be public.",
       "Generate robots.txt with clear allow/disallow intent.",
-      "Upload it to the domain root next to sitemap.xml.",
+      "Place it at the domain root next to sitemap.xml.",
     ],
     proof: [
       "SEOaxe's own robots.txt points to the live sitemap.",
@@ -326,20 +326,20 @@ const pages: Record<PageSlug, SeoPage> = {
   },
   "wordpress-seo-repair": {
     slug: "wordpress-seo-repair",
-    eyebrow: "WordPress SEO repair",
-    title: "Repair WordPress page SEO without waiting on a full redesign",
+    eyebrow: "WordPress SEO audit",
+    title: "Audit WordPress page SEO without waiting on a full redesign",
     description:
-      "Use SEOaxe to improve WordPress page metadata, schema, headings, answers, and deployment notes before publishing the update in your CMS.",
+      "Use SEOaxe to analyze WordPress page metadata, schema, headings, answers, and get guidance before publishing updates in your CMS.",
     icon: Globe2,
-    intent: "For WordPress site owners who need page-level SEO improvements and clear handoff notes.",
+    intent: "For WordPress site owners who need page-level SEO analysis and clear handoff notes.",
     outcomes: [
       "Better titles, descriptions, headings, and schema for key WordPress pages.",
-      "A practical checklist for adding repairs through your theme, builder, or SEO plugin.",
+      "A practical checklist for applying fixes through your theme, builder, or SEO plugin.",
       "Before/after proof that helps explain the update to a client or founder.",
     ],
     workflow: [
-      "Copy the live page HTML or page source.",
-      "Generate the repair plan and code snippets.",
+      "Enter your live WordPress page URL.",
+      "Generate the audit plan and code snippets.",
       "Apply the updates in WordPress and submit the URL for reindexing.",
     ],
     proof: [
@@ -350,20 +350,20 @@ const pages: Record<PageSlug, SeoPage> = {
     faq: [
       {
         question: "Do I still need Yoast or Rank Math?",
-        answer: "Those plugins can help publish fields. SEOaxe helps decide what to repair and generate stronger page-ready outputs.",
+        answer: "Those plugins can help publish fields. SEOaxe helps decide what to fix and generate stronger page-ready outputs.",
       },
       {
         question: "Can SEOaxe generate WordPress-ready copy?",
-        answer: "Yes. It can provide metadata, answer blocks, schema, and implementation notes you can paste into WordPress.",
+        answer: "Yes. It can provide metadata, answer blocks, schema, and implementation notes you can apply in WordPress.",
       },
     ],
   },
   "shopify-seo-repair": {
     slug: "shopify-seo-repair",
-    eyebrow: "Shopify SEO repair",
+    eyebrow: "Shopify SEO audit",
     title: "Improve Shopify product, collection, and landing page SEO",
     description:
-      "Repair Shopify pages with stronger metadata, product context, structured data guidance, collection descriptions, and answer sections.",
+      "Audit Shopify pages with stronger metadata, product context, structured data guidance, collection descriptions, and answer sections.",
     icon: ShoppingBag,
     intent: "For Shopify stores that need product and collection pages to be clearer for search engines and buyers.",
     outcomes: [
@@ -372,9 +372,9 @@ const pages: Record<PageSlug, SeoPage> = {
       "Schema and internal-link recommendations for commerce pages.",
     ],
     workflow: [
-      "Choose a product, collection, or landing page.",
-      "Run the current HTML through SEOaxe.",
-      "Apply the repair in Shopify theme fields, product content, or custom liquid where needed.",
+      "Choose a product, collection, or landing page URL.",
+      "Run the live page through SEOaxe.",
+      "Apply the guidance in Shopify theme fields, product content, or custom liquid where needed.",
     ],
     proof: [
       "Focuses on conversion pages, not just blog posts.",
@@ -384,7 +384,7 @@ const pages: Record<PageSlug, SeoPage> = {
     faq: [
       {
         question: "Can SEOaxe repair product pages?",
-        answer: "Yes. It can improve metadata, headings, product explanation, FAQ-style content, and schema guidance.",
+        answer: "Yes. It can analyze metadata, headings, product explanation, FAQ-style content, and provide schema guidance.",
       },
       {
         question: "Should collection pages have unique copy?",
@@ -395,9 +395,9 @@ const pages: Record<PageSlug, SeoPage> = {
   "local-seo-south-africa": {
     slug: "local-seo-south-africa",
     eyebrow: "South Africa local SEO",
-    title: "Repair local SEO pages for South African businesses",
+    title: "Audit local SEO pages for South African businesses",
     description:
-      "SEOaxe helps service businesses create clearer local pages with location intent, trust signals, schema, multilingual clues, and direct answers.",
+      "SEOaxe helps service businesses analyze local pages with location intent, trust signals, schema, multilingual clues, and direct answers.",
     icon: Store,
     intent: "For South African businesses that need local service pages to rank and convert more clearly.",
     outcomes: [
@@ -406,9 +406,9 @@ const pages: Record<PageSlug, SeoPage> = {
       "Answer blocks that match how customers search for help in South Africa.",
     ],
     workflow: [
-      "Start with your home, service, or city page.",
-      "Repair metadata, schema, headings, and trust signals.",
-      "Publish the update and connect it to Google Business Profile activity.",
+      "Enter your home, service, or city page URL.",
+      "Analyze metadata, schema, headings, and trust signals.",
+      "Apply the updates and connect it to Google Business Profile activity.",
     ],
     proof: [
       "SEOaxe was positioned around practical SEO for real small-business pages.",
@@ -429,11 +429,11 @@ const pages: Record<PageSlug, SeoPage> = {
   "seo-health-score": {
     slug: "seo-health-score",
     eyebrow: "SEO health score",
-    title: "Score page SEO health before and after repairs",
+    title: "Score page SEO health before and after fixes",
     description:
       "Use SEOaxe to measure technical SEO, content SEO, and AEO readiness so improvements are visible, explainable, and repeatable.",
     icon: MonitorCheck,
-    intent: "For teams that want proof of product: a measurable score before and after SEO repairs.",
+    intent: "For teams that want proof of product: a measurable score before and after SEO improvements.",
     outcomes: [
       "A page-level score that highlights what changed.",
       "Category breakdowns for technical SEO, content quality, and answer readiness.",
@@ -441,13 +441,13 @@ const pages: Record<PageSlug, SeoPage> = {
     ],
     workflow: [
       "Analyze the current page.",
-      "Apply the generated repair plan.",
+      "Apply the generated guidance.",
       "Compare the improved page against the original baseline.",
     ],
     proof: [
       "Makes SEOaxe's value visible instead of hidden in a black-box recommendation.",
       "Supports agency reporting and founder decision-making.",
-      "Turns SEO repair into a repeatable workflow with evidence.",
+      "Turns SEO improvements into a repeatable workflow with evidence.",
     ],
     faq: [
       {
@@ -456,7 +456,7 @@ const pages: Record<PageSlug, SeoPage> = {
       },
       {
         question: "Why score before and after?",
-        answer: "Before/after scoring helps prove that the repair improved the page's search signals.",
+        answer: "Before/after scoring helps prove that the improvements enhanced the page's search signals.",
       },
     ],
   },

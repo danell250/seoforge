@@ -77,15 +77,15 @@ export function FAQPageSchema() {
         "name": `What is ${BRAND_NAME}?`,
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": `${BRAND_NAME} is an SEO repair engine for existing website pages. It turns real HTML into deployable, search-ready code with meta tags, schema markup, AEO answer blocks, hreflang, sitemaps, before/after health scores, and a repair receipt showing exactly what changed.`
+          "text": `${BRAND_NAME} is a live SEO audit engine for existing website pages. It scans public URLs and returns prioritized SEO, AEO, schema, hreflang, sitemap, content gap, and health score guidance without requiring source files.`
         }
       },
       {
         "@type": "Question",
-        "name": "How does SEO page repair work?",
+        "name": "How does live SEO auditing work?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "SEOaxe analyzes an existing page, identifies the missing search signals, and returns repaired HTML. The platform can generate optimized meta titles and descriptions, JSON-LD structured data, AEO answer blocks, XML sitemaps, robots.txt files, and a before/after SEO health score."
+          "text": "SEOaxe analyzes an existing public page, identifies the missing search signals, and returns a guided audit. The platform can generate meta title and description recommendations, JSON-LD structured data guidance, AEO answer blocks, XML sitemaps, robots.txt files, and a before/after SEO health score."
         }
       },
       {
@@ -93,7 +93,7 @@ export function FAQPageSchema() {
         "name": "Is SEOaxe free?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes, SEOaxe is free to start with no credit card required. Create a free account to begin repairing your pages, then upgrade if you need premium features like bulk repair, competitor analysis, site monitoring, and CMS deployment to WordPress and Shopify."
+          "text": "Yes, SEOaxe is free to start with no credit card required. Create a free account to audit live pages, then upgrade if you need premium features like multi-page crawling, competitor analysis, site monitoring, and white-label reporting."
         }
       },
       {
@@ -129,13 +129,13 @@ export function SoftwareApplicationSchema() {
       "priceCurrency": pricingLocale.currency
     },
     "featureList": [
-      "Existing HTML repair",
+      "Live URL SEO audits",
       "Meta tag generation",
       "Schema markup automation",
       "AEO answer block creation",
       "XML sitemap generation",
       "Robots.txt creation",
-      "Before and after repair receipts",
+      "Before and after audit receipts",
       "SEO health scoring",
       "Competitor analysis",
       "Site crawling",
@@ -163,7 +163,7 @@ export function LocalBusinessSchema() {
       "name": "Worldwide"
     },
     "serviceType": [
-      "SEO Page Repair",
+      "Live SEO Audits",
       "Answer Engine Optimization",
       "Technical SEO Audits",
       "Schema Markup Implementation",

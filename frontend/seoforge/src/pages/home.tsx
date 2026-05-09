@@ -29,46 +29,46 @@ export default function Home() {
 
   useEffect(() => {
     document.body.classList.add("seoaxe-home");
-    document.title = "SEOaxe - SEO Repair Engine for Existing Website Pages";
+    document.title = "SEOaxe - Live SEO Audit and AEO Guidance";
     const description =
-      "Repair the website pages you already have. Get deployable HTML patches, schema, AEO answer blocks, sitemaps, before-and-after scores, and a clear repair receipt.";
+      "Audit live website pages from a URL. Get SEO, AEO, schema, sitemap, content gap, and competitor guidance without requesting source files.";
     const metaDesc = document.querySelector('meta[name="description"]');
     metaDesc?.setAttribute("content", description);
     document.querySelector('meta[name="title"]')?.setAttribute("content", document.title);
-    document.querySelector('meta[property="og:title"]')?.setAttribute("content", "SEOaxe - SEO Repair Engine");
+    document.querySelector('meta[property="og:title"]')?.setAttribute("content", "SEOaxe - Live SEO Audit and AEO Guidance");
     document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
-    document.querySelector('meta[property="twitter:title"]')?.setAttribute("content", "SEOaxe - SEO Repair Engine");
+    document.querySelector('meta[property="twitter:title"]')?.setAttribute("content", "SEOaxe - Live SEO Audit and AEO Guidance");
     document.querySelector('meta[property="twitter:description"]')?.setAttribute("content", description);
     return () => document.body.classList.remove("seoaxe-home");
   }, []);
 
   const features = [
-    { icon: FileCode2, title: "Repair Real HTML", desc: "Paste, upload, or crawl existing pages and get production-ready HTML back." },
-    { icon: ShieldCheck, title: "Get a Repair Receipt", desc: "See every meta, schema, heading, answer block, and language patch applied." },
-    { icon: LayoutTemplate, title: "Compare Before and After", desc: "Preview the search result and score lift before the repaired page ships." },
-    { icon: BrainCircuit, title: "Answer-Engine Patches", desc: "Add FAQ, AEO, and JSON-LD sections built for AI answers and snippets." },
-    { icon: Search, title: "Crawl Then Fix", desc: "Find weak pages across a live site and turn them into a repair queue." },
+    { icon: Globe2, title: "Audit Live URLs", desc: "Scan public pages directly from their URL. No HTML, TS, TSX, or ZIP files required." },
+    { icon: ShieldCheck, title: "Prioritized Fix List", desc: "See the metadata, schema, heading, answer-block, and language issues worth fixing first." },
+    { icon: LayoutTemplate, title: "Compare Before and After", desc: "Preview likely score impact before your team applies changes." },
+    { icon: BrainCircuit, title: "Answer-Engine Guidance", desc: "Generate FAQ, AEO, and JSON-LD suggestions built for AI answers and snippets." },
+    { icon: Search, title: "Crawl Then Prioritize", desc: "Find weak pages across a live site and turn them into a review queue." },
     { icon: Globe2, title: "Regional Search Layers", desc: "Add hreflang, localized schema, and language cues for multi-market pages." },
-    { icon: LineChart, title: "Competitor Gap Repair", desc: "Spot the topics competitors cover and patch missing proof into your page." },
-    { icon: Zap, title: "Deployable Outputs", desc: "Download HTML, sitemap.xml, robots.txt, or send finished pages to your CMS." },
-    { icon: Bot, title: "Agency-Ready Evidence", desc: "Give clients a clear before/after record instead of a vague recommendation list." },
-    { icon: Code2, title: "No Rebuild Required", desc: "Keep the website you already have and improve the code search engines read." },
+    { icon: LineChart, title: "Competitor Gap Research", desc: "Spot the topics competitors cover and build stronger proof into your pages." },
+    { icon: Zap, title: "Copyable Snippets", desc: "Copy schema, FAQ, sitemap, robots, and content suggestions after review." },
+    { icon: Bot, title: "Agency-Ready Evidence", desc: "Give clients a clear audit trail instead of a vague recommendation list." },
+    { icon: Code2, title: "No Rebuild Required", desc: "Keep the website you already have and improve the signals search engines read." },
   ];
   const workflow = [
     {
-      title: "Bring the page you already have",
-      desc: "Paste one HTML file, upload a ZIP, or crawl a live site. SEOaxe starts from your real website, not a blank article editor.",
+      title: "Enter the live page URL",
+      desc: "SEOaxe starts from the public website search engines can already crawl, so users do not need to provide source files.",
     },
     {
-      title: "Build the repair patch",
-      desc: "The engine rewrites the parts search systems care about: metadata, schema, answer sections, headings, alt text, canonical tags, and language signals.",
+      title: "Review the audit",
+      desc: "The engine flags the parts search systems care about: metadata, schema, answer sections, headings, alt text, canonical tags, and language signals.",
     },
     {
-      title: "Ship with proof",
-      desc: "Download deployable HTML and assets with a repair receipt showing exactly what changed and how the score moved.",
+      title: "Apply guided fixes",
+      desc: "Use copyable snippets and checklists your team can review before anything changes on the live site.",
     },
   ];
-  const workspaceHref = isAuthenticated ? "/app" : "/login?redirect=%2Fapp";
+  const workspaceHref = isAuthenticated ? "/app#site-crawler" : "/login?redirect=%2Fapp%23site-crawler";
 
   return (
     <div className="min-h-screen flex flex-col font-sans">
@@ -89,7 +89,7 @@ export default function Home() {
                 <span>2,500+ agencies using SEOaxe</span>
               </div>
               <span>•</span>
-              <span>50,000+ pages repaired</span>
+              <span>50,000+ pages audited</span>
               <span>•</span>
               <span>Average score lift: +47 points</span>
             </div>
@@ -109,7 +109,7 @@ export default function Home() {
               <div className="flex items-center justify-center gap-2">
                 <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">
                   <Sparkles className="h-3 w-3 mr-1" />
-                  The SEO Repair Engine
+                  Live SEO Audit Engine
                 </Badge>
               </div>
               
@@ -122,7 +122,7 @@ export default function Home() {
                   </span>
                 </h1>
                 <p className="max-w-2xl mx-auto text-lg text-muted-foreground leading-relaxed">
-                  Most AI SEO tools create drafts. SEOaxe returns deployable page patches: optimized HTML, schema, AEO answer blocks, sitemaps, language tags, before/after scores, and a repair receipt you can trust.
+                  Most AI SEO tools ask for files or create generic drafts. SEOaxe scans live URLs, finds the SEO and AEO issues, and gives reviewable fixes your team can apply with confidence.
                 </p>
               </div>
 
@@ -150,7 +150,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link href={workspaceHref}>
                   <Button size="lg" className="h-12 px-8 text-base gap-2">
-                    Repair a page free
+                    Audit a site free
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
@@ -181,29 +181,29 @@ export default function Home() {
                     <div className="w-3 h-3 rounded-full bg-green-400" />
                   </div>
                   <div className="flex-1 text-center">
-                    <span className="text-xs text-muted-foreground">SEOaxe Repair Receipt</span>
+                    <span className="text-xs text-muted-foreground">SEOaxe Audit Receipt</span>
                   </div>
                 </div>
                 <div className="grid md:grid-cols-[1fr_280px] divide-y md:divide-y-0 md:divide-x">
                   <div className="p-4 space-y-3 md:p-6 md:space-y-4">
                     <div className="flex items-center gap-3 pb-4 border-b">
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm">Upload Page</Button>
-                        <Button size="sm">Build Patch</Button>
+                        <Button variant="outline" size="sm">Scan URL</Button>
+                        <Button size="sm">Prioritize Fixes</Button>
                       </div>
                     </div>
                     <div className="grid gap-3 font-mono text-xs">
                       <div className="p-3 rounded bg-muted/50 border text-muted-foreground">
-                        <span className="text-green-600">+ Patched:</span> JSON-LD structured data for Organization
+                        <span className="text-green-600">Found:</span> Missing Organization JSON-LD
                       </div>
                       <div className="p-3 rounded bg-muted/50 border text-muted-foreground">
-                        <span className="text-green-600">+ Patched:</span> Meta description with search intent
+                        <span className="text-green-600">Found:</span> Thin meta description
                       </div>
                       <div className="p-3 rounded bg-muted/50 border text-muted-foreground">
-                        <span className="text-green-600">+ Patched:</span> Canonical URL and hreflang tags
+                        <span className="text-green-600">Found:</span> Missing canonical and hreflang signals
                       </div>
                       <div className="p-3 rounded bg-muted/50 border text-muted-foreground">
-                        <span className="text-green-600">+ Patched:</span> AEO answer block for AI citations
+                        <span className="text-green-600">Suggested:</span> AEO answer block for AI citations
                       </div>
                     </div>
                   </div>
@@ -222,7 +222,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="pt-4 border-t space-y-2">
-                      <p className="text-sm font-medium">Repair Pack</p>
+                      <p className="text-sm font-medium">Audit Focus</p>
                       <div className="space-y-1.5 text-sm">
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Technical</span>
@@ -250,7 +250,7 @@ export default function Home() {
           <div className="container max-w-5xl mx-auto px-4">
             <div className="text-center mb-8 md:mb-12">
               <h2 className="text-3xl font-bold mb-3">Not another AI writing tool</h2>
-              <p className="text-muted-foreground max-w-xl mx-auto">SEOaxe is built for the messy middle after a website is already live: inspect it, patch it, prove it, and ship it.</p>
+              <p className="text-muted-foreground max-w-xl mx-auto">SEOaxe is built for the messy middle after a website is already live: inspect it, prioritize it, prove it, and monitor it.</p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -278,8 +278,8 @@ export default function Home() {
         <section className="py-12 md:py-20">
           <div className="container max-w-5xl mx-auto px-4">
             <div className="text-center mb-8 md:mb-12">
-              <h2 className="text-3xl font-bold mb-3">How the repair engine works</h2>
-              <p className="text-muted-foreground">From live page to patched HTML with evidence</p>
+              <h2 className="text-3xl font-bold mb-3">How the audit engine works</h2>
+              <p className="text-muted-foreground">From live URL to prioritized fixes with evidence</p>
             </div>
             
             <div className="grid gap-5 md:grid-cols-3 md:gap-6">
@@ -306,24 +306,24 @@ export default function Home() {
           <div className="container max-w-5xl mx-auto px-4">
             <div className="text-center mb-8 md:mb-12">
               <h2 className="text-3xl font-bold mb-3">The unique angle buyers can remember</h2>
-              <p className="text-muted-foreground max-w-xl mx-auto">SEOaxe owns the practical job most SEO tools leave unfinished: turning existing pages into repaired, deployable, evidence-backed pages.</p>
+              <p className="text-muted-foreground max-w-xl mx-auto">SEOaxe owns the practical job most SEO tools leave unfinished: finding exactly what is holding live pages back and making the fixes easy to review.</p>
             </div>
             
             <div className="grid md:grid-cols-3 gap-6">
               {[
                 {
-                  title: "Repair, not rewrite",
-                  desc: "Keep the current website and patch the code that affects search visibility. That is easier to trust than asking a business to replace every page.",
+                  title: "Audit, not blind rewrite",
+                  desc: "Keep the current website and identify the signals that affect search visibility. That is easier to trust than asking a business to provide source files.",
                   icon: FileCode2
                 },
                 {
                   title: "Evidence, not mystery",
-                  desc: "Every run produces a before score, after score, code diff, and repair receipt. Agencies can show what changed instead of selling invisible work.",
+                  desc: "Every run produces scores, findings, snippets, and a clear audit receipt. Agencies can show what matters instead of selling invisible work.",
                   icon: ShieldCheck
                 },
                 {
-                  title: "Deploy, not advise",
-                  desc: "SEOaxe packages the actual HTML, sitemap, robots file, CMS path, and monitoring workflow so the fix can leave the dashboard.",
+                  title: "Guide, not gamble",
+                  desc: "SEOaxe gives sitemap, robots, schema, content, and monitoring guidance so the team can review before anything goes live.",
                   icon: Zap
                 }
               ].map((testimonial, i) => (
@@ -345,12 +345,12 @@ export default function Home() {
         {/* CTA Section */}
         <section className="py-12 bg-primary text-primary-foreground md:py-20">
           <div className="container max-w-3xl mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Repair one page and see the receipt.</h2>
-            <p className="text-primary-foreground/80 mb-8 text-lg">Start with the website you already have. SEOaxe will show the patch, the score lift, and the deployable output.</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Audit one live site and see the proof.</h2>
+            <p className="text-primary-foreground/80 mb-8 text-lg">Start with the website you already have. SEOaxe will show the issues, the likely score lift, and the reviewable fixes.</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href={workspaceHref}>
                 <Button size="lg" variant="secondary" className="h-12 px-8 gap-2">
-                  Start free repair
+                  Start free audit
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </Link>

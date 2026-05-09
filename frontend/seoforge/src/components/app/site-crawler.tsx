@@ -25,13 +25,9 @@ import {
   CheckCircle2,
   AlertCircle,
   RefreshCw,
-  Download,
-  Rocket,
   Search,
   Sparkles,
 } from "lucide-react";
-import JSZip from "jszip";
-import { saveAs } from "file-saver";
 
 interface CrawlPage {
   url: string;
@@ -111,7 +107,7 @@ export function SiteCrawler() {
         title: "Crawl complete",
         description: `Discovered ${initial.length} page${initial.length === 1 ? "" : "s"} on ${result.domain}.`,
       });
-      // Auto-start optimization
+      // Auto-start guided analysis from the crawled public HTML.
       await runOptimization(initial);
     } catch {
       toast({
@@ -157,29 +153,9 @@ export function SiteCrawler() {
     setDone(true);
     const successCount = updated.filter((p) => p.status === "success").length;
     toast({
-      title: "Site optimization complete",
-      description: `Optimized ${successCount} of ${updated.length} pages.`,
+      title: "Site audit complete",
+      description: `Reviewed ${successCount} of ${updated.length} pages.`,
     });
-  };
-
-  const downloadAll = async () => {
-    const zip = new JSZip();
-    let count = 0;
-    pages.forEach((p) => {
-      if (p.status === "success" && p.optimizedHtml) {
-        zip.file(p.filename, p.optimizedHtml);
-        count++;
-      }
-    });
-    if (count === 0) {
-      toast({ title: "Nothing to download", variant: "destructive" });
-      return;
-    }
-    const blob = await zip.generateAsync({ type: "blob" });
-    const safeDomain = domain
-      .replace(/^https?:\/\//, "")
-      .replace(/[^a-zA-Z0-9.-]/g, "-");
-    saveAs(blob, `seoforge-${safeDomain}-optimized.zip`);
   };
 
   const fillGapsForAll = async () => {
@@ -243,43 +219,9 @@ export function SiteCrawler() {
     });
   };
 
-  const sendAllToDeployQueue = () => {
-    const queue = pages
-      .filter((p) => p.gapStatus === "success" && p.gapHtml)
-      .map((p) => ({
-        id: p.url,
-        sourceUrl: p.url,
-        title: p.title,
-        filename: p.filename,
-        html: p.gapHtml!,
-        gapsCount: p.gapsCount,
-      }));
-    if (queue.length === 0) {
-      toast({ title: "Nothing to queue", variant: "destructive" });
-      return;
-    }
-    sessionStorage.setItem("seoforge:deploy-queue", JSON.stringify(queue));
-    sessionStorage.setItem("seoforge:deploy-html", queue[0].html);
-    window.location.hash = "deploy";
-    window.dispatchEvent(new Event("seoforge:deploy-html-updated"));
-    toast({
-      title: `${queue.length} pages queued`,
-      description: "Open the Deploy tab to push them one click at a time.",
-    });
-  };
-
-  const downloadSingle = (page: CrawlPage) => {
-    if (!page.optimizedHtml) return;
-    const blob = new Blob([page.optimizedHtml], {
-      type: "text/html;charset=utf-8",
-    });
-    saveAs(blob, page.filename);
-  };
-
   const isCrawling = crawlMutation.isPending;
   const isBusy = isCrawling || isOptimizing || isFillingGaps;
   const successPagesCount = pages.filter((p) => p.status === "success").length;
-  const gapsReadyCount = pages.filter((p) => p.gapStatus === "success").length;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -291,9 +233,9 @@ export function SiteCrawler() {
                 <Globe className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-2xl">Scan and Optimize a Website</CardTitle>
+                <CardTitle className="text-2xl">Audit a Live Website</CardTitle>
                 <CardDescription>
-                  Enter a website URL. We scan its pages, improve each one, and let you download the updated files.
+                  Enter a website URL. We scan public pages, score the search signals, and show guided fixes without asking for source files.
                 </CardDescription>
               </div>
             </div>
@@ -358,7 +300,7 @@ export function SiteCrawler() {
             </div>
 
             <div className="rounded-md border bg-muted/30 p-3 text-sm text-muted-foreground">
-              One click flow: scan pages -&gt; repair pages -&gt; download a clean ZIP.
+              Flow: scan live pages -&gt; score SEO/AEO signals -&gt; review prioritized fixes.
             </div>
           </CardContent>
         </Card>
@@ -372,16 +314,6 @@ export function SiteCrawler() {
               </CardDescription>
             </div>
             <div className="flex gap-2">
-              {done && (
-                <Button
-                  onClick={downloadAll}
-                  className="gap-2"
-                  data-testid="button-download-all"
-                >
-                  <Download className="h-4 w-4" />
-                  Download Updated Site
-                </Button>
-              )}
               <Button variant="outline" onClick={reset} disabled={isBusy}>
                 New Scan
               </Button>
@@ -393,7 +325,7 @@ export function SiteCrawler() {
               <div className="mb-6 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="font-medium text-primary">
-                    Optimizing page{" "}
+                    Reviewing page{" "}
                     {Math.ceil((progress / 100) * pages.length)} of{" "}
                     {pages.length}…
                   </span>
@@ -413,9 +345,9 @@ export function SiteCrawler() {
                     <Sparkles className="h-5 w-5 text-purple-600" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-base">Apply Content Gaps to ALL Pages</h3>
+                    <h3 className="font-semibold text-base">Find Content Gaps Across Pages</h3>
                     <p className="text-sm text-muted-foreground">
-                      Find missing topics across all the updated pages, add the new sections, and then send the whole batch to Publish.
+                      Find missing topics across all reviewed pages and generate copyable section suggestions for your team to approve.
                     </p>
                   </div>
                 </div>
@@ -461,15 +393,10 @@ export function SiteCrawler() {
                       </>
                     ) : (
                       <>
-                        <Sparkles className="h-4 w-4" /> Add Missing Content to {successPagesCount} Pages
+                        <Sparkles className="h-4 w-4" /> Generate Suggestions for {successPagesCount} Pages
                       </>
                     )}
                   </Button>
-                  {gapsDone && gapsReadyCount > 0 && (
-                    <Button onClick={sendAllToDeployQueue} className="gap-2" variant="default">
-                      <Rocket className="h-4 w-4" /> Send {gapsReadyCount} to Publish Queue
-                    </Button>
-                  )}
                 </div>
               </div>
             )}
@@ -481,9 +408,8 @@ export function SiteCrawler() {
                     <TableHead>Page</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Score</TableHead>
-                    <TableHead>Changes</TableHead>
+                    <TableHead>Recommendations</TableHead>
                     <TableHead>Gaps</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -513,7 +439,7 @@ export function SiteCrawler() {
                         {page.status === "success" && (
                           <span className="text-green-600 text-sm flex items-center gap-1">
                             <CheckCircle2 className="h-3 w-3" />
-                            Done
+                            Reviewed
                           </span>
                         )}
                         {page.status === "error" && (
@@ -577,16 +503,6 @@ export function SiteCrawler() {
                         {!page.gapStatus && (
                           <span className="text-muted-foreground">-</span>
                         )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => downloadSingle(page)}
-                          disabled={page.status !== "success"}
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}

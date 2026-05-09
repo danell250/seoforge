@@ -318,12 +318,12 @@ export default function AuditPage() {
                       <ShieldCheck className="h-12 w-12 text-primary" />
                     </div>
                     <div className="flex-1 text-center md:text-left">
-                      <h3 className="text-lg font-semibold mb-1">Get the full repair report</h3>
+                      <h3 className="text-lg font-semibold mb-1">Get the full guided audit</h3>
                       <p className="text-sm text-muted-foreground mb-4">
-                        This audit shows what is wrong. SEOForge can generate the actual fixes — repaired HTML, schema markup, AEO answer blocks, and a deployable patch for every issue found.
+                        This audit shows what is wrong. SEOaxe can generate reviewable snippets, schema guidance, AEO answer blocks, and a checklist for every issue found.
                       </p>
                       <div className="flex flex-wrap justify-center md:justify-start gap-3">
-                        <Link href="/app">
+                        <Link href="/app#site-crawler">
                           <Button>
                             Open Workspace <ArrowRight className="ml-2 h-4 w-4" />
                           </Button>

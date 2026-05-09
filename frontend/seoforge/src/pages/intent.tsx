@@ -314,7 +314,7 @@ export default function IntentPage() {
                     <div className="flex-1 text-center md:text-left">
                       <h3 className="text-lg font-semibold mb-1">Generate the fixes automatically</h3>
                       <p className="text-sm text-muted-foreground mb-4">
-                        SEOForge can rewrite your title, meta, headings, and body to better match this search intent — then deliver deployable HTML.
+                        SEOForge can analyze your title, meta, headings, and body to better match this search intent — then provide guided fixes.
                       </p>
                       <div className="flex flex-wrap justify-center md:justify-start gap-3">
                         <Link href="/app">

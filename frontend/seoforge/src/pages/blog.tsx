@@ -77,7 +77,7 @@ const originalArticles: BlogArticle[] = [
 
       <div class="p-6 bg-primary/10 border border-primary/20 rounded-xl my-8">
         <p class="font-semibold text-primary mb-2">Ready to optimize your website for AEO?</p>
-        <p class="text-muted-foreground mb-4">Paste your HTML into our optimizer and get an instant AEO readiness score with automated fixes.</p>
+        <p class="text-muted-foreground mb-4">Enter your live URL and get an instant AEO readiness score with guided fixes.</p>
         <a href="/app" class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors">
           Try SEOaxe Free →
         </a>
@@ -152,7 +152,7 @@ const originalArticles: BlogArticle[] = [
 
       <div class="p-6 bg-primary/10 border border-primary/20 rounded-xl my-8">
         <p class="font-semibold text-primary mb-2">Get your SEO health score in 30 seconds</p>
-        <p class="text-muted-foreground mb-4">Paste any page HTML and see exactly what's broken — with automated fixes for every issue.</p>
+        <p class="text-muted-foreground mb-4">Enter any live page URL and see exactly what's broken — with guided fixes for every issue.</p>
         <a href="/app" class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors">
           Check Your Score Now →
         </a>
@@ -164,7 +164,7 @@ const originalArticles: BlogArticle[] = [
       <p>A score of 80 or above is considered excellent. Scores between 50 and 79 need improvement. Anything below 50 indicates critical issues that are actively hurting your rankings.</p>
 
       <h3>How do I check my SEO health score?</h3>
-      <p>You can check your SEO health score using <a href="/app" class="text-primary hover:underline font-semibold">SEOaxe</a> — paste your HTML and get an instant score broken down by Technical SEO, Content SEO, and AEO Readiness. Compare us to other tools on our <a href="/compare" class="text-primary hover:underline">comparison page</a>.</p>
+      <p>You can check your SEO health score using <a href="/app" class="text-primary hover:underline font-semibold">SEOaxe</a> — enter your live URL and get an instant score broken down by Technical SEO, Content SEO, and AEO Readiness. Compare us to other tools on our <a href="/compare" class="text-primary hover:underline">comparison page</a>.</p>
 
       <h3>How long does it take to improve an SEO health score?</h3>
       <p>With the right tool, technical SEO fixes can be applied in minutes. Rankings typically improve within 2 to 8 weeks after fixes are implemented and Google recrawls your pages.</p>
@@ -206,7 +206,7 @@ const originalArticles: BlogArticle[] = [
       <h2>How to Add Schema Without Coding</h2>
 
       <h3>Method 1 — Use SEOaxe (Fastest)</h3>
-      <p>Paste your page HTML into SEOaxe. The AI automatically detects what schema types apply to your page and injects the correct JSON-LD code. Copy the optimized HTML and paste it back into your site. Done in under 60 seconds.</p>
+      <p>Enter your live page URL into SEOaxe. The AI automatically detects what schema types apply to your page and provides the correct JSON-LD code. Copy the snippets and apply them to your site. Done in under 60 seconds.</p>
 
       <h3>Method 2 — WordPress Plugin</h3>
       <p>If your site runs on WordPress, install the free Rank Math or Yoast SEO plugin. Both generate schema markup automatically from your content with no coding required.</p>
@@ -402,17 +402,17 @@ const originalArticles: BlogArticle[] = [
       <ol>
         <li><strong>Step 1</strong> — Copy the appropriate JSON-LD template for your page type</li>
         <li><strong>Step 2</strong> — Fill in your specific details</li>
-        <li><strong>Step 3</strong> — Paste the complete JSON-LD block between the &lt;head&gt; and &lt;/head&gt; tags of your page</li>
+        <li><strong>Step 3</strong> — Apply the JSON-LD block between the &lt;head&gt; and &lt;/head&gt; tags of your page</li>
         <li><strong>Step 4</strong> — Test it at <a href="https://search.google.com/test/rich-results">search.google.com/test/rich-results</a></li>
         <li><strong>Step 5</strong> — Submit your updated sitemap to Google Search Console</li>
       </ol>
 
-      <p>The fastest method is to use SEOaxe — paste your HTML and it automatically detects which schema types your page needs and injects them correctly.</p>
+      <p>The fastest method is to use SEOaxe — enter your live URL and it automatically detects which schema types your page needs and provides them.</p>
 
       <h2>FAQ</h2>
 
       <h3>Is JSON-LD hard to implement?</h3>
-      <p>Not anymore. Tools like SEOaxe generate and inject JSON-LD automatically. You paste your HTML in, get fully schema-marked-up HTML back, and paste it into your site.</p>
+      <p>Not anymore. Tools like SEOaxe analyze your live page and provide JSON-LD snippets automatically. You enter your URL, get schema recommendations, and apply them to your site.</p>
 
       <h3>Does JSON-LD schema improve Google rankings?</h3>
       <p>JSON-LD does not directly change your ranking position but it enables rich results and AI citations that significantly increase your search visibility and click-through rates.</p>
@@ -561,7 +561,7 @@ const originalArticles: BlogArticle[] = [
       <p>Install Rank Math or Yoast SEO. Both generate your sitemap automatically at yourdomain.co.za/sitemap.xml</p>
 
       <h3>If you built a custom site:</h3>
-      <p>Use SEOaxe to generate a complete sitemap.xml file after optimizing your pages. Download it and upload it to your website's root folder.</p>
+      <p>Use SEOaxe to generate a complete sitemap.xml file after auditing your pages. Copy it and apply it to your website's root folder.</p>
 
       <h3>Manual creation:</h3>
       <p>Create a file named sitemap.xml in your website root with this structure:</p>
@@ -574,8 +574,8 @@ const originalArticles: BlogArticle[] = [
   &lt;/url&gt;
 &lt;/urlset&gt;</code></pre>
 
-      <h2>Step 2 — Upload Your Sitemap</h2>
-      <p>Upload your sitemap.xml file to the root of your website. It should be accessible at yourdomain.co.za/sitemap.xml — test this by opening the URL in your browser before submitting to Google.</p>
+      <h2>Step 2 — Apply Your Sitemap</h2>
+      <p>Place your sitemap.xml file at the root of your website. It should be accessible at yourdomain.co.za/sitemap.xml — test this by opening the URL in your browser before submitting to Google.</p>
 
       <h2>Step 3 — Open Google Search Console</h2>
       <p>Go to <a href="https://search.google.com/search-console">search.google.com/search-console</a> and sign in with your Google account. If you have not verified your website yet, complete the verification process first.</p>

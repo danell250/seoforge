@@ -4,7 +4,6 @@ import { isIP } from "node:net";
 import { ScanCompetitorBody, ScanCompetitorResponse } from "@workspace/api-zod";
 import { requireAuthenticatedUser } from "../middleware/auth";
 import { runSeoaxeJsonTask } from "../lib/seoaxe-ai";
-import { GroqApiError, GroqTimeoutError } from "../lib/groq";
 
 const router: IRouter = Router();
 router.use(requireAuthenticatedUser);
@@ -190,6 +189,300 @@ async function fetchPage(url: string): Promise<{ html: string; finalUrl: string 
   throw new CompetitorScanError("We could not fetch that competitor page right now.", 502);
 }
 
+const HTML_ENTITIES: Record<string, string> = {
+  amp: "&",
+  gt: ">",
+  lt: "<",
+  quot: "\"",
+  apos: "'",
+  nbsp: " ",
+};
+
+const STOP_WORDS = new Set([
+  "about",
+  "after",
+  "again",
+  "against",
+  "also",
+  "and",
+  "are",
+  "because",
+  "been",
+  "before",
+  "being",
+  "best",
+  "but",
+  "can",
+  "com",
+  "could",
+  "for",
+  "from",
+  "get",
+  "has",
+  "have",
+  "here",
+  "how",
+  "into",
+  "its",
+  "just",
+  "learn",
+  "more",
+  "not",
+  "our",
+  "out",
+  "over",
+  "page",
+  "see",
+  "services",
+  "site",
+  "that",
+  "the",
+  "their",
+  "then",
+  "this",
+  "through",
+  "use",
+  "was",
+  "web",
+  "website",
+  "what",
+  "when",
+  "where",
+  "which",
+  "with",
+  "you",
+  "your",
+]);
+
+function decodeHtmlEntities(value: string): string {
+  return value.replace(/&(#x?[0-9a-f]+|[a-z]+);/gi, (match, entity: string) => {
+    const normalized = entity.toLowerCase();
+    if (normalized.startsWith("#x")) {
+      const parsed = Number.parseInt(normalized.slice(2), 16);
+      return Number.isFinite(parsed) ? String.fromCodePoint(parsed) : match;
+    }
+    if (normalized.startsWith("#")) {
+      const parsed = Number.parseInt(normalized.slice(1), 10);
+      return Number.isFinite(parsed) ? String.fromCodePoint(parsed) : match;
+    }
+    return HTML_ENTITIES[normalized] ?? match;
+  });
+}
+
+function cleanText(value: string): string {
+  return decodeHtmlEntities(value)
+    .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
+    .replace(/<noscript\b[\s\S]*?<\/noscript>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractFirstTagText(html: string, tagName: string): string {
+  const match = new RegExp(`<${tagName}\\b[^>]*>([\\s\\S]*?)<\\/${tagName}>`, "i").exec(html);
+  return match ? cleanText(match[1]) : "";
+}
+
+function extractTagTexts(html: string, tagName: string, limit = 20): string[] {
+  const values: string[] = [];
+  const pattern = new RegExp(`<${tagName}\\b[^>]*>([\\s\\S]*?)<\\/${tagName}>`, "gi");
+  let match: RegExpExecArray | null;
+  while ((match = pattern.exec(html)) && values.length < limit) {
+    const text = cleanText(match[1]);
+    if (text) {
+      values.push(text);
+    }
+  }
+  return values;
+}
+
+function getAttribute(tag: string, attributeName: string): string {
+  const pattern = new RegExp(`${attributeName}\\s*=\\s*("[^"]*"|'[^']*'|[^\\s>]+)`, "i");
+  const match = pattern.exec(tag);
+  if (!match) return "";
+  return decodeHtmlEntities(match[1].replace(/^['"]|['"]$/g, "").trim());
+}
+
+function extractMetaContent(html: string, metaName: string): string {
+  const pattern = /<meta\b[^>]*>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = pattern.exec(html))) {
+    const tag = match[0];
+    const name = getAttribute(tag, "name").toLowerCase();
+    const property = getAttribute(tag, "property").toLowerCase();
+    if (name === metaName.toLowerCase() || property === metaName.toLowerCase()) {
+      return getAttribute(tag, "content");
+    }
+  }
+  return "";
+}
+
+function collectJsonLdTypes(value: unknown, types: Set<string>): void {
+  if (!value) return;
+  if (Array.isArray(value)) {
+    value.forEach((entry) => collectJsonLdTypes(entry, types));
+    return;
+  }
+  if (typeof value !== "object") return;
+
+  const record = value as Record<string, unknown>;
+  const type = record["@type"];
+  if (typeof type === "string" && type.trim()) {
+    types.add(type.trim());
+  } else if (Array.isArray(type)) {
+    type.filter((entry): entry is string => typeof entry === "string").forEach((entry) => types.add(entry.trim()));
+  }
+  Object.values(record).forEach((entry) => collectJsonLdTypes(entry, types));
+}
+
+function extractSchemaUsage(html: string): string[] {
+  const types = new Set<string>();
+  const scriptPattern = /<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  let scriptMatch: RegExpExecArray | null;
+  while ((scriptMatch = scriptPattern.exec(html))) {
+    const rawJson = cleanText(scriptMatch[1]);
+    try {
+      collectJsonLdTypes(JSON.parse(rawJson), types);
+    } catch {
+      for (const typeMatch of rawJson.matchAll(/"@type"\s*:\s*"([^"]+)"/g)) {
+        types.add(typeMatch[1].trim());
+      }
+    }
+  }
+
+  for (const itemTypeMatch of html.matchAll(/itemtype\s*=\s*["'][^"']*schema\.org\/([^"']+)["']/gi)) {
+    types.add(itemTypeMatch[1].trim());
+  }
+
+  return [...types].filter(Boolean).sort();
+}
+
+function tokenize(value: string): string[] {
+  return value
+    .toLowerCase()
+    .replace(/https?:\/\/\S+/g, " ")
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .split(/\s+/)
+    .map((word) => word.replace(/^-+|-+$/g, ""))
+    .filter((word) => word.length > 2 && !STOP_WORDS.has(word) && !/^\d+$/.test(word));
+}
+
+function scoreKeywordText(scores: Map<string, number>, value: string, weight: number): void {
+  const words = tokenize(value);
+  words.forEach((word) => {
+    scores.set(word, (scores.get(word) ?? 0) + weight);
+  });
+
+  for (let i = 0; i < words.length - 1; i += 1) {
+    const phrase = `${words[i]} ${words[i + 1]}`;
+    scores.set(phrase, (scores.get(phrase) ?? 0) + weight * 2);
+  }
+
+  for (let i = 0; i < words.length - 2; i += 1) {
+    const phrase = `${words[i]} ${words[i + 1]} ${words[i + 2]}`;
+    scores.set(phrase, (scores.get(phrase) ?? 0) + weight * 3);
+  }
+}
+
+function extractTargetKeywords(html: string, finalUrl: string): string[] {
+  const scores = new Map<string, number>();
+  const title = extractFirstTagText(html, "title");
+  const description = extractMetaContent(html, "description");
+  const headings = ["h1", "h2", "h3"].flatMap((tagName) => extractTagTexts(html, tagName, 12));
+  const bodyText = cleanText(html).slice(0, 6_000);
+
+  scoreKeywordText(scores, new URL(finalUrl).hostname.replace(/^www\./, "").replace(/\./g, " "), 2);
+  scoreKeywordText(scores, title, 8);
+  scoreKeywordText(scores, description, 5);
+  headings.forEach((heading) => scoreKeywordText(scores, heading, 4));
+  scoreKeywordText(scores, bodyText, 1);
+
+  const selected: string[] = [];
+  for (const [keyword] of [...scores.entries()].sort((a, b) => b[1] - a[1])) {
+    if (selected.length >= 12) break;
+    if (keyword.length > 60) continue;
+    if (selected.some((existing) => existing.includes(keyword) || keyword.includes(existing))) continue;
+    selected.push(keyword);
+  }
+
+  return selected.length >= 5 ? selected.slice(0, 12) : [...selected, "seo", "answer engine optimization"].slice(0, 8);
+}
+
+function buildDeterministicScan(html: string, finalUrl: string): ScanResult {
+  const title = extractFirstTagText(html, "title") || new URL(finalUrl).hostname.replace(/^www\./, "");
+  const description = extractMetaContent(html, "description");
+  const h1s = extractTagTexts(html, "h1", 5);
+  const h2s = extractTagTexts(html, "h2", 12);
+  const schemaTypes = extractSchemaUsage(html);
+  const targetKeywords = extractTargetKeywords(html, finalUrl);
+  const headingSummary =
+    h1s.length > 0
+      ? `The page leads with ${h1s.length} H1${h1s.length === 1 ? "" : "s"} (${h1s.slice(0, 2).join("; ")}) and ${h2s.length} H2 section${h2s.length === 1 ? "" : "s"}.`
+      : `The page has no clear H1 and uses ${h2s.length} H2 section${h2s.length === 1 ? "" : "s"}, which weakens answer extraction.`;
+
+  const schemaUsage = schemaTypes.length > 0 ? schemaTypes : ["None detected"];
+  const metaStrategy = description
+    ? `The page uses a title-led search snippet around "${title}" with a meta description that supports the same intent. Its likely strategy is to capture branded and service-intent searches, then reinforce those themes through headings and repeated on-page terms.`
+    : `The page relies mostly on its title, "${title}", and visible headings because no meta description was detected. That leaves room to beat the snippet with a sharper value proposition and answer-first summary.`;
+
+  const beatThem = [
+    description
+      ? "Write a tighter meta title and description pair that states the exact buyer problem, location or market, and measurable outcome more clearly than their snippet."
+      : "Add a complete meta title and description pair so your result has a stronger search snippet than theirs.",
+    schemaTypes.length > 0
+      ? `Match their structured data coverage (${schemaTypes.slice(0, 3).join(", ")}) and add FAQ, HowTo, or Service schema where it genuinely fits your page.`
+      : "Add relevant FAQ, Service, Organization, and Breadcrumb schema because this competitor page does not expose strong structured data signals.",
+    h1s.length === 1
+      ? "Keep one clear H1, then build stronger H2 sections around pricing, process, proof, FAQs, and comparison queries they do not answer directly."
+      : "Use one clean H1 and a more deliberate H2 hierarchy so Google and AI answer engines can understand the page faster.",
+    `Create supporting content around "${targetKeywords.slice(0, 3).join('", "')}" and link those articles back to the money page.`,
+    "Add proof blocks, concrete examples, and direct question-answer sections so your page is easier to quote in AI results.",
+  ];
+
+  return {
+    title,
+    strategy: {
+      metaStrategy,
+      targetKeywords,
+      schemaUsage,
+      contentStructure: `${headingSummary} ${schemaTypes.length > 0 ? `Structured data detected: ${schemaTypes.join(", ")}.` : "No structured data was detected in the page HTML."} This suggests ${h2s.length >= 4 ? "a section-led content strategy" : "a thin structure that can be beaten with deeper sections"} and an AEO opportunity around direct answers.`,
+    },
+    beatThem,
+  };
+}
+
+function normalizeScanResult(data: Partial<ScanResult> | null | undefined, html: string, finalUrl: string): ScanResult {
+  const fallback = buildDeterministicScan(html, finalUrl);
+  return {
+    title: typeof data?.title === "string" && data.title.trim() ? data.title.trim() : fallback.title,
+    strategy: {
+      metaStrategy:
+        typeof data?.strategy?.metaStrategy === "string" && data.strategy.metaStrategy.trim()
+          ? data.strategy.metaStrategy.trim()
+          : fallback.strategy.metaStrategy,
+      targetKeywords:
+        Array.isArray(data?.strategy?.targetKeywords) && data.strategy.targetKeywords.length > 0
+          ? data.strategy.targetKeywords
+              .filter((keyword): keyword is string => typeof keyword === "string" && keyword.trim().length > 0)
+              .slice(0, 12)
+          : fallback.strategy.targetKeywords,
+      schemaUsage:
+        Array.isArray(data?.strategy?.schemaUsage) && data.strategy.schemaUsage.length > 0
+          ? data.strategy.schemaUsage.filter((schema): schema is string => typeof schema === "string" && schema.trim().length > 0)
+          : fallback.strategy.schemaUsage,
+      contentStructure:
+        typeof data?.strategy?.contentStructure === "string" && data.strategy.contentStructure.trim()
+          ? data.strategy.contentStructure.trim()
+          : fallback.strategy.contentStructure,
+    },
+    beatThem:
+      Array.isArray(data?.beatThem) && data.beatThem.length > 0
+        ? data.beatThem.filter((tip): tip is string => typeof tip === "string" && tip.trim().length > 0).slice(0, 5)
+        : fallback.beatThem,
+  };
+}
+
 const PROMPT = `You are scanning a competitor's web page for SEO and AEO intelligence. Given the raw HTML below, return a JSON object (no prose, no code fences) with this exact shape:
 
 {
@@ -236,7 +529,7 @@ router.post("/scan-competitor", async (req, res) => {
 
     let data: ScanResult;
     try {
-      data = await runSeoaxeJsonTask<ScanResult>({
+      const aiScan = await runSeoaxeJsonTask<ScanResult>({
         taskName: "competitor-scan",
         taskPrompt: PROMPT,
         systemInstruction:
@@ -250,49 +543,15 @@ router.post("/scan-competitor", async (req, res) => {
         extraParts: [`Competitor URL: ${finalUrl}`],
         log: req.log as any,
       });
+      data = normalizeScanResult(aiScan, html, finalUrl);
     } catch (err) {
-      req.log.error({ err, url: finalUrl, htmlLength: html.length }, "Competitor scan AI task failed");
-      
-      // Return appropriate status code based on error type
-      if (err instanceof GroqTimeoutError) {
-        return res.status(504).json({
-          message: "The AI analysis took too long. Please try again with a simpler page.",
-          error: err.message,
-          code: "AI_TIMEOUT"
-        });
-      }
-      
-      if (err instanceof GroqApiError) {
-        // Map Groq API errors to appropriate HTTP status codes
-        const statusCode = err.statusCode >= 400 && err.statusCode < 500 ? 502 : 500;
-        return res.status(statusCode).json({
-          message: "AI service temporarily unavailable. Please try again in a moment.",
-          error: err.message,
-          code: "AI_SERVICE_ERROR"
-        });
-      }
-      
-      return res.status(500).json({ 
-        message: "The scan failed. Please try again.",
-        error: err instanceof Error ? err.message : "Unknown error",
-        code: "SCAN_FAILED"
-      });
+      (req.log as any).warn?.({ err, url: finalUrl, htmlLength: html.length }, "Competitor scan AI task failed, using deterministic fallback");
+      data = buildDeterministicScan(html, finalUrl);
     }
 
     const safe = ScanCompetitorResponse.parse({
       url: finalUrl,
-      title: data.title || finalUrl,
-      strategy: {
-        metaStrategy: data.strategy?.metaStrategy ?? "",
-        targetKeywords: Array.isArray(data.strategy?.targetKeywords)
-          ? data.strategy.targetKeywords
-          : [],
-        schemaUsage: Array.isArray(data.strategy?.schemaUsage)
-          ? data.strategy.schemaUsage
-          : [],
-        contentStructure: data.strategy?.contentStructure ?? "",
-      },
-      beatThem: Array.isArray(data.beatThem) ? data.beatThem : [],
+      ...data,
     });
     return res.json(safe);
   } catch (err) {

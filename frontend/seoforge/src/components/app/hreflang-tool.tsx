@@ -2,10 +2,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useApplyHreflang } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
-import { Copy, Download, Globe2, Languages, Play, Plus, RefreshCw, Trash2, UploadCloud } from "lucide-react";
+import { Copy, Globe2, Languages, Play, Plus, RefreshCw, Trash2 } from "lucide-react";
 
 interface AltRow {
   hreflang: string;
@@ -43,7 +42,7 @@ const PRESETS: { label: string; value: AltRow[] }[] = [
 ];
 
 export function HreflangTool() {
-  const [html, setHtml] = useState("");
+  const [url, setUrl] = useState("");
   const [alternates, setAlternates] = useState<AltRow[]>([
     { hreflang: "en-ZA", href: "https://yoursite.co.za/" },
     { hreflang: "af-ZA", href: "https://yoursite.co.za/af/" },
@@ -51,64 +50,57 @@ export function HreflangTool() {
   const { toast } = useToast();
   const mutation = useApplyHreflang();
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => setHtml(ev.target?.result as string);
-    reader.readAsText(file);
-  };
-
   const updateAlt = (i: number, key: keyof AltRow, value: string) => {
     setAlternates((prev) => prev.map((row, idx) => (idx === i ? { ...row, [key]: value } : row)));
   };
   const removeAlt = (i: number) => setAlternates((prev) => prev.filter((_, idx) => idx !== i));
   const addAlt = () => setAlternates((prev) => [...prev, { hreflang: "", href: "" }]);
 
-  const handleRun = () => {
-    if (!html.trim()) {
-      toast({ title: "Input required", description: "Paste the page HTML first.", variant: "destructive" });
+  const handleRun = async () => {
+    if (!url.trim()) {
+      toast({ title: "Input required", description: "Enter a live page URL first.", variant: "destructive" });
       return;
     }
-    const cleaned = alternates
-      .map((a) => ({ hreflang: a.hreflang.trim(), href: a.href.trim() }))
-      .filter((a) => a.hreflang && a.href);
-    if (cleaned.length === 0) {
-      toast({ title: "Add alternates", description: "Add at least one locale.", variant: "destructive" });
-      return;
-    }
-    for (const a of cleaned) {
-      try {
-        new URL(a.href);
-      } catch {
-        toast({ title: "Invalid URL", description: `${a.href} is not a valid URL.`, variant: "destructive" });
+    try {
+      const html = await fetchPageHtml(url);
+      const cleaned = alternates
+        .map((a) => ({ hreflang: a.hreflang.trim(), href: a.href.trim() }))
+        .filter((a) => a.hreflang && a.href);
+      if (cleaned.length === 0) {
+        toast({ title: "Add alternates", description: "Add at least one locale.", variant: "destructive" });
         return;
       }
+      for (const a of cleaned) {
+        try {
+          new URL(a.href);
+        } catch {
+          toast({ title: "Invalid URL", description: `${a.href} is not a valid URL.`, variant: "destructive" });
+          return;
+        }
+      }
+      mutation.mutate(
+        { data: { html, alternates: cleaned } },
+        { onError: () => toast({ title: "Error", description: "Generation failed, please try again.", variant: "destructive" }) },
+      );
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to fetch page. Please check the URL.", variant: "destructive" });
     }
-    mutation.mutate(
-      { data: { html, alternates: cleaned } },
-      { onError: () => toast({ title: "Error", description: "Generation failed, please try again.", variant: "destructive" }) },
-    );
+  };
+
+  const fetchPageHtml = async (url: string): Promise<string> => {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to fetch');
+    return await response.text();
   };
 
   const reset = () => {
-    setHtml("");
+    setUrl("");
     mutation.reset();
   };
 
   const copy = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
     toast({ title: "Copied", description: `${label} copied.` });
-  };
-
-  const download = (text: string, name: string, mime: string) => {
-    const blob = new Blob([text], { type: mime });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = name;
-    a.click();
-    URL.revokeObjectURL(url);
   };
 
   return (
@@ -122,26 +114,16 @@ export function HreflangTool() {
                 Add Language and Country Tags
               </CardTitle>
               <CardDescription>
-                Paste your page HTML, list the other versions of that page, and we will add the correct language and country tags for you.
+                Enter a live page URL to generate hreflang snippets. SEOaxe scans your page directly—no file uploads needed.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="relative">
-                <Textarea
-                  value={html}
-                  onChange={(e) => setHtml(e.target.value)}
-                  placeholder="Paste your page HTML here..."
-                  className="min-h-[260px] font-mono text-sm resize-y p-4 bg-muted/30 focus-visible:ring-primary"
-                />
-                <div className="absolute top-4 right-4">
-                  <Button variant="outline" size="sm" className="bg-background/80 backdrop-blur-sm shadow-sm" asChild>
-                    <label className="cursor-pointer flex items-center gap-2">
-                      <UploadCloud className="h-4 w-4" /> Upload HTML
-                      <input type="file" accept=".html,.htm" className="hidden" onChange={handleFile} />
-                    </label>
-                  </Button>
-                </div>
-              </div>
+              <Input
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://example.com/page"
+                className="font-mono"
+              />
             </CardContent>
           </Card>
 
@@ -233,19 +215,12 @@ export function HreflangTool() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between border-b bg-muted/30">
               <div>
-                <CardTitle className="text-base">Augmented HTML</CardTitle>
-                <CardDescription>Drop straight into your page.</CardDescription>
+                <CardTitle className="text-base">Suggested HTML</CardTitle>
+                <CardDescription>Review the hreflang changes before adding them to your page.</CardDescription>
               </div>
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" onClick={() => copy(mutation.data.html, "HTML")}>
                   <Copy className="h-3 w-3 mr-1" /> Copy
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => download(mutation.data.html, "page-hreflang.html", "text/html")}
-                >
-                  <Download className="h-3 w-3 mr-1" /> Download
                 </Button>
               </div>
             </CardHeader>

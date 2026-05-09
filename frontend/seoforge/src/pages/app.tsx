@@ -1,23 +1,20 @@
 import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
-import { SinglePageOptimizer } from "@/components/app/single-page-optimizer";
-import { ZipUpload } from "@/components/app/zip-upload";
 import { CompetitorScanner } from "@/components/app/competitor-scanner";
 import { SiteCrawler } from "@/components/app/site-crawler";
 import { AeoAnswerBlock } from "@/components/app/aeo-answer-block";
-import { DeployPanel } from "@/components/app/deploy-panel";
 import { SitemapGenerator } from "@/components/app/sitemap-generator";
 import { HreflangTool } from "@/components/app/hreflang-tool";
 import { ContentGapDetector } from "@/components/app/content-gap-detector";
 import { SiteMonitor } from "@/components/app/site-monitor";
 import { BlogGenerator } from "@/components/app/blog-generator";
 import { type ReactNode, useEffect, useState } from "react";
-import { Bot, FileCode2, FolderArchive, Globe, Languages, Search, Ship, ShieldCheck, Sparkles, Radar, FileQuestion } from "lucide-react";
+import { Bot, Globe, Languages, Search, ShieldCheck, Sparkles, Radar, FileQuestion } from "lucide-react";
 
 export default function AppWorkspace() {
   const initial = typeof window !== "undefined" && window.location.hash
     ? window.location.hash.slice(1)
-    : "single-page";
+    : "site-crawler";
   const [tab, setTab] = useState(initial);
 
   useEffect(() => {
@@ -37,25 +34,17 @@ export default function AppWorkspace() {
   };
 
   const tabMeta: Record<string, { title: string; description: string }> = {
-    "single-page": {
-      title: "Repair One Page",
-      description: "Paste one HTML page and get repaired, deployable HTML with a receipt.",
-    },
     "aeo-block": {
-      title: "Add FAQ Answers",
-      description: "Add FAQ-style questions and answers so AI search tools can quote your page more easily.",
+      title: "Generate FAQ Snippets",
+      description: "Create reviewable FAQ and schema snippets without uploading source files.",
     },
     "content-gaps": {
       title: "Find Missing Content",
-      description: "Find important questions your page is missing and add new sections to cover them.",
+      description: "Find important questions a page is missing and generate copyable section suggestions.",
     },
     "site-crawler": {
-      title: "Scan and Repair a Website",
-      description: "Crawl a live site, repair each page, and download the updated files.",
-    },
-    "zip-upload": {
-      title: "Repair Many Files",
-      description: "Upload a ZIP of HTML files, repair them in bulk, and download a new ZIP.",
+      title: "Audit a Live Website",
+      description: "Crawl a live site, score each page, and get guided fixes from public URLs.",
     },
     competitor: {
       title: "Research a Competitor",
@@ -73,23 +62,18 @@ export default function AppWorkspace() {
       title: "Monitor a Website",
       description: "Keep checking a live site and get alerted when pages lose important search signals.",
     },
-    deploy: {
-      title: "Publish Repairs",
-      description: "Send repaired HTML to WordPress or Shopify when it is ready to go live.",
-    },
     "blog-gen": {
       title: "Blog Generator",
       description: "Generate 20-50 SEO-optimized blog posts fast from long-tail keywords.",
     },
   };
-  const active = tabMeta[tab] ?? tabMeta["single-page"];
+  const active = tabMeta[tab] ?? tabMeta["site-crawler"];
   const groups = [
     {
-      title: "Repair",
+      title: "Audit",
       items: [
-        { value: "single-page", label: "Repair Page", icon: FileCode2 },
-        { value: "zip-upload", label: "Repair Files", icon: FolderArchive },
-        { value: "site-crawler", label: "Repair Site", icon: Globe },
+        { value: "site-crawler", label: "Live Site Audit", icon: Globe },
+        { value: "monitor", label: "Monitor", icon: Radar },
       ],
     },
     {
@@ -103,31 +87,21 @@ export default function AppWorkspace() {
     {
       title: "Technical",
       items: [
-        { value: "aeo-block", label: "Add FAQs", icon: Bot },
+        { value: "aeo-block", label: "FAQ Snippets", icon: Bot },
         { value: "hreflang", label: "Languages", icon: Languages },
         { value: "sitemap", label: "Sitemap", icon: ShieldCheck },
-      ],
-    },
-    {
-      title: "Operations",
-      items: [
-        { value: "deploy", label: "Publish", icon: Ship },
-        { value: "monitor", label: "Monitor", icon: Radar },
       ],
     },
   ] as const;
 
   const contentByTab: Record<string, ReactNode> = {
-    "single-page": <SinglePageOptimizer />,
     "site-crawler": <SiteCrawler />,
-    "zip-upload": <ZipUpload />,
     "aeo-block": <AeoAnswerBlock />,
     "content-gaps": <ContentGapDetector />,
     competitor: <CompetitorScanner />,
     hreflang: <HreflangTool />,
     sitemap: <SitemapGenerator />,
     monitor: <SiteMonitor />,
-    deploy: <DeployPanel />,
     "blog-gen": <BlogGenerator />,
   };
 
@@ -176,7 +150,7 @@ export default function AppWorkspace() {
                 <span className="mx-2 text-border">/</span>
                 <span>{active.description}</span>
               </div>
-              {contentByTab[tab] ?? contentByTab["single-page"]}
+              {contentByTab[tab] ?? contentByTab["site-crawler"]}
             </section>
           </div>
         </div>

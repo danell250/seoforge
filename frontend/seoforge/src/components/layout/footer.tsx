@@ -20,11 +20,10 @@ export function Footer() {
   ];
 
   const seoLinks = [
-    { href: "/seo-repair-engine", label: "SEO Repair Engine" },
-    { href: "/html-seo-optimizer", label: "HTML SEO Optimizer" },
+    { href: "/audit", label: "Free SEO Audit" },
+    { href: "/technical-seo-audit", label: "Technical SEO Audit" },
     { href: "/aeo-optimizer", label: "AEO Optimizer" },
     { href: "/schema-markup-generator", label: "Schema Markup Generator" },
-    { href: "/technical-seo-audit", label: "Technical SEO Audit" },
     { href: "/local-seo-south-africa", label: "South Africa Local SEO" },
   ];
 
@@ -36,7 +35,7 @@ export function Footer() {
   ];
 
   const workspaceLinks = [
-    { href: "/app", label: "Optimizer" },
+    { href: "/app#site-crawler", label: "Live Site Audit" },
     ...(isAuthenticated ? [
       { href: "/dashboard", label: "Dashboard" },
       { href: "/settings", label: "Settings" },

@@ -247,7 +247,7 @@ ${items
             <Globe className="h-5 w-5 text-primary" /> Submit in Google Search Console
           </CardTitle>
           <CardDescription>
-            Upload sitemap.xml and robots.txt to your domain root, then click below to open Search Console with your
+            Place sitemap.xml and robots.txt at your domain root, then click below to open Search Console with your
             property selected.
           </CardDescription>
         </CardHeader>

@@ -1,8 +1,8 @@
 export const BRAND_NAME = "SEOaxe";
 export const SITE_URL = "https://www.seoaxe.site";
 export const SUPPORT_EMAIL = "support@seoaxe.site";
-export const PRODUCT_DESCRIPTION = "SEO repair engine that turns existing website pages into deployable, search-ready HTML with schema, AEO answer blocks, sitemaps, and before/after proof.";
+export const PRODUCT_DESCRIPTION = "Live SEO audit engine that scores existing website pages and produces reviewable SEO, AEO, schema, sitemap, and content recommendations.";
 export const PRODUCT_AUTOMATION_DESCRIPTION =
-  "Repair existing HTML with automated meta tags, schema markup, AEO answer blocks, hreflang, sitemaps, and repair receipts for websites worldwide.";
+  "Audit existing website pages with automated meta tag checks, schema guidance, AEO answer blocks, hreflang suggestions, sitemaps, and audit receipts for websites worldwide.";
 export const GLOBAL_SUPPORT_ANSWER =
-  "Yes. SEOaxe works for websites worldwide and includes region and language targeting tools such as multilingual schema support, hreflang generation, and localized repair workflows. It can help global sites as well as teams serving specific regional markets.";
+  "Yes. SEOaxe works for websites worldwide and includes region and language targeting tools such as multilingual schema support, hreflang generation, and localized audit workflows. It can help global sites as well as teams serving specific regional markets.";

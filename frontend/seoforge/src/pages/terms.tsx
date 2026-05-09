@@ -26,7 +26,7 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-3">2. Description of Service</h2>
               <p className="text-muted-foreground leading-relaxed">
-                SEOaxe is an AI-powered SEO repair platform that provides SEO (Search Engine Optimization) and AEO (Answer Engine Optimization) tools, including HTML repair, meta tag generation, schema markup creation, sitemap generation, and website analysis services.
+                SEOaxe is an AI-powered SEO audit platform that provides SEO (Search Engine Optimization) and AEO (Answer Engine Optimization) tools, including live URL audits, meta tag recommendations, schema markup guidance, sitemap generation, and website analysis services.
               </p>
             </section>
 
@@ -53,7 +53,7 @@ export default function TermsOfService() {
                 <li>Infringe on intellectual property rights</li>
                 <li>Distribute malware or malicious content</li>
                 <li>Scrape or crawl websites without permission</li>
-                <li>Upload content that is illegal, harmful, or offensive</li>
+                <li>Submit content or URLs that are illegal, harmful, or offensive</li>
                 <li>Attempt to gain unauthorized access to systems</li>
                 <li>Interfere with other users' access to the Service</li>
               </ul>
@@ -63,7 +63,7 @@ export default function TermsOfService() {
               <h2 className="text-xl font-semibold mb-3">5. Content and Intellectual Property</h2>
               <h3 className="text-lg font-medium mb-2">5.1 Your Content</h3>
               <p className="text-muted-foreground leading-relaxed mb-3">
-                You retain ownership of any content you upload to the Service. By uploading content, you grant us a license to use, process, and store it solely to provide the Service.
+                You retain ownership of any content or URLs you submit to the Service. By submitting content, you grant us a license to use, process, and store it solely to provide the Service.
               </p>
               
               <h3 className="text-lg font-medium mb-2">5.2 Our Intellectual Property</h3>

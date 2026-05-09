@@ -96,7 +96,7 @@ export default function Signup() {
             <CardDescription>
               {isReturningToCheckout
                 ? "Create your account, then continue to your selected plan."
-                : "Start repairing real website pages with an email and password."}
+                : "Start auditing live website pages with an email and password."}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -115,7 +115,7 @@ export default function Signup() {
               <div>
                 {isReturningToCheckout
                   ? "You'll be signed in right away and sent back to checkout."
-                  : "You'll be signed in immediately so you can run your first repair."}
+                  : "You'll be signed in immediately so you can run your first audit."}
               </div>
             </div>
 
