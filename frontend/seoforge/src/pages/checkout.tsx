@@ -12,12 +12,6 @@ import { PayPalButtons } from "@paypal/react-paypal-js";
 import { customFetch } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
 
-const PLAN_PRICES_USD: Record<string, number> = {
-  free: 1.0,
-  starter: 4.99,
-  agency: 9.99,
-};
-
 function buildAuthRedirect(path: string) {
   return encodeURIComponent(path);
 }
@@ -41,6 +35,7 @@ export default function Checkout() {
 
   const createPayPalOrder = async () => {
     console.log("Creating PayPal order for plan:", selectedPlan?.slug);
+    setIsProcessing(true);
     try {
       const response = await customFetch<{ id: string; purchase_units: any[] }>("/api/payments/paypal/create-order", {
         method: "POST",
@@ -59,11 +54,13 @@ export default function Checkout() {
     } catch (err) {
       console.error("PayPal create order failed:", err);
       toast({
-        title: "Payment error",
-        description: "Could not start PayPal checkout. Please try again.",
+        title: "Payment setup failed",
+        description: "Could not initialize PayPal payment. Please try again.",
         variant: "destructive",
       });
       throw err;
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -124,7 +121,7 @@ export default function Checkout() {
   const alreadyOnPlan = user?.plan === selectedPlan.slug;
   const signupHref = `/signup?redirect=${buildAuthRedirect(currentPath)}`;
   const loginHref = `/login?redirect=${buildAuthRedirect(currentPath)}`;
-  const planPrice = selectedPlan.slug ? PLAN_PRICES_USD[selectedPlan.slug] : null;
+  const hasPaidPlan = selectedPlan.slug !== "free";
 
   return (
     <div className="min-h-screen flex flex-col bg-muted/20">
@@ -169,7 +166,7 @@ export default function Checkout() {
                     </div>
                   </CardContent>
                 </Card>
-              ) : planPrice ? (
+              ) : hasPaidPlan ? (
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-xl">
@@ -188,23 +185,23 @@ export default function Checkout() {
                     {isProcessing ? (
                       <div className="flex flex-col items-center justify-center py-8 space-y-4">
                         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                        <p className="text-sm font-medium">Processing your payment...</p>
-                        <p className="text-xs text-muted-foreground">Please don&apos;t close this window.</p>
+                        <p className="text-sm font-medium">Setting up payment...</p>
+                        <p className="text-xs text-muted-foreground">Please wait while we prepare your PayPal checkout.</p>
                       </div>
                     ) : (
                       <div className="py-2 space-y-4">
                         {usdPrice && (
                           <div className="rounded-lg bg-muted/30 p-3 text-center border border-dashed border-primary/20">
-                            <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">PayPal Conversion</p>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">PayPal Amount</p>
                             <p className="text-lg font-bold text-primary">${usdPrice.toFixed(2)} USD</p>
-                            <p className="text-[10px] text-muted-foreground">Final amount charged by PayPal</p>
+                            <p className="text-[10px] text-muted-foreground">Converted from {priceLabel} for payment</p>
                           </div>
                         )}
                         <PayPalButtons
                           style={{ layout: "vertical", label: "pay" }}
                           createOrder={createPayPalOrder}
                           onApprove={onPayPalApprove}
-                          disabled={alreadyOnPlan}
+                          disabled={alreadyOnPlan || isProcessing}
                         />
                       </div>
                     )}

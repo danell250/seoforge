@@ -56,7 +56,18 @@ export function ZipUpload() {
       const htmlFiles: ProcessedFile[] = [];
       
       for (const [filename, zipEntry] of Object.entries(contents.files)) {
-        if (!zipEntry.dir && (filename.endsWith('.html') || filename.endsWith('.htm') || filename.endsWith('.ts') || filename.endsWith('.tsx'))) {
+        if (!zipEntry.dir && (
+          filename.endsWith('.html') || filename.endsWith('.htm') || 
+          filename.endsWith('.ts') || filename.endsWith('.tsx') ||
+          filename.endsWith('.js') || filename.endsWith('.jsx') ||
+          filename.endsWith('.vue') || filename.endsWith('.svelte') ||
+          filename.endsWith('.php') || filename.endsWith('.jsp') ||
+          filename.endsWith('.asp') || filename.endsWith('.aspx') ||
+          filename.endsWith('.ejs') || filename.endsWith('.hbs') ||
+          filename.endsWith('.pug') || filename.endsWith('.xml') ||
+          filename.endsWith('.json') || filename.endsWith('.css') ||
+          filename.endsWith('.md')
+        )) {
           const content = await zipEntry.async("text");
           htmlFiles.push({
             filename,
@@ -67,7 +78,7 @@ export function ZipUpload() {
       }
       
       if (htmlFiles.length === 0) {
-        toast({ title: "Empty ZIP", description: "No HTML, TS, or TSX files found in the archive.", variant: "destructive" });
+        toast({ title: "Empty ZIP", description: "No supported files found in the archive. Supported: HTML, TS, TSX, JS, JSX, Vue, Svelte, PHP, JSP, ASP, ASPX, EJS, HBS, Pug, XML, JSON, CSS, MD files.", variant: "destructive" });
         return;
       }
       
@@ -159,7 +170,7 @@ export function ZipUpload() {
         <Card className="border-2 border-primary/10 shadow-lg">
           <CardHeader className="text-center pb-2">
             <CardTitle className="text-2xl">Optimize Many Files</CardTitle>
-            <CardDescription>Upload one ZIP of HTML, TS, or TSX files. We will improve each file and give you a new ZIP back.</CardDescription>
+            <CardDescription>Upload one ZIP of web files. We will improve each file and give you a new ZIP back.</CardDescription>
           </CardHeader>
           <CardContent>
             <div 
@@ -174,7 +185,7 @@ export function ZipUpload() {
                 <FileArchive className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-lg font-semibold mb-2">Drop a ZIP file here</h3>
-              <p className="text-sm text-muted-foreground mb-6">The ZIP should contain `.html`, `.ts`, or `.tsx` files. Folders are fine.</p>
+              <p className="text-sm text-muted-foreground mb-6">The ZIP should contain web files (.html, .ts, .tsx, .js, .jsx, .vue, .svelte, .php, .jsp, .asp, .aspx, .ejs, .hbs, .pug, .xml, .json, .css, .md). Folders are fine.</p>
               
               <Button onClick={() => fileInputRef.current?.click()} variant="outline">
                 <UploadCloud className="h-4 w-4 mr-2" /> Choose ZIP File
@@ -194,7 +205,7 @@ export function ZipUpload() {
           <CardHeader className="flex flex-row items-center justify-between pb-4 border-b">
             <div>
               <CardTitle>Bulk Results</CardTitle>
-              <CardDescription>{files.length} HTML file{files.length === 1 ? "" : "s"} ready</CardDescription>
+              <CardDescription>{files.length} web file{files.length === 1 ? "" : "s"} ready</CardDescription>
             </div>
             {!isProcessing && progress === 100 ? (
               <div className="flex gap-2">

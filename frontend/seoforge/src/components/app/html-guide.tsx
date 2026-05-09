@@ -47,7 +47,7 @@ export function HtmlGuide({ sendPrompt, onUploadClick, hasHtml }: HtmlGuideProps
       ? `I am on the SEOaxe one-page optimizer and I need help getting the full HTML from a live website. Please walk me through it for ${browserLabel(browserTab)}.`
       : option === "cms"
         ? `I am on the SEOaxe one-page optimizer and I need help getting the full HTML from ${cmsLabel(cmsTab)}. Please give me the exact steps.`
-        : "I already have an HTML file but I am not sure if it is the right file for SEOaxe. Please help me confirm what to upload.";
+        : "I already have a web file but I am not sure if it is the right file for SEOaxe. Please help me confirm what to upload.";
 
   return (
     <div className="mb-4 overflow-hidden rounded-lg border border-primary/15 bg-primary/[0.03]">
@@ -250,7 +250,7 @@ export function HtmlGuide({ sendPrompt, onUploadClick, hasHtml }: HtmlGuideProps
             <div className="space-y-3">
               <Steps
                 items={[
-                  <>Click <strong>Upload HTML</strong> and choose your <Kbd>.html</Kbd> or <Kbd>.htm</Kbd> file.</>,
+                  <>Click <strong>Upload File</strong> and choose your web file (.html, .htm, .ts, .tsx, .js, .jsx, .vue, .svelte, .php, .jsp, .asp, .aspx, .ejs, .hbs, .pug, .xml, .json, .css, .md).</>,
                   <>SEOaxe will load it into the editor automatically.</>,
                   <>Click <strong>Improve This Page</strong> when you are ready.</>,
                 ]}
@@ -258,7 +258,7 @@ export function HtmlGuide({ sendPrompt, onUploadClick, hasHtml }: HtmlGuideProps
               />
               <Button type="button" variant="outline" size="sm" onClick={onUploadClick}>
                 <FileCode className="h-4 w-4" />
-                Choose HTML File
+                Choose Web File
               </Button>
             </div>
           )}

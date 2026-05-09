@@ -406,7 +406,7 @@ export function SinglePageOptimizer() {
               <Textarea 
                 value={htmlInput}
                 onChange={(e) => setHtmlInput(e.target.value)}
-                placeholder="Paste your HTML, TS, or TSX code here..."
+                placeholder="Paste your HTML, TS, TSX, or any web code here..."
                 className="min-h-[400px] font-mono text-sm resize-y p-4 bg-muted/30 focus-visible:ring-primary"
               />
               <div className="absolute top-4 right-4 flex items-center gap-2">
@@ -414,7 +414,7 @@ export function SinglePageOptimizer() {
                   <label className="cursor-pointer flex items-center gap-2">
                     <UploadCloud className="h-4 w-4" />
                     Upload File
-                    <input ref={fileInputRef} type="file" accept=".html,.htm,.ts,.tsx" className="hidden" onChange={handleFileUpload} />
+                    <input ref={fileInputRef} type="file" accept=".html,.htm,.ts,.tsx,.js,.jsx,.vue,.svelte,.php,.jsp,.asp,.aspx,.ejs,.hbs,.pug,.xml,.json,.css,.md" className="hidden" onChange={handleFileUpload} />
                   </label>
                 </Button>
               </div>

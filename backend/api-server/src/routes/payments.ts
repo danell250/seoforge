@@ -30,9 +30,9 @@ const paymentWriteRateLimit = createRateLimit({
 });
 
 const ZAR_PRICES: Record<string, number> = {
-  free: 16.38,
-  starter: 299,
-  agency: 999,
+  free: 0,
+  starter: 599,
+  agency: 1499,
 };
 
 router.get("/payments/health", (req, res) => {

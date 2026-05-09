@@ -164,10 +164,10 @@ export function DeployPanel() {
         <CardHeader>
           <CardTitle className="text-2xl flex items-center gap-2">
             <Rocket className="h-6 w-6 text-primary" />
-            Publish HTML to WordPress or Shopify
+            Publish to WordPress or Shopify
           </CardTitle>
           <CardDescription>
-            Paste or upload finished HTML, then send it to an existing WordPress page or Shopify page. Credentials stay in this browser session and are never stored.
+            Paste or upload finished web content, then send it to an existing WordPress page or Shopify page. Credentials stay in this browser session and are never stored.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -187,8 +187,8 @@ export function DeployPanel() {
             <div className="absolute top-4 right-4">
               <Button variant="outline" size="sm" className="bg-background/80 backdrop-blur-sm shadow-sm" asChild>
                 <label className="cursor-pointer flex items-center gap-2">
-                  <UploadCloud className="h-4 w-4" /> Upload HTML
-                  <input type="file" accept=".html,.htm" className="hidden" onChange={handleFile} />
+                  <UploadCloud className="h-4 w-4" /> Upload File
+                  <input type="file" accept=".html,.htm,.ts,.tsx,.js,.jsx,.vue,.svelte,.php,.jsp,.asp,.aspx,.ejs,.hbs,.pug,.xml,.json,.css,.md" className="hidden" onChange={handleFile} />
                 </label>
               </Button>
             </div>

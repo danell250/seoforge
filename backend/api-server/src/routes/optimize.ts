@@ -124,7 +124,7 @@ interface StructuredDataIssue {
 const TASK_INSTRUCTION = `Return a JSON object (no prose, no code fences) with this shape:
 
 {
-  "optimizedHtml": "<full optimized code, every SEO and AEO improvement applied. Optimize: title, meta, canonical, OG, Twitter, JSON-LD schema (Org/WebSite/FAQ), hreflang, semantic HTML, alt text, heading hierarchy, AEO answer blocks. If TS/TSX, maintain code but optimize HTML/JSX strings.>",
+  "optimizedHtml": "<full optimized code, every SEO and AEO improvement applied. Optimize: title, meta, canonical, OG, Twitter, JSON-LD schema (Org/WebSite/FAQ), hreflang, semantic HTML, alt text, heading hierarchy, AEO answer blocks. For TS/TSX/JS/JSX/Vue/Svelte/PHP/JSP/ASP/ASPX/EJS/HBS/Pug and other web files, maintain code structure but optimize any HTML/JSX/template strings and add SEO improvements where applicable.>",
   "changes": ["list of concrete changes made"],
   "originalScore": { "technical": 0-100, "content": 0-100, "aeo": 0-100, "overall": 0-100 },
   "score": { "technical": 0-100, "content": 0-100, "aeo": 0-100, "overall": 0-100 },
@@ -259,7 +259,7 @@ async function optimizeHtmlDocument(
       taskName: "optimize-html",
       taskPrompt: enhancedPrompt,
       systemInstruction:
-        "You are the core SEOaxe page optimizer. Transform full HTML/TS/TSX documents safely. RETURN ONLY VALID JSON. IMPORTANT: Do not use backticks (```) inside the optimizedHtml JSON field, as this breaks the JSON parser. Use single quotes or escaped double quotes for internal code.",
+        "You are the core SEOaxe page optimizer. Transform full HTML/TS/TSX/JS/JSX/Vue/Svelte/PHP/JSP/ASP/ASPX/EJS/HBS/Pug and other web documents safely. RETURN ONLY VALID JSON. IMPORTANT: Do not use backticks (```) inside the optimizedHtml JSON field, as this breaks the JSON parser. Use single quotes or escaped double quotes for internal code.",
       html,
       htmlLabel: "Code to optimize",
       primaryHtmlLimit: 40_000,
