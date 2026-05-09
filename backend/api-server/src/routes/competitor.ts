@@ -53,7 +53,11 @@ async function validateCompetitorUrl(rawUrl: string): Promise<URL> {
   try {
     parsed = new URL(rawUrl);
   } catch {
-    throw new CompetitorScanError("Please enter a valid website URL.", 400);
+    try {
+      parsed = new URL(`https://${rawUrl}`);
+    } catch {
+      throw new CompetitorScanError("Please enter a valid website URL.", 400);
+    }
   }
 
   if (!["http:", "https:"].includes(parsed.protocol)) {
@@ -116,44 +120,73 @@ function isPrivateAddress(address: string): boolean {
   return false;
 }
 
-async function fetchPage(url: string): Promise<string> {
-  const ctrl = new AbortController();
-  const timeout = setTimeout(() => ctrl.abort(), 20_000);
-  try {
-    const res = await fetch(url, {
-      signal: ctrl.signal,
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Cache-Control": "no-cache",
-      },
-      redirect: "follow",
-    });
-    if (!res.ok) {
-      throw new CompetitorScanError(`We could not open that page. The site responded with ${res.status}.`, 502);
-    }
-    const contentType = res.headers.get("content-type") || "";
-    if (!contentType.toLowerCase().includes("html")) {
-      throw new CompetitorScanError("That URL did not return an HTML page we can analyze.", 422);
-    }
-    const text = await res.text();
-    if (!text.trim()) {
-      throw new CompetitorScanError("That page loaded empty content, so there was nothing to analyze.", 422);
-    }
-    return text;
-  } catch (err) {
-    if (err instanceof CompetitorScanError) {
-      throw err;
-    }
-    if (err instanceof Error && err.name === "AbortError") {
-      throw new CompetitorScanError("That page took too long to load. Try a simpler URL or retry in a moment.", 504);
-    }
-    throw new CompetitorScanError("We could not fetch that competitor page right now.", 502);
-  } finally {
-    clearTimeout(timeout);
+async function fetchPage(url: string): Promise<{ html: string; finalUrl: string }> {
+  const parsedUrl = new URL(url);
+  const urlsToTry: string[] = [];
+  
+  if (parsedUrl.protocol === "https:") {
+    urlsToTry.push(url);
+    const httpUrl = new URL(url);
+    httpUrl.protocol = "http:";
+    urlsToTry.push(httpUrl.toString());
+  } else if (parsedUrl.protocol === "http:") {
+    urlsToTry.push(url);
+    const httpsUrl = new URL(url);
+    httpsUrl.protocol = "https:";
+    urlsToTry.push(httpsUrl.toString());
+  } else {
+    urlsToTry.push(url);
   }
+
+  let lastError: CompetitorScanError | null = null;
+  
+  for (const tryUrl of urlsToTry) {
+    const ctrl = new AbortController();
+    const timeout = setTimeout(() => ctrl.abort(), 20_000);
+    try {
+      const res = await fetch(tryUrl, {
+        signal: ctrl.signal,
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+          Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          "Accept-Language": "en-US,en;q=0.9",
+          "Cache-Control": "no-cache",
+        },
+        redirect: "follow",
+      });
+      if (!res.ok) {
+        lastError = new CompetitorScanError(`We could not open that page. The site responded with ${res.status}.`, 502);
+        continue;
+      }
+      const contentType = res.headers.get("content-type") || "";
+      if (!contentType.toLowerCase().includes("html")) {
+        lastError = new CompetitorScanError("That URL did not return an HTML page we can analyze.", 422);
+        continue;
+      }
+      const text = await res.text();
+      if (!text.trim()) {
+        lastError = new CompetitorScanError("That page loaded empty content, so there was nothing to analyze.", 422);
+        continue;
+      }
+      return { html: text, finalUrl: res.url };
+    } catch (err) {
+      if (err instanceof CompetitorScanError) {
+        lastError = err;
+      } else if (err instanceof Error && err.name === "AbortError") {
+        lastError = new CompetitorScanError("That page took too long to load. Try a simpler URL or retry in a moment.", 504);
+      } else {
+        lastError = new CompetitorScanError("We could not fetch that competitor page right now.", 502);
+      }
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+  
+  if (lastError) {
+    throw lastError;
+  }
+  throw new CompetitorScanError("We could not fetch that competitor page right now.", 502);
 }
 
 const PROMPT = `You are scanning a competitor's web page for SEO and AEO intelligence. Given the raw HTML below, return a JSON object (no prose, no code fences) with this exact shape:
@@ -188,15 +221,16 @@ router.post("/scan-competitor", async (req, res) => {
   }
   const url = competitorUrl.toString();
 
-  let html: string;
+  let fetchResult: { html: string; finalUrl: string };
   try {
-    html = await fetchPage(url);
+    fetchResult = await fetchPage(url);
   } catch (err) {
     req.log.warn({ err, url }, "Failed to fetch competitor page");
     return res.status(err instanceof CompetitorScanError ? err.statusCode : 500).json({
       message: err instanceof CompetitorScanError ? err.message : "Scan failed, please try again.",
     });
   }
+  const { html, finalUrl } = fetchResult;
 
   try {
     let data: ScanResult;
@@ -212,11 +246,11 @@ router.post("/scan-competitor", async (req, res) => {
         fallbackHtmlLimit: 20_000,
         timeoutMs: 30_000,
         fallbackTimeoutMs: 15_000,
-        extraParts: [`Competitor URL: ${url}`],
+        extraParts: [`Competitor URL: ${finalUrl}`],
         log: req.log,
       });
     } catch (err) {
-      req.log.error({ err, url, htmlLength: html.length }, "Competitor scan AI task failed");
+      req.log.error({ err, url: finalUrl, htmlLength: html.length }, "Competitor scan AI task failed");
       
       // Return appropriate status code based on error type
       if (err instanceof GroqTimeoutError) {
@@ -245,8 +279,8 @@ router.post("/scan-competitor", async (req, res) => {
     }
 
     const safe = ScanCompetitorResponse.parse({
-      url,
-      title: data.title || url,
+      url: finalUrl,
+      title: data.title || finalUrl,
       strategy: {
         metaStrategy: data.strategy?.metaStrategy ?? "",
         targetKeywords: Array.isArray(data.strategy?.targetKeywords)
