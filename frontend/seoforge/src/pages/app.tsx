@@ -8,8 +8,12 @@ import { HreflangTool } from "@/components/app/hreflang-tool";
 import { ContentGapDetector } from "@/components/app/content-gap-detector";
 import { SiteMonitor } from "@/components/app/site-monitor";
 import { BlogGenerator } from "@/components/app/blog-generator";
+import { SinglePageOptimizer } from "@/components/app/single-page-optimizer";
+import { ZipUpload } from "@/components/app/zip-upload";
+import { HtmlGuide } from "@/components/app/html-guide";
+import { DeployPanel } from "@/components/app/deploy-panel";
 import { type ReactNode, useEffect, useState } from "react";
-import { Bot, Globe, Languages, Search, ShieldCheck, Sparkles, Radar, FileQuestion } from "lucide-react";
+import { Bot, Globe, Languages, Search, ShieldCheck, Sparkles, Radar, FileQuestion, FileEdit, FileArchive, BookOpen, UploadCloud } from "lucide-react";
 
 export default function AppWorkspace() {
   const initial = typeof window !== "undefined" && window.location.hash
@@ -66,6 +70,22 @@ export default function AppWorkspace() {
       title: "Blog Generator",
       description: "Generate 20-50 SEO-optimized blog posts fast from long-tail keywords.",
     },
+    "single-page": {
+      title: "Repair Page",
+      description: "Upload HTML or TSX, get AI-powered SEO fixes, and download the repaired file.",
+    },
+    "zip-upload": {
+      title: "Repair Files",
+      description: "Upload a ZIP of files, get AI fixes for all, and download the fixed bundle.",
+    },
+    "html-guide": {
+      title: "HTML Guide",
+      description: "A complete, copyable reference for SEO-friendly HTML structure.",
+    },
+    deploy: {
+      title: "Publish",
+      description: "Publish your optimizations directly to Vercel with one click.",
+    },
   };
   const active = tabMeta[tab] ?? tabMeta["site-crawler"];
   const groups = [
@@ -74,6 +94,13 @@ export default function AppWorkspace() {
       items: [
         { value: "site-crawler", label: "Live Site Audit", icon: Globe },
         { value: "monitor", label: "Monitor", icon: Radar },
+      ],
+    },
+    {
+      title: "Repair",
+      items: [
+        { value: "single-page", label: "Repair Page", icon: FileEdit },
+        { value: "zip-upload", label: "Repair Files", icon: FileArchive },
       ],
     },
     {
@@ -90,6 +117,13 @@ export default function AppWorkspace() {
         { value: "aeo-block", label: "FAQ Snippets", icon: Bot },
         { value: "hreflang", label: "Languages", icon: Languages },
         { value: "sitemap", label: "Sitemap", icon: ShieldCheck },
+        { value: "html-guide", label: "Add FAQs", icon: BookOpen },
+      ],
+    },
+    {
+      title: "Operations",
+      items: [
+        { value: "deploy", label: "Publish", icon: UploadCloud },
       ],
     },
   ] as const;
@@ -103,6 +137,10 @@ export default function AppWorkspace() {
     sitemap: <SitemapGenerator />,
     monitor: <SiteMonitor />,
     "blog-gen": <BlogGenerator />,
+    "single-page": <SinglePageOptimizer />,
+    "zip-upload": <ZipUpload />,
+    "html-guide": <HtmlGuide />,
+    deploy: <DeployPanel />,
   };
 
   return (
