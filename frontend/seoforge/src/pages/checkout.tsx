@@ -15,7 +15,7 @@ declare global {
   }
 }
 
-const PAYPAL_CLIENT_ID = "AXxjiGRRXzL0lhWXhz9lUCYnIXg0Sfz-9-kDB7HbdwYPOrlspRzyS6TQWAlwRC2GlYSd4lze25jluDLj";
+const PAYPAL_CLIENT_ID = "ARjgrd_rMVP3CpnoBtLVmuq6lZCOegyuwMeTqwV95Ernrav6O7uyb63_0eW1gFhKVSyOwMWX0oRnvTuU";
 
 const PLAN_PRICES_USD: Record<string, number> = {
   starter: 4.99,
