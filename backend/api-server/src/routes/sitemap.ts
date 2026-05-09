@@ -102,7 +102,7 @@ router.get("/sitemap.xml", async (_req, res) => {
   // Combine static pages with user-added URLs
   const allUrls = [
     ...staticPages,
-    ...rows.map(r => ({ url: r.url, priority: r.priority, changefreq: r.changefreq })),
+    ...rows.map((r: any) => ({ url: r.url, priority: r.priority, changefreq: r.changefreq })),
   ];
   
   const body = `<?xml version="1.0" encoding="UTF-8"?>

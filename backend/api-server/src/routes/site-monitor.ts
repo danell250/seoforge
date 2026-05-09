@@ -174,7 +174,7 @@ router.delete("/monitor/sites/:id", async (req, res) => {
   if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ message: "Invalid id" });
   const site = await getOwnedSite(req, id);
   if (!site) return res.status(404).json({ message: "Site not found" });
-  await db.transaction(async (tx) => {
+  await db.transaction(async (tx: any) => {
     await tx.delete(siteSnapshotsTable).where(eq(siteSnapshotsTable.siteId, id));
     await tx.delete(monitorReportsTable).where(eq(monitorReportsTable.siteId, id));
     await tx.delete(monitoredSitesTable).where(eq(monitoredSitesTable.id, id));

@@ -60,7 +60,7 @@ router.post("/hreflang", async (req, res) => {
   const lang = detected.languageCode?.toLowerCase().slice(0, 8) || "en";
 
   const tags = alternates.map(
-    (a) => `<link rel="alternate" hreflang="${escapeAttr(a.hreflang)}" href="${escapeAttr(a.href)}" />`,
+    (a: { hreflang: string; href: string }) => `<link rel="alternate" hreflang="${escapeAttr(a.hreflang)}" href="${escapeAttr(a.href)}" />`,
   );
   const xDefault = alternates[0];
   if (xDefault) {
@@ -70,7 +70,7 @@ router.post("/hreflang", async (req, res) => {
 
   let out = html;
   if (/<html[^>]*>/i.test(out)) {
-    out = out.replace(/<html([^>]*)>/i, (match, attrs: string) => {
+    out = out.replace(/<html([^>]*)>/i, (match: string, attrs: string) => {
       if (/\blang\s*=/.test(attrs)) {
         return match.replace(/\blang\s*=\s*"[^"]*"/i, `lang="${lang}"`);
       }

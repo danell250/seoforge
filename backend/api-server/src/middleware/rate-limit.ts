@@ -30,7 +30,7 @@ export function startRateLimitCleanupLoop() {
     void db
       .delete(rateLimitBucketsTable)
       .where(sql`${rateLimitBucketsTable.resetAt} <= NOW()`)
-      .catch((err) => {
+      .catch((err: unknown) => {
         if (isMissingRelationError(err, "rate_limit_buckets")) {
           rateLimitStoreAvailable = false;
         }

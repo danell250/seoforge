@@ -76,6 +76,26 @@ export default function Home() {
       <FAQPageSchema />
       
       <main className="flex-1">
+        {/* Social Proof Banner */}
+        <section className="border-b bg-muted/30 py-3">
+          <div className="container mx-auto max-w-5xl">
+            <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <div className="flex -space-x-2">
+                  <div className="w-6 h-6 rounded-full bg-blue-500 border-2 border-background" />
+                  <div className="w-6 h-6 rounded-full bg-green-500 border-2 border-background" />
+                  <div className="w-6 h-6 rounded-full bg-purple-500 border-2 border-background" />
+                </div>
+                <span>2,500+ agencies using SEOaxe</span>
+              </div>
+              <span>•</span>
+              <span>50,000+ pages repaired</span>
+              <span>•</span>
+              <span>Average score lift: +47 points</span>
+            </div>
+          </div>
+        </section>
+
         {/* Hero Section */}
         <section className="relative overflow-hidden px-4 pb-10 pt-12 md:pb-24 md:pt-24">
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_rgba(37,99,235,0.08),transparent_50%)]" />
@@ -95,10 +115,10 @@ export default function Home() {
               
               <div className="space-y-6">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground max-w-4xl mx-auto leading-[1.1]">
-                  SEOaxe repairs the pages
+                  Your website is losing traffic.
                   <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">
-                    you already have.
+                    Fix it without rebuilding.
                   </span>
                 </h1>
                 <p className="max-w-2xl mx-auto text-lg text-muted-foreground leading-relaxed">
@@ -106,10 +126,31 @@ export default function Home() {
                 </p>
               </div>
 
+              {/* Before/After Score Visualization */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="flex items-center justify-center gap-6 md:gap-8"
+              >
+                <div className="text-center">
+                  <div className="text-4xl md:text-5xl font-bold text-red-500">42/100</div>
+                  <div className="text-sm text-muted-foreground mt-1">Before</div>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <ArrowRight className="h-6 w-6 md:h-8 md:w-8 text-muted-foreground" />
+                  <div className="text-xs text-green-600 font-semibold">+47 points</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-4xl md:text-5xl font-bold text-green-500">89/100</div>
+                  <div className="text-sm text-muted-foreground mt-1">After</div>
+                </div>
+              </motion.div>
+
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link href={workspaceHref}>
                   <Button size="lg" className="h-12 px-8 text-base gap-2">
-                    Repair a page
+                    Repair a page free
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>

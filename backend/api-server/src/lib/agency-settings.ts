@@ -51,7 +51,7 @@ export async function ensureAgencySettingsRow() {
 
 export async function normalizeStoredAgencyBrandName() {
   try {
-    await db.transaction(async (tx) => {
+    await db.transaction(async (tx: any) => {
       const rows = await tx.select().from(agencySettingsTable).where(eq(agencySettingsTable.id, SINGLETON_ID));
       const row = rows[0];
       if (!row) {

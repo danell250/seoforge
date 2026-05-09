@@ -182,14 +182,14 @@ router.get("/ai-feedback/summary", async (req, res) => {
         reviewedCount,
         acceptanceRate,
       },
-      pageTypes: pageTypeRows.map((row) => ({
+      pageTypes: pageTypeRows.map((row: any) => ({
         pageType: row.pageType,
         total: row.total,
         accepted: row.accepted,
         rejected: row.rejected,
         acceptanceRate: row.accepted + row.rejected > 0 ? Math.round((row.accepted / (row.accepted + row.rejected)) * 100) : 0,
       })),
-      acceptedExamples: acceptedExamples.map((row) => ({
+      acceptedExamples: acceptedExamples.map((row: any) => ({
         ...row,
         createdAt: row.createdAt.toISOString(),
         updatedAt: row.updatedAt.toISOString(),
@@ -240,7 +240,7 @@ router.get("/ai-feedback/training-examples/export", async (req, res) => {
       exportedAt: new Date().toISOString(),
       verdict,
       count: rows.length,
-      items: rows.map((row) => ({
+      items: rows.map((row: any) => ({
         ...row,
         createdAt: row.createdAt.toISOString(),
         updatedAt: row.updatedAt.toISOString(),
