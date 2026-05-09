@@ -5,6 +5,7 @@ import { prepareHtmlForModel } from "./html-processor";
 export interface AiLogger {
   error: (object: unknown, message?: string) => void;
   info: (object: unknown, message?: string) => void;
+  warn: (object: unknown, message?: string) => void;
 }
 
 // Prefer Groq if available, otherwise fallback to Gemini
@@ -71,32 +72,43 @@ export async function runSeoaxeJsonTask<T>({
   const primaryHtml = html ? prepareHtmlForModel(html, primaryHtmlLimit) : null;
   const fallbackHtml = html ? prepareHtmlForModel(html, fallbackHtmlLimit) : null;
 
-  let text: string;
+  let text: string = "";
+  let usedGroq = false;
 
   if (USE_GROQ) {
     log?.info({ taskName }, "Using Groq (Llama 3.1 70B) for optimization");
     try {
-      text = await generateSeoaxeOptimization(
-        systemPrompt,
-        promptParts.join("\n\n"),
-        primaryHtml,
-        timeoutMs,
-      );
-    } catch (err) {
-      if (!fallbackHtml || fallbackHtml === primaryHtml) {
-        throw err;
-      }
-      log?.error({ err, taskName }, `${taskName} Groq primary call failed, retrying with compact HTML payload`);
-      text = await generateSeoaxeOptimization(
-        systemPrompt,
-        promptParts.join("\n\n"),
-        fallbackHtml,
-        fallbackTimeoutMs,
-      );
+      try {
+        text = await generateSeoaxeOptimization(
+          systemPrompt,
+          promptParts.join("\n\n"),
+          primaryHtml,
+          timeoutMs,
+        );
+        usedGroq = true;
+      } catch (err) {
+          if (fallbackHtml && fallbackHtml !== primaryHtml) {
+            log?.error({ err, taskName }, `${taskName} Groq primary call failed, retrying with compact HTML payload`);
+            text = await generateSeoaxeOptimization(
+              systemPrompt,
+              promptParts.join("\n\n"),
+              fallbackHtml,
+              fallbackTimeoutMs,
+            );
+            usedGroq = true;
+          } else {
+            throw err;
+          }
+        }
+    } catch (groqErr) {
+      log?.warn({ err: groqErr, taskName }, `${taskName} Groq failed entirely, falling back to Gemini`);
+      usedGroq = false;
     }
-  } else {
-    // Fallback to Gemini
-    log?.info({ taskName }, "Using Gemini for optimization (Groq not available)");
+  }
+
+  if (!usedGroq) {
+    // Use Gemini (either Groq wasn't available, or it failed and we're falling back)
+    log?.info({ taskName }, "Using Gemini for optimization");
     const model = getModel(systemPrompt);
 
     let result;
@@ -120,10 +132,12 @@ export async function runSeoaxeJsonTask<T>({
     text = result.response.text();
   }
 
+  // At this point, text should always be defined because both code paths assign it
+  // or throw an error before reaching here
   try {
-    return USE_GROQ ? groqExtractJson<T>(text) : extractJson<T>(text);
+    return usedGroq ? groqExtractJson<T>(text!) : extractJson<T>(text!);
   } catch (err) {
-    log?.error({ err, taskName, text: text.slice(0, 500) }, `${taskName} JSON parse failed`);
+    log?.error({ err, taskName, text: text?.slice(0, 500) }, `${taskName} JSON parse failed`);
     throw err;
   }
 }
