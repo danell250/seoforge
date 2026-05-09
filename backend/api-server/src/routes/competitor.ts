@@ -4,6 +4,7 @@ import { isIP } from "node:net";
 import { ScanCompetitorBody, ScanCompetitorResponse } from "@workspace/api-zod";
 import { requireAuthenticatedUser } from "../middleware/auth";
 import { runSeoaxeJsonTask } from "../lib/seoaxe-ai";
+import { GroqApiError, GroqTimeoutError } from "../lib/groq";
 
 const router: IRouter = Router();
 router.use(requireAuthenticatedUser);
@@ -216,9 +217,30 @@ router.post("/scan-competitor", async (req, res) => {
       });
     } catch (err) {
       req.log.error({ err, url, htmlLength: html.length }, "Competitor scan AI task failed");
-      return res.status(502).json({ 
-        message: "The scan response came back incomplete. Please try again.",
-        error: err instanceof Error ? err.message : "Unknown error"
+      
+      // Return appropriate status code based on error type
+      if (err instanceof GroqTimeoutError) {
+        return res.status(504).json({
+          message: "The AI analysis took too long. Please try again with a simpler page.",
+          error: err.message,
+          code: "AI_TIMEOUT"
+        });
+      }
+      
+      if (err instanceof GroqApiError) {
+        // Map Groq API errors to appropriate HTTP status codes
+        const statusCode = err.statusCode >= 400 && err.statusCode < 500 ? 502 : 500;
+        return res.status(statusCode).json({
+          message: "AI service temporarily unavailable. Please try again in a moment.",
+          error: err.message,
+          code: "AI_SERVICE_ERROR"
+        });
+      }
+      
+      return res.status(500).json({ 
+        message: "The scan failed. Please try again.",
+        error: err instanceof Error ? err.message : "Unknown error",
+        code: "SCAN_FAILED"
       });
     }
 

@@ -34,15 +34,34 @@ export function isGroqAvailable(): boolean {
   return !!GROQ_API_KEY;
 }
 
+export class GroqApiError extends Error {
+  statusCode: number;
+  responseBody?: string;
+
+  constructor(message: string, statusCode: number, responseBody?: string) {
+    super(message);
+    this.name = "GroqApiError";
+    this.statusCode = statusCode;
+    this.responseBody = responseBody;
+  }
+}
+
+export class GroqTimeoutError extends Error {
+  constructor(timeoutMs: number) {
+    super(`Groq request timed out after ${timeoutMs}ms`);
+    this.name = "GroqTimeoutError";
+  }
+}
+
 export async function generateContentWithGroq(
   messages: GroqMessage[],
-  model = "llama-3.1-70b-versatile",
+  model = "llama-3.3-70b-versatile",
   temperature = 0.3,
   maxTokens = 8192,
   timeoutMs = 45_000,
 ): Promise<string> {
   if (!GROQ_API_KEY) {
-    throw new Error("GROQ_API_KEY environment variable is required but was not provided.");
+    throw new GroqApiError("GROQ_API_KEY environment variable is required but was not provided.", 500);
   }
 
   const controller = new AbortController();
@@ -69,7 +88,20 @@ export async function generateContentWithGroq(
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`Groq API error (${response.status}): ${errorText}`);
+      // Parse Groq error response for better messages
+      let errorMessage = `Groq API error (${response.status})`;
+      try {
+        const errorJson = JSON.parse(errorText);
+        if (errorJson.error?.message) {
+          errorMessage = `Groq API: ${errorJson.error.message}`;
+        } else if (errorJson.message) {
+          errorMessage = `Groq API: ${errorJson.message}`;
+        }
+      } catch {
+        // Keep original error text if not JSON
+        if (errorText) errorMessage += `: ${errorText}`;
+      }
+      throw new GroqApiError(errorMessage, response.status, errorText);
     }
 
     const data = await response.json() as GroqResponse;
@@ -82,9 +114,13 @@ export async function generateContentWithGroq(
   } catch (err) {
     clearTimeout(timeoutId);
     if (err instanceof Error && err.name === "AbortError") {
-      throw new Error(`Groq request timed out after ${timeoutMs}ms`);
+      throw new GroqTimeoutError(timeoutMs);
     }
-    throw err;
+    // Re-throw GroqApiError as-is
+    if (err instanceof GroqApiError) {
+      throw err;
+    }
+    throw new GroqApiError(err instanceof Error ? err.message : "Unknown Groq error", 500);
   }
 }
 
@@ -105,10 +141,10 @@ export async function generateSeoaxeOptimization(
 
   messages.push({ role: "user", content: fullUserContent });
 
-  // Use Llama 3.1 70B for best SEO optimization quality
+  // Use Llama 3.3 70B for best SEO optimization quality (updated from deprecated 3.1)
   return generateContentWithGroq(
     messages,
-    "llama-3.1-70b-versatile",
+    "llama-3.3-70b-versatile",
     0.3, // Lower temperature for consistent output
     8192,
     timeoutMs,
