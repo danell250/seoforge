@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useGenerateAeoBlock } from "@workspace/api-client-react";
+import { useGenerateAeoBlock, customFetch } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Copy, MessageSquareQuote, Play, RefreshCw, Sparkles, Globe } from "lucide-react";
 
@@ -19,22 +19,24 @@ export function AeoAnswerBlock() {
       return;
     }
     try {
-      const html = await fetchPageHtml(url);
+      const { html } = await customFetch<{ html: string; finalUrl: string }>("/api/fetch-page", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: url.trim() }),
+      });
       mutation.mutate(
         { data: { html, topic: topic.trim() || undefined } },
         {
           onError: () => toast({ title: "Error", description: "Generation failed, please try again.", variant: "destructive" }),
         },
       );
-    } catch (error) {
-      toast({ title: "Error", description: "Failed to fetch page. Please check the URL.", variant: "destructive" });
+    } catch (error: any) {
+      toast({ 
+        title: "Error", 
+        description: error?.data?.message || "Failed to fetch page. Please check the URL.", 
+        variant: "destructive" 
+      });
     }
-  };
-
-  const fetchPageHtml = async (url: string): Promise<string> => {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error('Failed to fetch');
-    return await response.text();
   };
 
   const handleReset = () => {

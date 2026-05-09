@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { CompetitorScanner } from "@/components/app/competitor-scanner";
 import { SiteCrawler } from "@/components/app/site-crawler";
 import { AeoAnswerBlock } from "@/components/app/aeo-answer-block";
@@ -13,13 +14,21 @@ import { ZipUpload } from "@/components/app/zip-upload";
 import { HtmlGuide } from "@/components/app/html-guide";
 import { DeployPanel } from "@/components/app/deploy-panel";
 import { type ReactNode, useEffect, useState } from "react";
-import { Bot, Globe, Languages, Search, ShieldCheck, Sparkles, Radar, FileQuestion, FileEdit, FileArchive, BookOpen, UploadCloud } from "lucide-react";
+import { Bot, Globe, Languages, Search, ShieldCheck, Sparkles, Radar, FileQuestion, FileEdit, FileArchive, BookOpen, UploadCloud, Edit2, Check, ExternalLink } from "lucide-react";
 
 export default function AppWorkspace() {
   const initial = typeof window !== "undefined" && window.location.hash
     ? window.location.hash.slice(1)
     : "site-crawler";
   const [tab, setTab] = useState(initial);
+  const [websiteUrl, setWebsiteUrl] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("seoaxe:website-url") || "";
+    }
+    return "";
+  });
+  const [isEditingUrl, setIsEditingUrl] = useState(false);
+  const [tempUrl, setTempUrl] = useState("");
 
   useEffect(() => {
     const onHash = () => {
@@ -152,6 +161,73 @@ export default function AppWorkspace() {
             <aside className="rounded-xl border bg-background p-3 md:sticky md:top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
               <div className="mb-3 px-2">
                 <h1 className="text-sm font-semibold tracking-tight text-foreground">Workspace</h1>
+                <div className="mt-2 space-y-2">
+                  {isEditingUrl ? (
+                    <div className="flex gap-1">
+                      <Input
+                        value={tempUrl}
+                        onChange={(e) => setTempUrl(e.target.value)}
+                        placeholder="https://yourdomain.com"
+                        className="text-xs h-8"
+                        autoFocus
+                      />
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 px-2"
+                        onClick={() => {
+                          if (tempUrl.trim()) {
+                            setWebsiteUrl(tempUrl.trim());
+                            localStorage.setItem("seoaxe:website-url", tempUrl.trim());
+                          }
+                          setIsEditingUrl(false);
+                        }}
+                      >
+                        <Check className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between gap-2">
+                      {websiteUrl ? (
+                        <div className="flex items-center gap-1 text-xs text-foreground truncate">
+                          <Globe className="h-3 w-3 shrink-0 text-muted-foreground" />
+                          <a 
+                            href={websiteUrl.startsWith("http") ? websiteUrl : `https://${websiteUrl}`} 
+                            target="_blank" 
+                            rel="noreferrer"
+                            className="truncate hover:underline"
+                          >
+                            {websiteUrl.replace(/^https?:\/\//, "")}
+                          </a>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-6 px-1"
+                            onClick={() => {
+                              setTempUrl(websiteUrl);
+                              setIsEditingUrl(true);
+                            }}
+                          >
+                            <Edit2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs h-8 w-full justify-start text-muted-foreground"
+                          onClick={() => {
+                            setTempUrl("");
+                            setIsEditingUrl(true);
+                          }}
+                        >
+                          <Edit2 className="h-3 w-3 mr-1" />
+                          Add your domain
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </div>
                 <p className="text-xs text-muted-foreground mt-1">Choose one tool and focus.</p>
               </div>
               <nav className="space-y-3">

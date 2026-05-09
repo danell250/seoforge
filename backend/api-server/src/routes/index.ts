@@ -18,6 +18,7 @@ import pricingRouter from "./pricing";
 import paymentsRouter from "./payments";
 import auditRouter from "./audit";
 import intentRouter from "./intent";
+import toolsRouter from "./tools";
 
 const router: IRouter = Router();
 
@@ -40,5 +41,6 @@ router.use(pricingRouter);
 router.use(paymentsRouter);
 router.use(auditRouter);
 router.use(intentRouter);
+router.use(toolsRouter);
 
 export default router;

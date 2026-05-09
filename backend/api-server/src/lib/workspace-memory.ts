@@ -10,6 +10,7 @@ export interface WorkspaceMemory {
   preferredMarkets: string;
   primaryCms: string;
   optimizationStyle: string;
+  websiteUrl: string | null;
 }
 
 export async function getWorkspaceMemory(): Promise<WorkspaceMemory> {
@@ -34,6 +35,7 @@ export function normalizeWorkspaceMemory(
     preferredMarkets: row?.preferredMarkets ?? DEFAULT_AGENCY_SETTINGS.preferredMarkets,
     primaryCms: row?.primaryCms ?? DEFAULT_AGENCY_SETTINGS.primaryCms,
     optimizationStyle: row?.optimizationStyle ?? DEFAULT_AGENCY_SETTINGS.optimizationStyle,
+    websiteUrl: row?.websiteUrl ?? DEFAULT_AGENCY_SETTINGS.websiteUrl,
   };
 }
 
