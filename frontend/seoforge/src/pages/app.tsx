@@ -137,7 +137,7 @@ export default function AppWorkspace() {
       <main className="flex-1 px-4 py-6">
         <div className="container mx-auto max-w-7xl">
           <div className="grid gap-5 md:grid-cols-[240px_minmax(0,1fr)]">
-            <aside className="rounded-xl border bg-background p-3 h-fit md:sticky md:top-20">
+            <aside className="rounded-xl border bg-background p-3 md:sticky md:top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
               <div className="mb-3 px-2">
                 <h1 className="text-sm font-semibold tracking-tight text-foreground">Workspace</h1>
                 <p className="text-xs text-muted-foreground mt-1">Choose one tool and focus.</p>

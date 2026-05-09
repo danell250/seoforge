@@ -20,6 +20,10 @@ services:
         sync: false
       - key: BREVO_API_KEY
         sync: false
+      - key: EMAIL_FROM
+        value: noreply@seoaxe.site
+      - key: EMAIL_FROM_NAME
+        value: SEOaxe
       - key: STITCH_EXPRESS_CLIENT_ID
         sync: false
       - key: STITCH_EXPRESS_CLIENT_SECRET
