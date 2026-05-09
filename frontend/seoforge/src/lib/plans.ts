@@ -14,10 +14,10 @@ export interface PlanDefinition {
 export const PLAN_DEFINITIONS: readonly PlanDefinition[] = [
   {
     slug: "free",
-    name: "Free",
+    name: "$1 Starter",
     amountZar: 16.38,
     period: "month",
-    description: "Entry plan priced at about $1/month.",
+    description: "Start for just $1/month and try our core features.",
     features: [
       "3 page repairs per month",
       "Basic technical SEO checks",
@@ -25,12 +25,12 @@ export const PLAN_DEFINITIONS: readonly PlanDefinition[] = [
       "Repair receipt for every page",
       "Community support",
     ],
-    cta: "Start $1 Plan",
-    popular: false,
+    cta: "Start for $1",
+    popular: true,
   },
   {
     slug: "starter",
-    name: "Starter",
+    name: "Pro",
     amountZar: 299,
     period: "month",
     description: "For founders repairing live websites.",
@@ -42,8 +42,8 @@ export const PLAN_DEFINITIONS: readonly PlanDefinition[] = [
       "Deployable HTML, sitemap, and robots outputs",
       "Email support within 24h",
     ],
-    cta: "Start Starter Plan",
-    popular: true,
+    cta: "Start Pro Plan",
+    popular: false,
   },
   {
     slug: "agency",
