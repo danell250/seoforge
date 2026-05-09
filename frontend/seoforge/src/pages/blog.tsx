@@ -298,39 +298,6 @@ const originalArticles: BlogArticle[] = [
 
       <h3>Can small businesses appear in Google AI Overviews?</h3>
       <p>Yes. Google AI Overviews favour clarity and authority over website size. A small business with well-structured, direct content can outrank large competitors that have not implemented AEO.</p>
-
-      <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "How do I get my website into Google AI Overviews?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Implement schema markup, write direct answer-first content, add FAQ sections, fix your meta tags, and build authority signals like directory listings and backlinks. Tools like SEOaxe automate the technical implementation."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How long does it take to appear in Google AI Overviews?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "There is no guaranteed timeline but well-optimized pages have been seen appearing in AI Overviews within two to four weeks of implementation."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can small businesses appear in Google AI Overviews?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. Google AI Overviews favour clarity and authority over website size. A small business with well-structured, direct content can outrank large competitors that have not implemented AEO."
-      }
-    }
-  ]
-}
-      </script>
     `,
   },
   {
@@ -392,39 +359,6 @@ const originalArticles: BlogArticle[] = [
 
       <h3>What is the best SEO tool for South African websites?</h3>
       <p>SEOaxe supports South African websites alongside global markets, with multilingual schema, local business markup, hreflang support, and AEO optimization for region-specific search behaviour.</p>
-
-      <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Does South Africa have different Google search results than other countries?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. Google customizes results based on location, language, and local relevance. South African search results factor in local businesses, South African news sources, and regional content."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How important is local SEO for South African businesses?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Extremely important. Most South African searches have local intent. Businesses without local SEO optimization lose significant visibility to competitors who have it."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Should I create Afrikaans or Zulu content for SEO?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "If a significant portion of your target market speaks Afrikaans or Zulu, creating content in those languages can give you a major competitive advantage as most competitors only publish in English."
-      }
-    }
-  ]
-}
-      </script>
     `,
   },
   {
@@ -488,39 +422,6 @@ const originalArticles: BlogArticle[] = [
 
       <h3>How many schema types can one page have?</h3>
       <p>A single page can have multiple schema types. A blog post might have Article schema, BreadcrumbList schema, and FAQPage schema all at once.</p>
-
-      <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Is JSON-LD hard to implement?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Not anymore. Tools like SEOaxe generate and inject JSON-LD automatically. You paste your HTML in, get fully schema-marked-up HTML back, and paste it into your site."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Does JSON-LD schema improve Google rankings?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "JSON-LD does not directly change your ranking position but it enables rich results and AI citations that significantly increase your search visibility and click-through rates."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Where exactly do you put JSON-LD on a page?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "JSON-LD goes inside the <head> section of your HTML, wrapped in <script type=\"application/ld+json\"> tags."
-      }
-    }
-  ]
-}
-      </script>
     `,
   },
   {
@@ -580,39 +481,6 @@ const originalArticles: BlogArticle[] = [
 
       <h3>Do featured snippets increase website traffic?</h3>
       <p>Featured snippets significantly increase click-through rates and brand visibility. They also increase the likelihood of your content being cited in Google AI Overviews, which is becoming more valuable than traditional clicks.</p>
-
-      <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "How long does it take to win a featured snippet?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Pages can win featured snippets within days of being reoptimized if the content structure and schema are correct. Google continuously tests and updates which pages appear in snippet positions."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can a new website win featured snippets?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. Featured snippets are determined by content quality and structure, not domain age. A well-structured answer on a new website can beat an established site that has not formatted its content for snippets."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Do featured snippets increase website traffic?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Featured snippets significantly increase click-through rates and brand visibility. They also increase the likelihood of your content being cited in Google AI Overviews, which is becoming more valuable than traditional clicks."
-      }
-    }
-  ]
-}
-      </script>
     `,
   },
   {
@@ -666,39 +534,6 @@ const originalArticles: BlogArticle[] = [
 
       <h3>How do I implement both SEO and AEO at the same time?</h3>
       <p>Use a tool like SEOaxe that handles both simultaneously — optimizing your meta tags, headings, and technical SEO while also injecting the schema markup and structured content that AEO requires.</p>
-
-      <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Can I do AEO without SEO?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "No. AEO requires a foundation of solid SEO. AI systems prefer to cite content from websites that already have authority, good technical health, and ranking signals."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Which is more important — SEO or AEO?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Neither alone is sufficient. SEO provides visibility. AEO provides citation authority. Both are required for maximum search performance in 2026."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How do I implement both SEO and AEO at the same time?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Use a tool like SEOaxe that handles both simultaneously — optimizing your meta tags, headings, and technical SEO while also injecting the schema markup and structured content that AEO requires."
-      }
-    }
-  ]
-}
-      </script>
     `,
   },
   {
@@ -1961,31 +1796,7 @@ function useBlogSeo(article: BlogArticle | null) {
 }
 
 function ArticleView({ article }: { article: BlogArticle }) {
-  useEffect(() => {
-    // Dynamically inject the article's specific FAQ schema if present in its content
-    const schemaMatch = article.content.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
-    if (schemaMatch && schemaMatch[1]) {
-      try {
-        const schemaId = `article-faq-schema-${article.id}`;
-        // Remove existing if any
-        document.getElementById(schemaId)?.remove();
-        
-        const script = document.createElement('script');
-        script.type = 'application/ld+json';
-        script.id = schemaId;
-        script.text = schemaMatch[1].trim();
-        document.head.appendChild(script);
-        
-        return () => {
-          document.getElementById(schemaId)?.remove();
-        };
-      } catch (e) {
-        console.error("Failed to inject article schema:", e);
-      }
-    }
-  }, [article]);
-
-  // Clean the content for display (remove the raw script tag so it doesn't break React rendering)
+  // Clean the content for display (remove any script tags that might be present)
   const displayContent = article.content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, "");
 
   return (
