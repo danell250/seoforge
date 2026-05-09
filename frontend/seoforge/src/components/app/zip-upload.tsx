@@ -56,7 +56,7 @@ export function ZipUpload() {
       const htmlFiles: ProcessedFile[] = [];
       
       for (const [filename, zipEntry] of Object.entries(contents.files)) {
-        if (!zipEntry.dir && (filename.endsWith('.html') || filename.endsWith('.htm'))) {
+        if (!zipEntry.dir && (filename.endsWith('.html') || filename.endsWith('.htm') || filename.endsWith('.ts') || filename.endsWith('.tsx'))) {
           const content = await zipEntry.async("text");
           htmlFiles.push({
             filename,
@@ -67,7 +67,7 @@ export function ZipUpload() {
       }
       
       if (htmlFiles.length === 0) {
-        toast({ title: "Empty ZIP", description: "No HTML files found in the archive.", variant: "destructive" });
+        toast({ title: "Empty ZIP", description: "No HTML, TS, or TSX files found in the archive.", variant: "destructive" });
         return;
       }
       
@@ -139,7 +139,10 @@ export function ZipUpload() {
 
   const downloadSingle = (file: ProcessedFile) => {
     if (!file.optimizedHtml) return;
-    const blob = new Blob([file.optimizedHtml], { type: "text/html;charset=utf-8" });
+    const contentType = file.filename.endsWith(".ts") || file.filename.endsWith(".tsx") 
+      ? "text/plain;charset=utf-8" 
+      : "text/html;charset=utf-8";
+    const blob = new Blob([file.optimizedHtml], { type: contentType });
     saveAs(blob, file.filename);
   };
 
@@ -155,8 +158,8 @@ export function ZipUpload() {
       {files.length === 0 ? (
         <Card className="border-2 border-primary/10 shadow-lg">
           <CardHeader className="text-center pb-2">
-            <CardTitle className="text-2xl">Optimize Many HTML Files</CardTitle>
-            <CardDescription>Upload one ZIP of HTML files. We will improve each file and give you a new ZIP back.</CardDescription>
+            <CardTitle className="text-2xl">Optimize Many Files</CardTitle>
+            <CardDescription>Upload one ZIP of HTML, TS, or TSX files. We will improve each file and give you a new ZIP back.</CardDescription>
           </CardHeader>
           <CardContent>
             <div 
@@ -171,7 +174,7 @@ export function ZipUpload() {
                 <FileArchive className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-lg font-semibold mb-2">Drop a ZIP file here</h3>
-              <p className="text-sm text-muted-foreground mb-6">The ZIP should contain `.html` or `.htm` files. Folders are fine.</p>
+              <p className="text-sm text-muted-foreground mb-6">The ZIP should contain `.html`, `.ts`, or `.tsx` files. Folders are fine.</p>
               
               <Button onClick={() => fileInputRef.current?.click()} variant="outline">
                 <UploadCloud className="h-4 w-4 mr-2" /> Choose ZIP File

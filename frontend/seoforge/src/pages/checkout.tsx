@@ -26,6 +26,7 @@ export default function Checkout() {
   const [location, navigate] = useLocation();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [usdPrice, setUsdPrice] = useState<number | null>(null);
   const search = typeof window !== "undefined" ? window.location.search : "";
   const params = new URLSearchParams(search);
   const planParam = params.get("plan");
@@ -40,11 +41,18 @@ export default function Checkout() {
   const createPayPalOrder = async () => {
     console.log("Creating PayPal order for plan:", selectedPlan?.slug);
     try {
-      const response = await customFetch<{ id: string }>("/api/payments/paypal/create-order", {
+      const response = await customFetch<{ id: string; purchase_units: any[] }>("/api/payments/paypal/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan: selectedPlan?.slug }),
       });
+      
+      // Update USD price for display
+      const amount = response.purchase_units?.[0]?.amount?.value;
+      if (amount) {
+        setUsdPrice(parseFloat(amount));
+      }
+
       console.log("PayPal order created:", response.id);
       return response.id;
     } catch (err) {
@@ -205,7 +213,14 @@ export default function Checkout() {
                         <p className="text-xs text-muted-foreground">Please don&apos;t close this window.</p>
                       </div>
                     ) : (
-                      <div className="py-2">
+                      <div className="py-2 space-y-4">
+                        {usdPrice && (
+                          <div className="rounded-lg bg-muted/30 p-3 text-center border border-dashed border-primary/20">
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">PayPal Conversion</p>
+                            <p className="text-lg font-bold text-primary">${usdPrice.toFixed(2)} USD</p>
+                            <p className="text-[10px] text-muted-foreground">Final amount charged by PayPal</p>
+                          </div>
+                        )}
                         <PayPalButtons
                           style={{ layout: "vertical", label: "pay" }}
                           createOrder={createPayPalOrder}
@@ -216,7 +231,7 @@ export default function Checkout() {
                     )}
 
                     <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
-                      After payment, your plan will be activated immediately.
+                      After payment, your {selectedPlan?.name} plan will be activated immediately.
                     </div>
                   </CardContent>
                 </Card>

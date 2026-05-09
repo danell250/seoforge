@@ -110,15 +110,15 @@ interface OptimizationOutcome {
   };
 }
 
-const TASK_INSTRUCTION = `Given the HTML below, return a JSON object (no prose, no code fences) with this exact shape:
+const TASK_INSTRUCTION = `Given the code below (HTML, TS, or TSX), return a JSON object (no prose, no code fences) with this exact shape:
 
 {
-  "optimizedHtml": "<full optimized HTML, production-ready, every SEO and AEO improvement applied: title, meta description, canonical, Open Graph, Twitter card, JSON-LD schema (Organization/WebSite/WebPage/FAQPage where appropriate), hreflang for African multilingual targets when relevant, semantic HTML5, alt text on every image, descriptive heading hierarchy, AEO answer blocks, FAQ section if missing>",
+  "optimizedHtml": "<full optimized code, production-ready, every SEO and AEO improvement applied. If the input was TS or TSX, maintain that format but optimize any HTML/JSX content within it: title, meta description, canonical, Open Graph, Twitter card, JSON-LD schema (Organization/WebSite/WebPage/FAQPage where appropriate), hreflang for African multilingual targets when relevant, semantic HTML5, alt text on every image, descriptive heading hierarchy, AEO answer blocks, FAQ section if missing>",
   "changes": ["bullet list of every concrete change made, one short sentence each"],
   "originalScore": {
-    "technical": <0-100, assess the ORIGINAL HTML's technical SEO before optimization>,
-    "content": <0-100, assess the ORIGINAL HTML's content SEO before optimization>,
-    "aeo": <0-100, assess the ORIGINAL HTML's AEO readiness before optimization>,
+    "technical": <0-100, assess the ORIGINAL code's technical SEO before optimization>,
+    "content": <0-100, assess the ORIGINAL code's content SEO before optimization>,
+    "aeo": <0-100, assess the ORIGINAL code's AEO readiness before optimization>,
     "overall": <0-100, weighted overall score of original>
   },
   "score": {
@@ -132,7 +132,7 @@ const TASK_INSTRUCTION = `Given the HTML below, return a JSON object (no prose, 
 }
 
 SCORING INSTRUCTIONS - CRITICAL:
-Analyze the ORIGINAL HTML and score it BEFORE applying optimizations:
+Analyze the ORIGINAL code and score it BEFORE applying optimizations:
 - Technical SEO: Check meta tags, schema markup, heading hierarchy, alt text, canonical, Open Graph
 - Content SEO: Check title quality, description, keyword usage, content structure
 - AEO: Check for FAQ sections, answer blocks, question-based headers, schema for AI
@@ -149,9 +149,9 @@ AFRICAN LANGUAGE SUPPORT - CRITICAL:
   * Nigerian Pidgin: Conversational tone, "wetin be" patterns, slang-aware keywords
   * Swahili: "jinsi ya" query targeting, East African context, hospitality tone
 - Add hreflang tags for all supported African languages
-- Include lang="[code]" attribute on html element
+- Include lang="[code]" attribute on html element or within the appropriate JSX structure
 
-Return ONLY valid JSON. The optimizedHtml field must contain the FULL document HTML, not a fragment.`;
+Return ONLY valid JSON. The optimizedHtml field must contain the FULL document code, not a fragment.`;
 
 router.post("/optimize", async (req, res) => {
   const parsed = OptimizeHtmlBody.safeParse(req.body);

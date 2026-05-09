@@ -29,6 +29,16 @@ Follow these product rules on every task:
 - Keep SEO improvements realistic and defensible.
 - Never invent hidden page details that are not supported by the input.`;
 
+function appendHtml(parts: string[], htmlLabel: string, html: string | null, filename?: string): string[] {
+  if (!html) return parts;
+  let lang = "html";
+  if (filename) {
+    if (filename.endsWith(".ts")) lang = "typescript";
+    else if (filename.endsWith(".tsx")) lang = "typescript";
+  }
+  return [...parts, `${htmlLabel}:\n\`\`\`${lang}\n${html}\n\`\`\``];
+}
+
 export async function runSeoaxeJsonTask<T>({
   taskName,
   taskPrompt,
@@ -42,6 +52,8 @@ export async function runSeoaxeJsonTask<T>({
   extraParts = [],
   log,
 }: RunSeoaxeJsonTaskOptions): Promise<T> {
+  const filename = extraParts.find(p => p?.startsWith("Filename: "))?.split(": ")[1];
+  
   const model = getModel(
     systemInstruction
       ? `${SEOAXE_CORE_SYSTEM_PROMPT}\n\nTask specialization:\n${systemInstruction}`
@@ -60,7 +72,7 @@ export async function runSeoaxeJsonTask<T>({
   try {
     result = await generateContentWithTimeout(
       model,
-      appendHtml(promptParts, htmlLabel, primaryHtml),
+      appendHtml(promptParts, htmlLabel, primaryHtml, filename),
       timeoutMs,
     );
   } catch (err) {
@@ -70,7 +82,7 @@ export async function runSeoaxeJsonTask<T>({
     log?.error({ err, taskName }, `${taskName} primary model call failed, retrying with compact HTML payload`);
     result = await generateContentWithTimeout(
       model,
-      appendHtml(promptParts, htmlLabel, fallbackHtml),
+      appendHtml(promptParts, htmlLabel, fallbackHtml, filename),
       fallbackTimeoutMs,
     );
   }
@@ -82,10 +94,5 @@ export async function runSeoaxeJsonTask<T>({
     log?.error({ err, taskName, text: text.slice(0, 500) }, `${taskName} JSON parse failed`);
     throw err;
   }
-}
-
-function appendHtml(parts: string[], htmlLabel: string, html: string | null): string[] {
-  if (!html) return parts;
-  return [...parts, `${htmlLabel}:\n\`\`\`html\n${html}\n\`\`\``];
 }
 

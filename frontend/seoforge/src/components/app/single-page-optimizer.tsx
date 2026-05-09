@@ -347,15 +347,15 @@ export function SinglePageOptimizer() {
               <Textarea 
                 value={htmlInput}
                 onChange={(e) => setHtmlInput(e.target.value)}
-                placeholder="Paste one page of HTML here..."
+                placeholder="Paste your HTML, TS, or TSX code here..."
                 className="min-h-[400px] font-mono text-sm resize-y p-4 bg-muted/30 focus-visible:ring-primary"
               />
               <div className="absolute top-4 right-4 flex items-center gap-2">
                 <Button variant="outline" size="sm" className="bg-background/80 backdrop-blur-sm shadow-sm" asChild>
                   <label className="cursor-pointer flex items-center gap-2">
                     <UploadCloud className="h-4 w-4" />
-                    Upload HTML
-                    <input ref={fileInputRef} type="file" accept=".html,.htm" className="hidden" onChange={handleFileUpload} />
+                    Upload File
+                    <input ref={fileInputRef} type="file" accept=".html,.htm,.ts,.tsx" className="hidden" onChange={handleFileUpload} />
                   </label>
                 </Button>
               </div>
@@ -411,7 +411,10 @@ export function SinglePageOptimizer() {
               <Button
                 variant="outline"
                 onClick={() => {
-                  const blob = new Blob([optimizeMutation.data.optimizedHtml], { type: "text/html;charset=utf-8" });
+                  const contentType = sourceFilename.endsWith(".ts") || sourceFilename.endsWith(".tsx") 
+                    ? "text/plain;charset=utf-8" 
+                    : "text/html;charset=utf-8";
+                  const blob = new Blob([optimizeMutation.data.optimizedHtml], { type: contentType });
                   const url = URL.createObjectURL(blob);
                   const a = document.createElement("a");
                   a.href = url;

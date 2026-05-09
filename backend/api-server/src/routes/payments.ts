@@ -18,12 +18,13 @@ import crypto from "crypto";
 
 import { ordersController } from "../lib/paypal";
 import { CheckoutPaymentIntent } from "@paypal/paypal-server-sdk";
+import { convertFromZar } from "../lib/pricing";
 
 const router: IRouter = Router();
 
-const PAYPAL_PLAN_PRICES: Record<string, string> = {
-  starter: "4.99",
-  agency: "9.99",
+const ZAR_PRICES: Record<string, number> = {
+  starter: 299,
+  agency: 999,
 };
 
 router.get("/payments/health", (req, res) => {
@@ -289,10 +290,13 @@ router.post("/payments/paypal/create-order", requireAuthenticatedUser, async (re
     return res.status(400).json({ message: "Choose Starter or Agency to continue to payment." });
   }
 
-  const price = PAYPAL_PLAN_PRICES[planSlug];
-  if (!price) {
+  const zarPrice = ZAR_PRICES[planSlug];
+  if (!zarPrice) {
     return res.status(400).json({ message: "Invalid plan selected." });
   }
+
+  // Convert ZAR to USD for PayPal
+  const usdPrice = convertFromZar(zarPrice, "USD").toFixed(2);
 
   try {
     const { result } = await ordersController.createOrder({
@@ -302,7 +306,7 @@ router.post("/payments/paypal/create-order", requireAuthenticatedUser, async (re
           {
             amount: {
               currencyCode: "USD",
-              value: price,
+              value: usdPrice,
             },
             description: `SEOaxe ${planSlug.charAt(0).toUpperCase() + planSlug.slice(1)} Plan`,
             customId: planSlug,
