@@ -24,6 +24,8 @@ services:
         sync: false
       - key: STITCH_EXPRESS_WEBHOOK_SECRET
         sync: false
+      - key: PAYPAL_WEBHOOK_SECRET
+        sync: false
       - key: STITCH_EXPRESS_REDIRECT_URL
         value: https://www.seoaxe.site/checkout?payment=return
       - key: ADMIN_EMAIL

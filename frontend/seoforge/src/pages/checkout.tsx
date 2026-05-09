@@ -107,6 +107,7 @@ export default function Checkout() {
             purchase_units: [
               {
                 description: `SEOaxe ${selectedPlan.name} Plan`,
+                custom_id: user?.email || selectedPlan.slug,
                 amount: {
                   currency_code: "USD",
                   value: planPrice.toFixed(2),
@@ -117,7 +118,8 @@ export default function Checkout() {
         },
         onApprove: (data: any, actions: any) => {
           return actions.order.capture().then((details: any) => {
-            alert(`Payment completed by ${details.payer.name.given_name}! Email your transaction ID to danelloosthuizen3@gmail.com to activate your plan.`);
+            alert(`Payment completed successfully! Your ${selectedPlan.name} plan will be activated shortly.`);
+            window.location.href = "/app";
           });
         },
         onError: (err: any) => {
@@ -126,7 +128,7 @@ export default function Checkout() {
         },
       })
       .render(paypalContainerRef.current);
-  }, [planPrice, selectedPlan.name]);
+  }, [planPrice, selectedPlan.name, user?.email]);
 
   return (
     <div className="min-h-screen flex flex-col bg-muted/20">
@@ -201,15 +203,12 @@ export default function Checkout() {
                       Secure PayPal payment
                     </CardTitle>
                     <CardDescription>
-                      Your account is linked. Complete payment via PayPal for your plan.
+                      Complete payment via PayPal. Your plan will activate automatically.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="rounded-lg border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
                       Signed in as <span className="font-medium text-foreground">{user?.email}</span>
-                    </div>
-                    <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
-                      After payment, email danelloosthuizen3@gmail.com with your transaction ID to activate your plan.
                     </div>
                     <div ref={paypalContainerRef} id="paypal-button-container" />
                   </CardContent>
@@ -289,7 +288,7 @@ export default function Checkout() {
               {[
                 "Pick your plan and confirm the account it should belong to.",
                 "Complete payment via PayPal for your chosen plan.",
-                "Email your transaction ID to danelloosthuizen3@gmail.com to activate your plan.",
+                "Your plan activates automatically after successful payment.",
               ].map((step, index) => (
                 <div key={step} className="rounded-xl border bg-muted/20 p-4 text-sm">
                   <div className="mb-2 flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary">

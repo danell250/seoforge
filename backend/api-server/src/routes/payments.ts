@@ -14,6 +14,7 @@ import {
   parseStitchMerchantReference,
 } from "../lib/stitch-express";
 import { verifySvixSignature } from "../lib/svix";
+import crypto from "crypto";
 
 const router: IRouter = Router();
 
@@ -78,6 +79,107 @@ function isPaidWebhook(payload: unknown): boolean {
     status === "paymentreceived"
   );
 }
+
+router.post("/payments/paypal/webhook", async (req, res) => {
+  const webhookSecret = process.env.PAYPAL_WEBHOOK_SECRET?.trim();
+  if (!webhookSecret) {
+    req.log.error("PAYPAL_WEBHOOK_SECRET is not configured");
+    return res.status(500).json({ message: "Webhook secret is not configured" });
+  }
+
+  const rawBody = (req as RequestWithRawBody).rawBody;
+  if (!rawBody) {
+    req.log.warn("PayPal webhook missing raw body");
+    return res.status(400).json({ message: "Missing request body" });
+  }
+
+  // Verify PayPal webhook signature
+  const paypalTransmissionId = req.headers["paypal-transmission-id"] as string;
+  const paypalCertUrl = req.headers["paypal-cert-url"] as string;
+  const paypalAuthAlgo = req.headers["paypal-auth-algo"] as string;
+  const paypalTransmissionSig = req.headers["paypal-transmission-sig"] as string;
+  const paypalTransmissionTime = req.headers["paypal-transmission-time"] as string;
+
+  if (!paypalTransmissionId || !paypalCertUrl || !paypalAuthAlgo || !paypalTransmissionSig || !paypalTransmissionTime) {
+    req.log.warn("PayPal webhook missing required headers");
+    return res.status(400).json({ message: "Missing required PayPal headers" });
+  }
+
+  // Simple signature verification (in production, use PayPal SDK for full verification)
+  const expectedSig = crypto
+    .createHmac("sha256", webhookSecret)
+    .update(`${paypalTransmissionId}|${paypalTransmissionTime}|${rawBody.toString()}`)
+    .digest("base64");
+
+  if (paypalTransmissionSig !== expectedSig) {
+    req.log.warn("PayPal webhook signature verification failed");
+    return res.status(400).json({ message: "Invalid webhook signature" });
+  }
+
+  const eventType = req.body.event_type;
+  if (eventType !== "PAYMENT.CAPTURE.COMPLETED" && eventType !== "PAYMENT.SALE.COMPLETED") {
+    return res.json({ received: true, processed: false });
+  }
+
+  const purchaseUnits = req.body.resource?.purchase_units;
+  if (!purchaseUnits || purchaseUnits.length === 0) {
+    req.log.warn("PayPal webhook missing purchase units");
+    return res.json({ received: true, processed: false });
+  }
+
+  const description = purchaseUnits[0].description;
+  const customId = purchaseUnits[0].custom_id;
+
+  // Parse plan from description or custom_id
+  let planSlug: string | null = null;
+  if (description) {
+    if (description.includes("Starter")) planSlug = "starter";
+    else if (description.includes("Agency")) planSlug = "agency";
+  }
+
+  if (!planSlug && customId) {
+    planSlug = customId;
+  }
+
+  if (!planSlug || !isPaidPlanSlug(planSlug)) {
+    req.log.warn({ description, customId }, "PayPal webhook missing valid plan");
+    return res.json({ received: true, processed: false });
+  }
+
+  // Get payer email to find user
+  const payerEmail = req.body.payer?.email_address;
+  if (!payerEmail) {
+    req.log.warn("PayPal webhook missing payer email");
+    return res.json({ received: true, processed: false });
+  }
+
+  // Find user by email
+  const users = await db.select().from(usersTable).where(eq(usersTable.email, payerEmail));
+  if (users.length === 0) {
+    req.log.warn({ payerEmail }, "PayPal webhook: user not found");
+    return res.json({ received: true, processed: false });
+  }
+
+  const user = users[0];
+
+  await db
+    .update(usersTable)
+    .set({
+      plan: planSlug,
+      updatedAt: new Date(),
+    })
+    .where(eq(usersTable.id, user.id));
+
+  req.log.info(
+    {
+      userId: user.id,
+      email: payerEmail,
+      plan: planSlug,
+    },
+    "Applied paid PayPal plan from webhook",
+  );
+  return res.json({ received: true, processed: true });
+});
 
 router.post("/payments/stitch/webhook", async (req, res) => {
   const webhookSecret = process.env.STITCH_EXPRESS_WEBHOOK_SECRET?.trim() || process.env.STITCH_WEBHOOK_SECRET?.trim();
