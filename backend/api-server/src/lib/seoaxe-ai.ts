@@ -3,6 +3,7 @@ import { prepareHtmlForModel } from "./html-processor";
 
 export interface AiLogger {
   error: (object: unknown, message?: string) => void;
+  info: (object: unknown, message?: string) => void;
 }
 
 interface RunSeoaxeJsonTaskOptions {

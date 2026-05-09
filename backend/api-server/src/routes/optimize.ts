@@ -178,10 +178,16 @@ router.post("/optimize", async (req, res) => {
   }
 
   try {
+    req.log.info({ filename, htmlLength: html.length }, "Starting optimization request");
+    
     const optimized = await optimizeHtmlDocument(html, filename, user.id, req.log);
+    req.log.info("AI optimization complete, persisting results");
+
     const optimizationId = await persistOptimizationRecord(optimized, filename, user.id, req.log);
     optimized.optimizationId = optimizationId ?? undefined;
+    
     if (optimizationId) {
+      req.log.info({ optimizationId }, "Persisting feedback and training seeds");
       await persistOptimizationFeedbackSeed(optimized, optimizationId, user.id, req.log);
       await persistTrainingExampleSeed(html, optimized, optimizationId, user.id, req.log);
     }
@@ -189,14 +195,18 @@ router.post("/optimize", async (req, res) => {
     try {
       return res.json(OptimizeHtmlResponse.parse(optimized));
     } catch (zodErr) {
-      req.log.error({ err: zodErr, optimized: { ...optimized, optimizedHtml: "(truncated)" } }, "Zod validation failed for optimization result");
-      // Fallback: return without strict validation if it's just a schema mismatch but data is usable
+      req.log.error({ err: zodErr }, "Zod validation failed for optimization result");
       return res.json(optimized);
     }
   } catch (err) {
-    req.log.error({ err }, "Gemini optimize call failed");
+    req.log.error({ 
+      err: err instanceof Error ? { message: err.message, stack: err.stack } : err,
+      filename,
+      htmlLength: html.length 
+    }, "Optimization workflow failed");
+    
     return res.status(500).json({ 
-      message: "Optimization failed. This often happens if the code is too large or the AI timed out. Please try a smaller snippet.",
+      message: "Optimization failed. This often happens if the code is too large or the AI timed out.",
       error: err instanceof Error ? err.message : String(err)
     });
   }
@@ -221,6 +231,9 @@ async function optimizeHtmlDocument(
     enhancedPrompt += generateAfricanLanguagePrompt(detectedLang);
   }
   
+  log.info({ pageType, detectedLang, promptLength: enhancedPrompt.length }, "Calling AI model");
+
+  try {
     const data = await runSeoaxeJsonTask<GeminiResult>({
       taskName: "optimize-html",
       taskPrompt: enhancedPrompt,
@@ -230,7 +243,7 @@ async function optimizeHtmlDocument(
       htmlLabel: "Code to optimize",
       primaryHtmlLimit: 60_000,
       fallbackHtmlLimit: 30_000,
-      timeoutMs: 28_000, // Reduced from 45s to avoid Render/Proxy timeouts
+      timeoutMs: 28_000,
       fallbackTimeoutMs: 12_000,
       extraParts: [
         filename ? `Filename: ${filename}` : undefined,
@@ -241,65 +254,70 @@ async function optimizeHtmlDocument(
       log,
     });
 
-  if (!data.optimizedHtml || !Array.isArray(data.changes) || !data.score) {
-    log.error({ data }, "Gemini response missing fields");
-    throw new Error("Gemini response missing required fields");
+    log.info("AI model response received and parsed successfully");
+
+    if (!data.optimizedHtml || !Array.isArray(data.changes) || !data.score) {
+      log.error({ dataKeys: Object.keys(data) }, "Gemini response missing critical fields");
+      throw new Error("AI response missing required fields (optimizedHtml, changes, or score)");
+    }
+
+    // ... rest of the function remains same
+    const baseUrl = extractBaseUrl(data.optimizedHtml) || "https://example.com/page";
+    const hreflangTags = generateAfricanHreflang(baseUrl, ["en", "af", "zu", "xh", "pcm", "sw"]);
+
+    const optimizedScores = {
+      technical: clamp(data.score.technical),
+      content: clamp(data.score.content),
+      aeo: clamp(data.score.aeo),
+      overall: clamp(data.score.overall),
+    };
+
+    const originalScores = data.originalScore ? {
+      technical: clamp(data.originalScore.technical),
+      content: clamp(data.originalScore.content),
+      aeo: clamp(data.originalScore.aeo),
+      overall: clamp(data.originalScore.overall),
+    } : {
+      technical: Math.max(10, optimizedScores.technical - 40),
+      content: Math.max(10, optimizedScores.content - 35),
+      aeo: Math.max(5, optimizedScores.aeo - 45),
+      overall: Math.max(15, optimizedScores.overall - 40),
+    };
+
+    const improvement = {
+      technical: optimizedScores.technical - originalScores.technical,
+      content: optimizedScores.content - originalScores.content,
+      aeo: optimizedScores.aeo - originalScores.aeo,
+      overall: optimizedScores.overall - originalScores.overall,
+    };
+    
+    const aiReview = evaluateOptimizationOutput({
+      originalHtml: html,
+      optimizedHtml: data.optimizedHtml,
+      changes: data.changes,
+      pageType,
+    });
+
+    return {
+      optimizedHtml: data.optimizedHtml,
+      changes: data.changes,
+      pageType,
+      aiReview,
+      score: optimizedScores,
+      originalScore: originalScores,
+      scoreImprovement: improvement,
+      detectedLanguage: data.detectedLanguage || detectedLang,
+      languageGuidance: data.languageGuidance || (detectedLang !== "en" ? `${langConfig.name} optimizations applied` : undefined),
+      africanLanguageSupport: detectedLang !== "en" ? {
+        detected: detectedLang,
+        config: langConfig,
+        hreflangTags,
+      } : undefined,
+    };
+  } catch (aiErr) {
+    log.error({ err: aiErr }, "AI model execution or JSON parsing failed");
+    throw aiErr;
   }
-
-  // Generate hreflang tags for African markets
-  const baseUrl = extractBaseUrl(data.optimizedHtml) || "https://example.com/page";
-  const hreflangTags = generateAfricanHreflang(baseUrl, ["en", "af", "zu", "xh", "pcm", "sw"]);
-
-  // Calculate scores
-  const optimizedScores = {
-    technical: clamp(data.score.technical),
-    content: clamp(data.score.content),
-    aeo: clamp(data.score.aeo),
-    overall: clamp(data.score.overall),
-  };
-
-  // Use AI-provided original scores or estimate if missing
-  const originalScores = data.originalScore ? {
-    technical: clamp(data.originalScore.technical),
-    content: clamp(data.originalScore.content),
-    aeo: clamp(data.originalScore.aeo),
-    overall: clamp(data.originalScore.overall),
-  } : {
-    technical: Math.max(10, optimizedScores.technical - 40),
-    content: Math.max(10, optimizedScores.content - 35),
-    aeo: Math.max(5, optimizedScores.aeo - 45),
-    overall: Math.max(15, optimizedScores.overall - 40),
-  };
-
-  const improvement = {
-    technical: optimizedScores.technical - originalScores.technical,
-    content: optimizedScores.content - originalScores.content,
-    aeo: optimizedScores.aeo - originalScores.aeo,
-    overall: optimizedScores.overall - originalScores.overall,
-  };
-  const aiReview = evaluateOptimizationOutput({
-    originalHtml: html,
-    optimizedHtml: data.optimizedHtml,
-    changes: data.changes,
-    pageType,
-  });
-
-  return {
-    optimizedHtml: data.optimizedHtml,
-    changes: data.changes,
-    pageType,
-    aiReview,
-    score: optimizedScores,
-    originalScore: originalScores,
-    scoreImprovement: improvement,
-    detectedLanguage: data.detectedLanguage || detectedLang,
-    languageGuidance: data.languageGuidance || (detectedLang !== "en" ? `${langConfig.name} optimizations applied` : undefined),
-    africanLanguageSupport: detectedLang !== "en" ? {
-      detected: detectedLang,
-      config: langConfig,
-      hreflangTags,
-    } : undefined,
-  };
 }
 
 function extractBaseUrl(html: string): string | null {
@@ -325,17 +343,17 @@ async function persistOptimizationRecord(
     const [record] = await db.insert(optimizationsTable).values({
       userId,
       filename: filename ?? null,
-      title: titleMatch?.[1]?.trim() || null,
+      title: titleMatch?.[1]?.trim() || "Untitled Optimization",
       sourceUrl: null,
-      scoreTechnical: optimized.score.technical,
-      scoreContent: optimized.score.content,
-      scoreAeo: optimized.score.aeo,
-      scoreOverall: optimized.score.overall,
-      changesCount: optimized.changes.length,
+      scoreTechnical: optimized.score.technical ?? 0,
+      scoreContent: optimized.score.content ?? 0,
+      scoreAeo: optimized.score.aeo ?? 0,
+      scoreOverall: optimized.score.overall ?? 0,
+      changesCount: optimized.changes?.length ?? 0,
     }).returning({ id: optimizationsTable.id });
     return record?.id ?? null;
   } catch (persistErr) {
-    log.error({ err: persistErr }, "Failed to persist optimization");
+    log.error({ err: persistErr }, "Failed to persist optimization to database");
     return null;
   }
 }
