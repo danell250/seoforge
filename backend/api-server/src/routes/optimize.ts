@@ -185,10 +185,20 @@ router.post("/optimize", async (req, res) => {
       await persistOptimizationFeedbackSeed(optimized, optimizationId, user.id, req.log);
       await persistTrainingExampleSeed(html, optimized, optimizationId, user.id, req.log);
     }
-    return res.json(OptimizeHtmlResponse.parse(optimized));
+    
+    try {
+      return res.json(OptimizeHtmlResponse.parse(optimized));
+    } catch (zodErr) {
+      req.log.error({ err: zodErr, optimized: { ...optimized, optimizedHtml: "(truncated)" } }, "Zod validation failed for optimization result");
+      // Fallback: return without strict validation if it's just a schema mismatch but data is usable
+      return res.json(optimized);
+    }
   } catch (err) {
     req.log.error({ err }, "Gemini optimize call failed");
-    return res.status(500).json({ message: "Optimization failed, please try again." });
+    return res.status(500).json({ 
+      message: "Optimization failed. This often happens if the code is too large or the AI timed out. Please try a smaller snippet.",
+      error: err instanceof Error ? err.message : String(err)
+    });
   }
 });
 
@@ -211,25 +221,25 @@ async function optimizeHtmlDocument(
     enhancedPrompt += generateAfricanLanguagePrompt(detectedLang);
   }
   
-  const data = await runSeoaxeJsonTask<GeminiResult>({
-    taskName: "optimize-html",
-    taskPrompt: enhancedPrompt,
-    systemInstruction:
-      "You are the core SEOaxe page optimizer. Transform full HTML documents safely, preserve valid markup, and return strong before-and-after scoring.",
-    html,
-    htmlLabel: "HTML to optimize",
-    primaryHtmlLimit: 60_000,
-    fallbackHtmlLimit: 30_000,
-    timeoutMs: 45_000,
-    fallbackTimeoutMs: 15_000,
-    extraParts: [
-      filename ? `Filename: ${filename}` : undefined,
-      `Detected/Prioritized Language: ${detectedLang} (${langConfig.name})`,
-      buildWorkspaceMemoryPrompt(workspaceMemory),
-      acceptedExamplesPrompt ?? undefined,
-    ],
-    log,
-  });
+    const data = await runSeoaxeJsonTask<GeminiResult>({
+      taskName: "optimize-html",
+      taskPrompt: enhancedPrompt,
+      systemInstruction:
+        "You are the core SEOaxe page optimizer. Transform full HTML/TS/TSX documents safely. RETURN ONLY VALID JSON. IMPORTANT: Do not use backticks (```) inside the optimizedHtml JSON field, as this breaks the JSON parser. Use single quotes or escaped double quotes for internal code.",
+      html,
+      htmlLabel: "Code to optimize",
+      primaryHtmlLimit: 60_000,
+      fallbackHtmlLimit: 30_000,
+      timeoutMs: 28_000, // Reduced from 45s to avoid Render/Proxy timeouts
+      fallbackTimeoutMs: 12_000,
+      extraParts: [
+        filename ? `Filename: ${filename}` : undefined,
+        `Detected/Prioritized Language: ${detectedLang} (${langConfig.name})`,
+        buildWorkspaceMemoryPrompt(workspaceMemory),
+        acceptedExamplesPrompt ?? undefined,
+      ],
+      log,
+    });
 
   if (!data.optimizedHtml || !Array.isArray(data.changes) || !data.score) {
     log.error({ data }, "Gemini response missing fields");

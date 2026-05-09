@@ -39,9 +39,36 @@ export async function generateContentWithTimeout(
 
 export function extractJson<T = unknown>(text: string): T {
   const trimmed = text.trim();
-  // Strip code fences
+  
+  // Try to find JSON within code fences first
   const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/);
-  const raw = fenced ? fenced[1] : trimmed;
-  if (!raw) throw new Error("Empty response");
-  return JSON.parse(raw) as T;
+  if (fenced) {
+    try {
+      return JSON.parse(fenced[1].trim()) as T;
+    } catch (e) {
+      // If fenced content fails to parse, fall back to general extraction
+    }
+  }
+
+  // Find the first '{' and the last '}'
+  const start = trimmed.indexOf("{");
+  const end = trimmed.lastIndexOf("}");
+  
+  if (start !== -1 && end !== -1 && end > start) {
+    const jsonStr = trimmed.substring(start, end + 1);
+    try {
+      return JSON.parse(jsonStr) as T;
+    } catch (e) {
+      // If that fails, try a more aggressive approach: remove code fences from inside the string
+      // sometimes LLMs put code fences inside JSON string values which is invalid
+      try {
+        const cleaned = jsonStr.replace(/```[a-z]*\n/g, "").replace(/\n```/g, "");
+        return JSON.parse(cleaned) as T;
+      } catch (e2) {
+        throw new Error(`Failed to parse JSON from AI response: ${e instanceof Error ? e.message : String(e)}`);
+      }
+    }
+  }
+
+  throw new Error("Could not find a valid JSON object in the AI response");
 }
