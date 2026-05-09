@@ -26,6 +26,10 @@ const PAYPAL_PLAN_PRICES: Record<string, string> = {
   agency: "9.99",
 };
 
+router.get("/payments/health", (req, res) => {
+  return res.json({ status: "ok", paypalConfigured: !!process.env.PAYPAL_CLIENT_ID });
+});
+
 type RequestWithRawBody = Request & {
   rawBody?: Buffer;
 };

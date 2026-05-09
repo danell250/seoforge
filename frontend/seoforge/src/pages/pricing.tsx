@@ -80,6 +80,7 @@ export default function Pricing() {
 
     void fetch(`${API_BASE_URL}/pricing-context?locale=${encodeURIComponent(pricingLocale.locale)}`, {
       signal: controller.signal,
+      credentials: "include",
     })
       .then(async (response) => {
         if (!response.ok) {

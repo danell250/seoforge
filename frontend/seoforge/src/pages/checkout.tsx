@@ -38,14 +38,17 @@ export default function Checkout() {
   }, [location]);
 
   const createPayPalOrder = async () => {
+    console.log("Creating PayPal order for plan:", selectedPlan?.slug);
     try {
       const response = await customFetch<{ id: string }>("/api/payments/paypal/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan: selectedPlan?.slug }),
       });
+      console.log("PayPal order created:", response.id);
       return response.id;
     } catch (err) {
+      console.error("PayPal create order failed:", err);
       toast({
         title: "Payment error",
         description: "Could not start PayPal checkout. Please try again.",

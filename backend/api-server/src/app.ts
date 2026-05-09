@@ -11,10 +11,20 @@ const app: Express = express();
 
 function allowedOrigins(): string[] {
   const raw = process.env.FRONTEND_URLS || process.env.FRONTEND_URL || "http://localhost:5173";
-  return raw
+  const origins = raw
     .split(",")
     .map((value) => value.trim())
     .filter(Boolean);
+  
+  // Always include the production domain for SEOaxe
+  if (!origins.includes("https://www.seoaxe.site")) {
+    origins.push("https://www.seoaxe.site");
+  }
+  if (!origins.includes("https://seoaxe.site")) {
+    origins.push("https://seoaxe.site");
+  }
+  
+  return origins;
 }
 
 function setSecurityHeaders(req: express.Request, res: express.Response, next: express.NextFunction) {
@@ -34,11 +44,13 @@ function setSecurityHeaders(req: express.Request, res: express.Response, next: e
 
 const corsOptions: CorsOptions = {
   origin(origin, callback) {
-    if (!origin || allowedOrigins().includes(origin)) {
+    const allowed = allowedOrigins();
+    if (!origin || allowed.includes(origin)) {
       callback(null, true);
       return;
     }
-    callback(new Error("Origin not allowed by CORS"));
+    logger.warn({ origin, allowed }, "CORS rejected origin");
+    callback(new Error(`Origin ${origin} not allowed by CORS`));
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
