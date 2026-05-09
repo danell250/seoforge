@@ -11,7 +11,8 @@
     "start:prod": "node --enable-source-maps ./dist/index.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "preflight": "node --env-file=.env ./scripts/preflight.mjs",
-    "verify:production": "pnpm run preflight && pnpm run typecheck && pnpm run build"
+    "preflight:ci": "node ./scripts/preflight.mjs",
+    "verify:production": "pnpm run preflight:ci && pnpm run typecheck && pnpm run build:prod"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
