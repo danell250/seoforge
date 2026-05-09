@@ -28,34 +28,39 @@ const PLAN_LIMITS = {
 };
 
 async function checkPlanLimit(userId: number): Promise<{ allowed: boolean; limit: number; current: number; plan: string }> {
-  // Get user's plan
-  const [user] = await db.select({ plan: usersTable.plan }).from(usersTable).where(eq(usersTable.id, userId));
-  const plan = user?.plan || "free";
-  const limit = PLAN_LIMITS[plan as keyof typeof PLAN_LIMITS] ?? PLAN_LIMITS.free;
-  
-  // Count current month's optimizations
-  const startOfMonth = new Date();
-  startOfMonth.setDate(1);
-  startOfMonth.setHours(0, 0, 0, 0);
-  
-  const [result] = await db
-    .select({ count: count() })
-    .from(optimizationsTable)
-    .where(
-      and(
-        eq(optimizationsTable.userId, userId),
-        gte(optimizationsTable.createdAt, startOfMonth),
-      ),
-    );
-  
-  const current = result?.count || 0;
-  
-  return {
-    allowed: current < limit,
-    limit,
-    current,
-    plan,
-  };
+  try {
+    // Get user's plan
+    const [user] = await db.select({ plan: usersTable.plan }).from(usersTable).where(eq(usersTable.id, userId));
+    const plan = user?.plan || "free";
+    const limit = PLAN_LIMITS[plan as keyof typeof PLAN_LIMITS] ?? PLAN_LIMITS.free;
+    
+    // Count current month's optimizations
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+    
+    const [result] = await db
+      .select({ count: count() })
+      .from(optimizationsTable)
+      .where(
+        and(
+          eq(optimizationsTable.userId, userId),
+          gte(optimizationsTable.createdAt, startOfMonth),
+        ),
+      );
+    
+    const current = result?.count || 0;
+    
+    return {
+      allowed: current < limit,
+      limit,
+      current,
+      plan,
+    };
+  } catch (err) {
+    console.error("Plan limit check failed, defaulting to allowed:", err);
+    return { allowed: true, limit: 3, current: 0, plan: "free" };
+  }
 }
 
 interface GeminiResult {
@@ -154,6 +159,14 @@ AFRICAN LANGUAGE SUPPORT - CRITICAL:
 Return ONLY valid JSON. The optimizedHtml field must contain the FULL document code, not a fragment.`;
 
 router.post("/optimize", async (req, res) => {
+  if (!process.env.GEMINI_API_KEY) {
+    req.log.error("GEMINI_API_KEY is missing from environment variables");
+    return res.status(500).json({ 
+      message: "Server configuration error: AI API key is missing.",
+      code: "MISSING_API_KEY"
+    });
+  }
+
   const parsed = OptimizeHtmlBody.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ message: "Invalid request body" });
@@ -222,8 +235,20 @@ async function optimizeHtmlDocument(
   const detectedLang = detectAfricanLanguageContent(html);
   const langConfig = getAfricanLanguageConfig(detectedLang);
   const pageType = inferPageType({ html, filename });
-  const workspaceMemory = await getWorkspaceMemory();
-  const acceptedExamplesPrompt = await buildAcceptedExamplesPrompt(userId, "optimize", pageType);
+  
+  let workspaceMemory = null;
+  try {
+    workspaceMemory = await getWorkspaceMemory();
+  } catch (e) {
+    log.error({ err: e }, "Failed to load workspace memory");
+  }
+
+  let acceptedExamplesPrompt = null;
+  try {
+    acceptedExamplesPrompt = await buildAcceptedExamplesPrompt(userId, "optimize", pageType);
+  } catch (e) {
+    log.error({ err: e }, "Failed to load accepted examples");
+  }
   
   // Build enhanced prompt with African language support
   let enhancedPrompt = `${TASK_INSTRUCTION}\n\n${buildRulePackPrompt("optimize", pageType)}`;
@@ -248,7 +273,7 @@ async function optimizeHtmlDocument(
       extraParts: [
         filename ? `Filename: ${filename}` : undefined,
         `Detected/Prioritized Language: ${detectedLang} (${langConfig.name})`,
-        buildWorkspaceMemoryPrompt(workspaceMemory),
+        workspaceMemory ? buildWorkspaceMemoryPrompt(workspaceMemory) : undefined,
         acceptedExamplesPrompt ?? undefined,
       ],
       log,
@@ -266,17 +291,18 @@ async function optimizeHtmlDocument(
     const hreflangTags = generateAfricanHreflang(baseUrl, ["en", "af", "zu", "xh", "pcm", "sw"]);
 
     const optimizedScores = {
-      technical: clamp(data.score.technical),
-      content: clamp(data.score.content),
-      aeo: clamp(data.score.aeo),
-      overall: clamp(data.score.overall),
+      technical: clamp(data?.score?.technical ?? 0),
+      content: clamp(data?.score?.content ?? 0),
+      aeo: clamp(data?.score?.aeo ?? 0),
+      overall: clamp(data?.score?.overall ?? 0),
     };
 
-    const originalScores = data.originalScore ? {
-      technical: clamp(data.originalScore.technical),
-      content: clamp(data.originalScore.content),
-      aeo: clamp(data.originalScore.aeo),
-      overall: clamp(data.originalScore.overall),
+    // Use AI-provided original scores or estimate if missing
+    const originalScores = data?.originalScore ? {
+      technical: clamp(data.originalScore.technical ?? 0),
+      content: clamp(data.originalScore.content ?? 0),
+      aeo: clamp(data.originalScore.aeo ?? 0),
+      overall: clamp(data.originalScore.overall ?? 0),
     } : {
       technical: Math.max(10, optimizedScores.technical - 40),
       content: Math.max(10, optimizedScores.content - 35),
