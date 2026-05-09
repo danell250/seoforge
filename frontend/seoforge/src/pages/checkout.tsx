@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { ArrowRight, Check, CreditCard, LockKeyhole, ShieldCheck } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
@@ -9,14 +9,22 @@ import { useAuth } from "@/hooks/use-auth";
 import { getPlanDefinition, PLAN_DEFINITIONS } from "@/lib/plans";
 import { detectPricingLocale, formatLocalPrice } from "@/lib/local-pricing";
 
+declare global {
+  interface Window {
+    paypal: any;
+  }
+}
+
+const PAYPAL_CLIENT_ID = "AXxjiGRRXzL0lhWXhz9lUCYnIXg0Sfz-9-kDB7HbdwYPOrlspRzyS6TQWAlwRC2GlYSd4lze25jluDLj";
+
+const PLAN_PRICES_USD: Record<string, number> = {
+  starter: 4.99,
+  agency: 9.99,
+};
+
 function buildAuthRedirect(path: string) {
   return encodeURIComponent(path);
 }
-
-const PAYPAL_LINKS: Record<string, string> = {
-  starter: "https://www.paypal.com/checkoutnow?business=danelloosthuizen3@gmail.com&item_name=SEOaxe+Starter+Plan&amount=39&currency_code=ZAR",
-  agency: "https://www.paypal.com/checkoutnow?business=danelloosthuizen3@gmail.com&item_name=SEOaxe+Agency+Plan&amount=99&currency_code=ZAR",
-};
 
 export default function Checkout() {
   const { isAuthenticated, user } = useAuth();
@@ -61,7 +69,64 @@ export default function Checkout() {
   const alreadyOnPlan = user?.plan === selectedPlan.slug;
   const signupHref = `/signup?redirect=${buildAuthRedirect(currentPath)}`;
   const loginHref = `/login?redirect=${buildAuthRedirect(currentPath)}`;
-  const paypalLink = selectedPlan.slug ? PAYPAL_LINKS[selectedPlan.slug] : null;
+  const paypalContainerRef = useRef<HTMLDivElement>(null);
+  const planPrice = selectedPlan.slug ? PLAN_PRICES_USD[selectedPlan.slug] : null;
+
+  // Load PayPal SDK
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD`;
+    script.async = true;
+    document.body.appendChild(script);
+
+    script.onload = () => {
+      // PayPal SDK loaded
+    };
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  // Render PayPal button
+  useEffect(() => {
+    if (!paypalContainerRef.current || !planPrice || !window.paypal) return;
+
+    paypalContainerRef.current.innerHTML = "";
+
+    window.paypal
+      .Buttons({
+        style: {
+          layout: "vertical",
+          color: "blue",
+          shape: "pill",
+          label: "paypal",
+        },
+        createOrder: (data: any, actions: any) => {
+          return actions.order.create({
+            purchase_units: [
+              {
+                description: `SEOaxe ${selectedPlan.name} Plan`,
+                amount: {
+                  currency_code: "USD",
+                  value: planPrice.toFixed(2),
+                },
+              },
+            ],
+          });
+        },
+        onApprove: (data: any, actions: any) => {
+          return actions.order.capture().then((details: any) => {
+            alert(`Payment completed by ${details.payer.name.given_name}! Email your transaction ID to danelloosthuizen3@gmail.com to activate your plan.`);
+          });
+        },
+        onError: (err: any) => {
+          console.error("PayPal error:", err);
+          alert("Payment error. Please try again.");
+        },
+      })
+      .render(paypalContainerRef.current);
+  }, [planPrice, selectedPlan.name]);
 
   return (
     <div className="min-h-screen flex flex-col bg-muted/20">
@@ -128,7 +193,7 @@ export default function Checkout() {
                     </Button>
                   </CardFooter>
                 </Card>
-              ) : paypalLink ? (
+              ) : planPrice ? (
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-xl">
@@ -136,7 +201,7 @@ export default function Checkout() {
                       Secure PayPal payment
                     </CardTitle>
                     <CardDescription>
-                      Your account is linked. Click below to complete payment via PayPal for your plan.
+                      Your account is linked. Complete payment via PayPal for your plan.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -146,13 +211,12 @@ export default function Checkout() {
                     <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
                       After payment, email danelloosthuizen3@gmail.com with your transaction ID to activate your plan.
                     </div>
+                    <div ref={paypalContainerRef} id="paypal-button-container" />
                   </CardContent>
                   <CardFooter>
-                    <Button className="w-full sm:w-auto" asChild disabled={alreadyOnPlan}>
-                      <a href={paypalLink} target="_blank" rel="noopener noreferrer">
-                        Pay with PayPal
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </a>
+                    <Button className="w-full sm:w-auto" disabled={alreadyOnPlan}>
+                      Pay with PayPal
+                      <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </CardFooter>
                 </Card>
