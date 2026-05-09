@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useRef } from "react";
+import { useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { ArrowRight, Check, CreditCard, LockKeyhole, ShieldCheck } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
@@ -9,14 +9,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { getPlanDefinition, PLAN_DEFINITIONS } from "@/lib/plans";
 import { detectPricingLocale, formatLocalPrice } from "@/lib/local-pricing";
 
-declare global {
-  interface Window {
-    paypal: any;
-  }
-}
-
-const PAYPAL_CLIENT_ID = "ARjgrd_rMVP3CpnoBtLVmuq6lZCOegyuwMeTqwV95Ernrav6O7uyb63_0eW1gFhKVSyOwMWX0oRnvTuU";
-
 const PLAN_PRICES_USD: Record<string, number> = {
   starter: 4.99,
   agency: 9.99,
@@ -24,6 +16,15 @@ const PLAN_PRICES_USD: Record<string, number> = {
 
 function buildAuthRedirect(path: string) {
   return encodeURIComponent(path);
+}
+
+function buildPayPalUrl(planSlug: string, planName: string, amount: number, userEmail: string | undefined): string {
+  const business = "danelloosthuizen3@gmail.com";
+  const itemName = `SEOaxe ${planName} Plan`;
+  const returnUrl = encodeURIComponent(`https://www.seoaxe.site/checkout?plan=${planSlug}&payment=return`);
+  const cancelUrl = encodeURIComponent(`https://www.seoaxe.site/checkout?plan=${planSlug}&payment=cancel`);
+  
+  return `https://www.paypal.com/paypalme/danelloosthuizen3/${amount}USD`;
 }
 
 export default function Checkout() {
@@ -69,66 +70,10 @@ export default function Checkout() {
   const alreadyOnPlan = user?.plan === selectedPlan.slug;
   const signupHref = `/signup?redirect=${buildAuthRedirect(currentPath)}`;
   const loginHref = `/login?redirect=${buildAuthRedirect(currentPath)}`;
-  const paypalContainerRef = useRef<HTMLDivElement>(null);
   const planPrice = selectedPlan.slug ? PLAN_PRICES_USD[selectedPlan.slug] : null;
-
-  // Load PayPal SDK
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD`;
-    script.async = true;
-    document.body.appendChild(script);
-
-    script.onload = () => {
-      // PayPal SDK loaded
-    };
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-
-  // Render PayPal button
-  useEffect(() => {
-    if (!paypalContainerRef.current || !planPrice || !window.paypal) return;
-
-    paypalContainerRef.current.innerHTML = "";
-
-    window.paypal
-      .Buttons({
-        style: {
-          layout: "vertical",
-          color: "blue",
-          shape: "pill",
-          label: "paypal",
-        },
-        createOrder: (data: any, actions: any) => {
-          return actions.order.create({
-            purchase_units: [
-              {
-                description: `SEOaxe ${selectedPlan.name} Plan`,
-                custom_id: user?.email || selectedPlan.slug,
-                amount: {
-                  currency_code: "USD",
-                  value: planPrice.toFixed(2),
-                },
-              },
-            ],
-          });
-        },
-        onApprove: (data: any, actions: any) => {
-          return actions.order.capture().then((details: any) => {
-            alert(`Payment completed successfully! Your ${selectedPlan.name} plan will be activated shortly.`);
-            window.location.href = "/app";
-          });
-        },
-        onError: (err: any) => {
-          console.error("PayPal error:", err);
-          alert("Payment error. Please try again.");
-        },
-      })
-      .render(paypalContainerRef.current);
-  }, [planPrice, selectedPlan.name, user?.email]);
+  const paypalUrl = planPrice && selectedPlan.slug
+    ? buildPayPalUrl(selectedPlan.slug, selectedPlan.name, planPrice, user?.email)
+    : null;
 
   return (
     <div className="min-h-screen flex flex-col bg-muted/20">
@@ -195,7 +140,7 @@ export default function Checkout() {
                     </Button>
                   </CardFooter>
                 </Card>
-              ) : planPrice ? (
+              ) : planPrice && paypalUrl ? (
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-xl">
@@ -210,8 +155,18 @@ export default function Checkout() {
                     <div className="rounded-lg border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
                       Signed in as <span className="font-medium text-foreground">{user?.email}</span>
                     </div>
-                    <div ref={paypalContainerRef} id="paypal-button-container" />
+                    <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
+                      After payment, your plan will be activated within 5 minutes.
+                    </div>
                   </CardContent>
+                  <CardFooter>
+                    <Button className="w-full" size="lg" asChild disabled={alreadyOnPlan}>
+                      <a href={paypalUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                        <span>Pay ${planPrice.toFixed(2)} USD with PayPal</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </a>
+                    </Button>
+                  </CardFooter>
                 </Card>
               ) : (
                 <Card>
