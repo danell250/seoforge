@@ -82,70 +82,78 @@ function pathToFilename(u: string): string {
 }
 
 router.post("/crawl-site", async (req, res) => {
-  const parsed = CrawlSiteBody.safeParse({
-    ...req.body,
-    url: typeof req.body?.url === "string" ? normalizeUrl(req.body.url) : req.body?.url,
-  });
-  if (!parsed.success) {
-    return res.status(400).json({ message: "Invalid request body" });
-  }
-
-  const { url } = parsed.data;
-  const maxPages = Math.min(parsed.data.maxPages ?? DEFAULT_MAX_PAGES, HARD_MAX_PAGES);
-
-  let origin: string;
   try {
-    origin = new URL(url).origin;
-  } catch {
-    return res.status(400).json({ message: "Invalid URL" });
-  }
-
-  const visited = new Set<string>();
-  const queue: string[] = [url];
-  const pages: { url: string; filename: string; html: string; title: string }[] = [];
-  const usedFilenames = new Set<string>();
-
-  while (queue.length > 0 && pages.length < maxPages) {
-    const next = queue.shift()!;
-    if (visited.has(next)) continue;
-    visited.add(next);
-
-    const html = await fetchHtml(next);
-    if (!html) continue;
-
-    let filename = pathToFilename(next);
-    let i = 1;
-    while (usedFilenames.has(filename)) {
-      filename = filename.replace(/(\.html?)$/i, `_${i}$1`);
-      i++;
-    }
-    usedFilenames.add(filename);
-
-    pages.push({
-      url: next,
-      filename,
-      html,
-      title: extractTitle(html),
+    const parsed = CrawlSiteBody.safeParse({
+      ...req.body,
+      url: typeof req.body?.url === "string" ? normalizeUrl(req.body.url) : req.body?.url,
     });
+    if (!parsed.success) {
+      return res.status(400).json({ message: "Invalid request body" });
+    }
 
-    if (pages.length + queue.length < maxPages * 2) {
-      const links = extractLinks(html, next, origin);
-      for (const l of links) {
-        if (!visited.has(l) && !queue.includes(l)) {
-          queue.push(l);
+    const { url } = parsed.data;
+    const maxPages = Math.min(parsed.data.maxPages ?? DEFAULT_MAX_PAGES, HARD_MAX_PAGES);
+
+    let origin: string;
+    try {
+      origin = new URL(url).origin;
+    } catch {
+      return res.status(400).json({ message: "Invalid URL" });
+    }
+
+    const visited = new Set<string>();
+    const queue: string[] = [url];
+    const pages: { url: string; filename: string; html: string; title: string }[] = [];
+    const usedFilenames = new Set<string>();
+
+    while (queue.length > 0 && pages.length < maxPages) {
+      const next = queue.shift()!;
+      if (visited.has(next)) continue;
+      visited.add(next);
+
+      const html = await fetchHtml(next);
+      if (!html) continue;
+
+      let filename = pathToFilename(next);
+      let i = 1;
+      while (usedFilenames.has(filename)) {
+        filename = filename.replace(/(\.html?)$/i, `_${i}$1`);
+        i++;
+      }
+      usedFilenames.add(filename);
+
+      pages.push({
+        url: next,
+        filename,
+        html,
+        title: extractTitle(html),
+      });
+
+      if (pages.length + queue.length < maxPages * 2) {
+        const links = extractLinks(html, next, origin);
+        for (const l of links) {
+          if (!visited.has(l) && !queue.includes(l)) {
+            queue.push(l);
+          }
         }
       }
     }
-  }
 
-  if (pages.length === 0) {
-    return res.status(500).json({
-      message: "We couldn't crawl that site, please try again.",
+    if (pages.length === 0) {
+      return res.status(404).json({
+        message: "We found no crawlable pages on that URL. Check the URL and try again.",
+      });
+    }
+
+    const safe = CrawlSiteResponse.parse({ domain: origin, pages });
+    return res.json(safe);
+  } catch (err) {
+    req.log.error({ err }, "Crawl site failed");
+    return res.status(500).json({ 
+      message: "Crawler error, please try again.",
+      error: err instanceof Error ? err.message : String(err)
     });
   }
-
-  const safe = CrawlSiteResponse.parse({ domain: origin, pages });
-  return res.json(safe);
 });
 
 export default router;
