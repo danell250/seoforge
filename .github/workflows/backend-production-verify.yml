@@ -62,4 +62,7 @@ jobs:
           PAYPAL_WEBHOOK_SECRET: ci-paypal-webhook-secret
           GEMINI_API_KEY: ci-gemini-key
           FRONTEND_URLS: http://localhost:5173
-        run: pnpm --filter @workspace/api-server run verify:production
+        run: |
+          pnpm --filter @workspace/db run build:types
+          pnpm --filter @workspace/api-zod run build:types
+          pnpm --filter @workspace/api-server run verify:production

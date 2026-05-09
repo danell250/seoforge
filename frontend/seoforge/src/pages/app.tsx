@@ -41,52 +41,52 @@ export default function AppWorkspace() {
 
   const tabMeta: Record<string, { title: string; description: string }> = {
     "aeo-block": {
-      title: "Generate FAQ Snippets",
-      description: "Create reviewable FAQ and schema snippets without uploading source files.",
+      title: "FAQ generator",
+      description: "Create reviewable FAQ text and schema suggestions without uploading files.",
     },
     "content-gaps": {
-      title: "Find Missing Content",
-      description: "Find important questions a page is missing and generate copyable section suggestions.",
+      title: "Missing content",
+      description: "Find the questions and page sections your content still needs.",
     },
     "site-crawler": {
-      title: "Audit a Live Website",
-      description: "Crawl a live site, score each page, and get guided fixes from public URLs.",
+      title: "Website audit",
+      description: "Scan a live site, score pages, and get easy-to-follow fix suggestions.",
     },
     competitor: {
-      title: "Research a Competitor",
-      description: "Analyze a competitor page and see how your page can be stronger.",
+      title: "Compare a competitor",
+      description: "See how a competing page stacks up and where your page can improve.",
     },
     hreflang: {
-      title: "Add Language Targeting",
-      description: "Add language and country tags when the same page exists in multiple versions.",
+      title: "Language targeting",
+      description: "Add the right language and country tags for multi-region pages.",
     },
     sitemap: {
-      title: "Create Sitemap Files",
-      description: "Build `sitemap.xml` and `robots.txt` from the pages you want indexed.",
+      title: "Sitemap builder",
+      description: "Create sitemap and robots guidance for the pages you want search engines to crawl.",
     },
     monitor: {
-      title: "Monitor a Website",
-      description: "Keep checking a live site and get alerted when pages lose important search signals.",
+      title: "Site monitoring",
+      description: "Keep an eye on a live site and see when key SEO signals change.",
     },
     "blog-gen": {
-      title: "Blog Generator",
-      description: "Generate 20-50 SEO-optimized blog posts fast from long-tail keywords.",
+      title: "Blog ideas",
+      description: "Generate SEO-friendly blog post ideas and outlines from keywords.",
     },
     "single-page": {
-      title: "Repair Page",
-      description: "Upload HTML or TSX, get AI-powered SEO fixes, and download the repaired file.",
+      title: "Fix one page",
+      description: "Upload a page and get AI-powered SEO improvements you can download.",
     },
     "zip-upload": {
-      title: "Repair Files",
-      description: "Upload a ZIP of files, get AI fixes for all, and download the fixed bundle.",
+      title: "Fix multiple pages",
+      description: "Upload a ZIP, get fixes for every file, and download the updated bundle.",
     },
     "html-guide": {
-      title: "HTML Guide",
-      description: "A complete, copyable reference for SEO-friendly HTML structure.",
+      title: "SEO guide",
+      description: "Copyable examples for page structure, metadata, and schema.",
     },
     deploy: {
       title: "Publish",
-      description: "Publish your optimizations directly to Vercel with one click.",
+      description: "Publish optimizations directly to Vercel with one click.",
     },
   };
   const active = tabMeta[tab] ?? tabMeta["site-crawler"];
@@ -94,36 +94,36 @@ export default function AppWorkspace() {
     {
       title: "Audit",
       items: [
-        { value: "site-crawler", label: "Live Site Audit", icon: Globe },
-        { value: "monitor", label: "Monitor", icon: Radar },
+        { value: "site-crawler", label: "Website audit", icon: Globe },
+        { value: "monitor", label: "Site monitoring", icon: Radar },
       ],
     },
     {
       title: "Repair",
       items: [
-        { value: "single-page", label: "Repair Page", icon: FileEdit },
-        { value: "zip-upload", label: "Repair Files", icon: FileArchive },
+        { value: "single-page", label: "Fix one page", icon: FileEdit },
+        { value: "zip-upload", label: "Fix multiple pages", icon: FileArchive },
       ],
     },
     {
       title: "Growth",
       items: [
-        { value: "competitor", label: "Competitor", icon: Search },
-        { value: "content-gaps", label: "Missing Content", icon: FileQuestion },
-        { value: "blog-gen", label: "Blog Generator", icon: Sparkles },
+        { value: "competitor", label: "Compare competitor", icon: Search },
+        { value: "content-gaps", label: "Find missing content", icon: FileQuestion },
+        { value: "blog-gen", label: "Blog ideas", icon: Sparkles },
       ],
     },
     {
-      title: "Technical",
+      title: "Tools",
       items: [
-        { value: "aeo-block", label: "FAQ Snippets", icon: Bot },
-        { value: "hreflang", label: "Languages", icon: Languages },
-        { value: "sitemap", label: "Sitemap", icon: ShieldCheck },
-        { value: "html-guide", label: "Add FAQs", icon: BookOpen },
+        { value: "aeo-block", label: "FAQ generator", icon: Bot },
+        { value: "hreflang", label: "Language targeting", icon: Languages },
+        { value: "sitemap", label: "Sitemap builder", icon: ShieldCheck },
+        { value: "html-guide", label: "SEO guide", icon: BookOpen },
       ],
     },
     {
-      title: "Operations",
+      title: "Publish",
       items: [
         { value: "deploy", label: "Publish", icon: UploadCloud },
       ],
@@ -141,7 +141,7 @@ export default function AppWorkspace() {
     "blog-gen": <BlogGenerator />,
     "single-page": <SinglePageOptimizer />,
     "zip-upload": <ZipUpload />,
-    "html-guide": <HtmlGuide />,
+    "html-guide": <HtmlGuide sendPrompt={() => {}} onUploadClick={() => {}} hasHtml={false} />,
     deploy: <DeployPanel />,
   };
 

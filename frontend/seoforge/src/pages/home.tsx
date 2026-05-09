@@ -43,16 +43,12 @@ export default function Home() {
   }, []);
 
   const features = [
-    { icon: Globe2, title: "Audit Live URLs", desc: "Scan public pages directly from their URL. No HTML, TS, TSX, or ZIP files required." },
-    { icon: ShieldCheck, title: "Prioritized Fix List", desc: "See the metadata, schema, heading, answer-block, and language issues worth fixing first." },
-    { icon: LayoutTemplate, title: "Compare Before and After", desc: "Preview likely score impact before your team applies changes." },
-    { icon: BrainCircuit, title: "Answer-Engine Guidance", desc: "Generate FAQ, AEO, and JSON-LD suggestions built for AI answers and snippets." },
-    { icon: Search, title: "Crawl Then Prioritize", desc: "Find weak pages across a live site and turn them into a review queue." },
-    { icon: Globe2, title: "Regional Search Layers", desc: "Add hreflang, localized schema, and language cues for multi-market pages." },
-    { icon: LineChart, title: "Competitor Gap Research", desc: "Spot the topics competitors cover and build stronger proof into your pages." },
-    { icon: Zap, title: "Copyable Snippets", desc: "Copy schema, FAQ, sitemap, robots, and content suggestions after review." },
-    { icon: Bot, title: "Agency-Ready Evidence", desc: "Give clients a clear audit trail instead of a vague recommendation list." },
-    { icon: Code2, title: "No Rebuild Required", desc: "Keep the website you already have and improve the signals search engines read." },
+    { icon: Globe2, title: "Audit a live page", desc: "Use a public URL and get instant SEO insights without uploading files." },
+    { icon: ShieldCheck, title: "See the biggest issues first", desc: "Get a ranked list of the most important fixes, not a long list of jargon." },
+    { icon: LayoutTemplate, title: "Understand the impact", desc: "See the before/after score and know which changes move the needle." },
+    { icon: Zap, title: "Copyable fixes", desc: "Use ready-to-copy recommendations for metadata, schema, headings, and page content." },
+    { icon: Code2, title: "Keep your current website", desc: "Improve search signals without rebuilding your site or changing site structure." },
+    { icon: Bot, title: "Built for non-SEO teams", desc: "Easy-to-read guidance with plain language and practical next steps." },
   ];
   const workflow = [
     {
@@ -118,11 +114,11 @@ export default function Home() {
                   Your website is losing traffic.
                   <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">
-                    Fix it without rebuilding.
+                    Fix it without learning SEO.
                   </span>
                 </h1>
                 <p className="max-w-2xl mx-auto text-lg text-muted-foreground leading-relaxed">
-                  Most AI SEO tools ask for files or create generic drafts. SEOaxe scans live URLs, finds the SEO and AEO issues, and gives reviewable fixes your team can apply with confidence.
+                  Scan any live page, get simple problem summaries, and use copyable fixes. No file uploads, no technical SEO expertise required.
                 </p>
               </div>
 
@@ -305,37 +301,37 @@ export default function Home() {
         <section className="py-12 bg-muted/30 md:py-20">
           <div className="container max-w-5xl mx-auto px-4">
             <div className="text-center mb-8 md:mb-12">
-              <h2 className="text-3xl font-bold mb-3">The unique angle buyers can remember</h2>
-              <p className="text-muted-foreground max-w-xl mx-auto">SEOaxe owns the practical job most SEO tools leave unfinished: finding exactly what is holding live pages back and making the fixes easy to review.</p>
+              <h2 className="text-3xl font-bold mb-3">What makes SEOaxe easy</h2>
+              <p className="text-muted-foreground max-w-xl mx-auto">Straightforward results, clear next steps, and recommendations anyone can read.</p>
             </div>
             
             <div className="grid md:grid-cols-3 gap-6">
               {[
                 {
-                  title: "Audit, not blind rewrite",
-                  desc: "Keep the current website and identify the signals that affect search visibility. That is easier to trust than asking a business to provide source files.",
+                  title: "Live page auditing",
+                  desc: "Start from a URL and get meaningful results immediately, no developer handoff needed.",
                   icon: FileCode2
                 },
                 {
-                  title: "Evidence, not mystery",
-                  desc: "Every run produces scores, findings, snippets, and a clear audit receipt. Agencies can show what matters instead of selling invisible work.",
+                  title: "Plain-language guidance",
+                  desc: "No technical SEO jargon. The results explain what to fix and why it matters.",
                   icon: ShieldCheck
                 },
                 {
-                  title: "Guide, not gamble",
-                  desc: "SEOaxe gives sitemap, robots, schema, content, and monitoring guidance so the team can review before anything goes live.",
+                  title: "Practical output",
+                  desc: "Copyable fix snippets and checklists help teams act quickly and safely.",
                   icon: Zap
                 }
-              ].map((testimonial, i) => (
+              ].map((item, i) => (
                 <div
                   key={i}
                   className="p-4 bg-card border rounded-xl shadow-sm md:p-6"
                 >
                   <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
-                    <testimonial.icon className="h-5 w-5" />
+                    <item.icon className="h-5 w-5" />
                   </div>
-                  <h3 className="mb-2 font-semibold">{testimonial.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{testimonial.desc}</p>
+                  <h3 className="mb-2 font-semibold">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
                 </div>
               ))}
             </div>

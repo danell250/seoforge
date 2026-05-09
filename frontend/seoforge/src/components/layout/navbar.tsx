@@ -21,9 +21,8 @@ export function Navbar() {
         { href: "/settings", label: "Settings" },
       ]
     : [
-        { href: "/audit", label: "SEO Audit" },
+        { href: "/audit", label: "Audit" },
         { href: "/pricing", label: "Pricing" },
-        { href: "/compare", label: "Compare" },
       ];
 
   const isActive = (href: string) => {

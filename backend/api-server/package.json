@@ -9,7 +9,7 @@
     "build:prod": "node ./build.mjs",
     "start": "node --env-file=.env --enable-source-maps ./dist/index.mjs",
     "start:prod": "node --enable-source-maps ./dist/index.mjs",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "pnpm --filter @workspace/db run build:types && pnpm --filter @workspace/api-zod run build:types && tsc -p tsconfig.json --noEmit",
     "preflight": "node --env-file=.env ./scripts/preflight.mjs",
     "preflight:ci": "node ./scripts/preflight.mjs",
     "verify:production": "pnpm run preflight:ci && pnpm run typecheck && pnpm run build:prod"

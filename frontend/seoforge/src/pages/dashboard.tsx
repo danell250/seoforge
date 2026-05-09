@@ -322,7 +322,7 @@ export default function Dashboard() {
       complete: summary.totalPages > 0,
       title: "Optimize your first page",
       description: "Run a page through the workspace to generate your first scorecard.",
-      href: "/app",
+      href: "/app#site-crawler",
     },
     {
       step: 2,
@@ -384,7 +384,7 @@ export default function Dashboard() {
                 size="lg"
                 className="min-w-[220px] bg-white text-slate-950 hover:bg-blue-50"
               >
-                <Link href="/app">
+                <Link href="/app#site-crawler">
                   Repair Your First Page
                   <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -415,7 +415,7 @@ export default function Dashboard() {
             description="Your newest page runs show up here with score breakdowns and quick cleanup actions."
             action={
               <Button variant="outline" asChild>
-                <Link href="/app">Open Workspace</Link>
+                <Link href="/app#site-crawler">Open Workspace</Link>
               </Button>
             }
           >
