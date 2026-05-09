@@ -64,7 +64,7 @@ const originalArticles: BlogArticle[] = [
         <tr><td>Meta tags and backlinks</td><td>Schema markup and structure</td></tr>
       </table>
 
-      <h2>How to Start with AEO Today</h2>
+      <h2>How to Start with AEO today</h2>
       <p>The fastest way to implement AEO on your website is to:</p>
 
       <ol>
@@ -96,39 +96,6 @@ const originalArticles: BlogArticle[] = [
 
       <h3>Do South African websites need AEO?</h3>
       <p>Yes. South Africa has extremely high mobile search usage and AI-powered search adoption is accelerating. Businesses that implement AEO now will dominate their competitors who are still only doing traditional SEO.</p>
-
-      <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "What does AEO stand for?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "AEO stands for Answer Engine Optimization. It is the process of optimizing your website to appear in AI-generated answers on platforms like Google AI Overviews, ChatGPT, and Perplexity."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Is AEO replacing SEO?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "No. AEO works alongside SEO. SEO handles your technical foundation and rankings. AEO ensures AI systems can extract and cite your content as authoritative answers."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Do South African websites need AEO?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. South Africa has extremely high mobile search usage and AI-powered search adoption is accelerating. Businesses that implement AEO now will dominate their competitors."
-      }
-    }
-  ]
-}
-      </script>
     `,
   },
   {
@@ -2092,6 +2059,36 @@ function useBlogSeo(article: BlogArticle | null) {
     setProperty("twitter:title", title);
     setProperty("twitter:description", description);
     setProperty("twitter:url", url);
+
+    // Inject JSON-LD schema only if NOT in an article view to avoid duplicates
+    // In article view, the article's own schema (if any) is part of its HTML content.
+    const schemaId = 'blog-page-schema';
+    if (!article) {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.text = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "name": "SEOaxe Blog",
+        "description": "Insights on SEO, AEO, and website repair for the modern search landscape.",
+        "url": `${SITE_URL}/blog`,
+        "publisher": {
+          "@type": "Organization",
+          "name": "SEOaxe",
+          "logo": {
+            "@type": "ImageObject",
+            "url": `${SITE_URL}/logo.png`
+          }
+        }
+      });
+      script.id = schemaId;
+      document.head.appendChild(script);
+    }
+    
+    return () => {
+      const existingScript = document.getElementById(schemaId);
+      if (existingScript) existingScript.remove();
+    };
   }, [article]);
 }
 

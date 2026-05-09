@@ -27,7 +27,9 @@ import {
 } from "lucide-react";
 const jsonLdSchema = {
   "@context": "https://schema.org",
-  "@type": "FAQPage",
+  "@type": "WebPage",
+  "name": "SEOaxe Comparison",
+  "description": "How does SEOaxe compare to AutoSEO, Semrush, Ahrefs, and traditional SEO agencies?",
   "mainEntity": [
     {
       "@type": "Question",
