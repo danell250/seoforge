@@ -6,14 +6,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGenerateAeoBlock } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, Copy, MessageSquareQuote, Play, RefreshCw, Sparkles, Globe } from "lucide-react";
-import { useFetchPage } from "@workspace/api-client-react";
 
 export function AeoAnswerBlock() {
   const [url, setUrl] = useState("");
   const [topic, setTopic] = useState("");
   const { toast } = useToast();
   const mutation = useGenerateAeoBlock();
-  const fetchMutation = useFetchPage();
 
   const handleRun = async () => {
     if (!url.trim()) {
