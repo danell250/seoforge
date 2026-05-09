@@ -10,7 +10,7 @@ export function getModel(systemInstruction?: string) {
     throw new Error("GEMINI_API_KEY environment variable is required but was not provided.");
   }
   return genAI.getGenerativeModel({
-    model: "gemini-1.5-flash-latest",
+    model: "gemini-1.5-flash-002",
     systemInstruction: systemInstruction ?? SEO_SYSTEM_PROMPT,
   });
 }
