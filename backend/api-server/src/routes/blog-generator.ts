@@ -46,7 +46,7 @@ Content structure requirements:
 - Include a dedicated FAQ section near the end with at least 3 questions and detailed answers
 - End with a strong conclusion/call-to-action
 - The content should be in HTML format with proper <p>, <h2>, <h3>, <ul>, <li> tags
-- Include schema markup at the end: FAQPage JSON-LD
+- DO NOT include JSON-LD schema markup in the content - the frontend will handle schema injection
 - Make it specific to the page topic - not generic
 - Write for South African businesses and context where relevant
 - Include practical, actionable advice

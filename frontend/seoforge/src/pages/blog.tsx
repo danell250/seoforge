@@ -171,39 +171,6 @@ const originalArticles: BlogArticle[] = [
 
       <h3>Why is my SEO score low?</h3>
       <p>The most common reasons for a low SEO score are missing meta tags, no schema markup, broken heading structure, images without alt text, and no sitemap.</p>
-
-      <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "What is a good SEO score for a website?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "A score of 80 or above is considered excellent. Scores between 50 and 79 need improvement. Anything below 50 indicates critical issues that are actively hurting your rankings."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How do I check my SEO health score?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "You can check your SEO health score using SEOaxe — paste your HTML and get an instant score broken down by Technical SEO, Content SEO, and AEO Readiness."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How long does it take to improve an SEO health score?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "With the right tool, technical SEO fixes can be applied in minutes. Rankings typically improve within 2 to 8 weeks after fixes are implemented and Google recrawls your pages."
-      }
-    }
-  ]
-}
-      </script>
     `,
   },
   {
@@ -277,39 +244,6 @@ const originalArticles: BlogArticle[] = [
 
       <h3>Is schema markup free?</h3>
       <p>Yes. Schema markup is a free open standard maintained at schema.org. Any website can implement it at no cost.</p>
-
-      <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "What is schema markup in simple terms?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Schema markup is invisible code that tells search engines and AI systems what your content means. It helps Google understand if your page is a recipe, a business listing, a FAQ, or a product — so it can display it correctly in search results."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Does schema markup directly improve rankings?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Schema markup does not directly boost your ranking position but it significantly improves your visibility in rich results and AI-generated answers, which drives more qualified traffic to your site."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Is schema markup free?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. Schema markup is a free open standard maintained at schema.org. Any website can implement it at no cost."
-      }
-    }
-  ]
-}
-      </script>
     `,
   },
   {
@@ -835,39 +769,6 @@ const originalArticles: BlogArticle[] = [
 
       <h3>Can I have multiple sitemaps?</h3>
       <p>Yes. Large websites often have separate sitemaps for blog posts, products, and images. You can reference all of them in a sitemap index file.</p>
-
-      <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "How often should I resubmit my sitemap?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "You do not need to resubmit your sitemap every time you add a page. Google recrawls it automatically. However, resubmitting after major site restructures or when adding many new pages speeds up indexing."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Does a sitemap improve my Google rankings?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "A sitemap does not directly improve rankings but it ensures Google finds and indexes all your pages. Unindexed pages cannot rank regardless of how well optimized they are."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can I have multiple sitemaps?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. Large websites often have separate sitemaps for blog posts, products, and images. You can reference all of them in a sitemap index file."
-      }
-    }
-  ]
-}
-      </script>
     `,
   },
   {
@@ -928,39 +829,6 @@ const originalArticles: BlogArticle[] = [
 
       <h3>What is the fastest SEO win for a South African website?</h3>
       <p>Adding meta tags and schema markup. These are technical fixes that take minutes to implement with the right tool and can show measurable ranking improvements within weeks.</p>
-
-      <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "How long does it take for SEO fixes to improve Google rankings?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Technical SEO fixes like meta tags and schema can show ranking improvements within 2 to 6 weeks after Google recrawls your pages. Content improvements typically take 2 to 4 months to fully reflect in rankings."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Do I need to hire an SEO agency in South Africa?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Not necessarily. Most technical SEO issues can be fixed using tools like SEOaxe without hiring an agency. Agencies add value for ongoing strategy, content creation, and link building — but the technical foundation can be self-managed."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What is the fastest SEO win for a South African website?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Adding meta tags and schema markup. These are technical fixes that take minutes to implement with the right tool and can show measurable ranking improvements within weeks."
-      }
-    }
-  ]
-}
-      </script>
     `,
   },
   {
@@ -2093,6 +1961,33 @@ function useBlogSeo(article: BlogArticle | null) {
 }
 
 function ArticleView({ article }: { article: BlogArticle }) {
+  useEffect(() => {
+    // Dynamically inject the article's specific FAQ schema if present in its content
+    const schemaMatch = article.content.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+    if (schemaMatch && schemaMatch[1]) {
+      try {
+        const schemaId = `article-faq-schema-${article.id}`;
+        // Remove existing if any
+        document.getElementById(schemaId)?.remove();
+        
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.id = schemaId;
+        script.text = schemaMatch[1].trim();
+        document.head.appendChild(script);
+        
+        return () => {
+          document.getElementById(schemaId)?.remove();
+        };
+      } catch (e) {
+        console.error("Failed to inject article schema:", e);
+      }
+    }
+  }, [article]);
+
+  // Clean the content for display (remove the raw script tag so it doesn't break React rendering)
+  const displayContent = article.content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, "");
+
   return (
     <div className="max-w-3xl mx-auto">
       <Link
@@ -2140,7 +2035,7 @@ function ArticleView({ article }: { article: BlogArticle }) {
         {/* Content */}
         <div 
           className="prose-headings:font-semibold prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3 prose-p:text-muted-foreground prose-p:leading-relaxed prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:my-1 prose-pre:bg-slate-900 prose-pre:text-slate-100 prose-pre:p-4 prose-pre:rounded-lg prose-pre:overflow-x-auto prose-code:text-pink-600 prose-code:bg-pink-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-table:w-full prose-table:text-sm prose-th:text-left prose-th:font-semibold prose-th:p-2 prose-th:bg-muted prose-td:p-2 prose-td:border-t prose-a:text-primary hover:prose-a:underline"
-          dangerouslySetInnerHTML={{ __html: article.content }}
+          dangerouslySetInnerHTML={{ __html: displayContent }}
         />
       </article>
 

@@ -5,7 +5,6 @@ export function GlobalSEO() {
     <>
       <OrganizationSchema />
       <WebsiteSchema />
-      <FAQPageSchema />
       <SoftwareApplicationSchema />
       <LocalBusinessSchema />
     </>

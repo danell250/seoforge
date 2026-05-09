@@ -34,7 +34,7 @@ Content requirements:
 - Include a dedicated FAQ section with at least 5 questions and detailed answers
 - End with a strong conclusion
 - Use proper HTML: <p>, <h2>, <h3>, <ul>, <li>, <strong>, <em>
-- Include FAQPage JSON-LD schema at the end
+- DO NOT include JSON-LD schema markup in the content - the frontend will handle schema injection
 - Make it actionable and practical
 - No fluff, no emojis, no marketing jargon
 - Include current year (2026) where relevant

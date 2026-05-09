@@ -25,37 +25,13 @@ import {
   TrendingUp,
   AlertTriangle
 } from "lucide-react";
+
 const jsonLdSchema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   "name": "SEOaxe Comparison",
-  "description": "How does SEOaxe compare to AutoSEO, Semrush, Ahrefs, and traditional SEO agencies?",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Is SEOaxe better than Semrush?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "For businesses that need deployable fixes instead of another diagnostic dashboard, SEOaxe is more direct. Semrush is excellent for research; SEOaxe repairs existing pages and shows a before/after receipt."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How does SEOaxe compare to AutoSEO?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "AutoSEO focuses on article creation. SEOaxe focuses on repairing existing pages with meta tags, schema markup, AEO answer blocks, health scores, sitemaps, and a visible repair receipt."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Is SEOaxe cheaper than hiring an SEO agency?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes significantly. Traditional SEO agencies charge R5,000 to R50,000 per month. SEOaxe Agency plan is R999 per month with full transparency, instant results, and no contract lock-in."
-      }
-    }
-  ]
+  "description": "How does SEOaxe compare to AutoSEO, Semrush, Ahrefs, and traditional SEO agencies? See why SEOaxe is positioned as an SEO repair engine for existing pages.",
+  "url": "https://www.seoaxe.site/compare"
 };
 
 const fullComparisonFeatures = [

@@ -6,6 +6,7 @@ import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { FAQPageSchema } from "@/components/seo";
 import {
   ArrowRight,
   Bot,
@@ -72,6 +73,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col font-sans">
       <Navbar />
+      <FAQPageSchema />
       
       <main className="flex-1">
         {/* Hero Section */}
