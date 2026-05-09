@@ -31,9 +31,9 @@ export interface PricingLocale {
 }
 
 const DEFAULT_PRICING_LOCALE: PricingLocale = {
-  currency: "USD",
-  locale: "en-US",
-  region: "US",
+  currency: "ZAR",
+  locale: "en-ZA",
+  region: "ZA",
 };
 
 const REGION_TO_CURRENCY: Record<string, SupportedCurrency> = {

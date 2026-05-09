@@ -1,7 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { ArrowRight, Check, CreditCard, LockKeyhole, ShieldCheck } from "lucide-react";
-import { ApiError, customFetch } from "@workspace/api-client-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
@@ -10,36 +9,21 @@ import { useAuth } from "@/hooks/use-auth";
 import { getPlanDefinition, PLAN_DEFINITIONS } from "@/lib/plans";
 import { detectPricingLocale, formatLocalPrice } from "@/lib/local-pricing";
 
-type StitchCheckoutResponse = {
-  paymentId: string;
-  paymentUrl: string;
-};
-
 function buildAuthRedirect(path: string) {
   return encodeURIComponent(path);
 }
 
-function getPaymentErrorMessage(error: unknown): string {
-  if (error instanceof ApiError) {
-    const data = error.data;
-    if (data && typeof data === "object" && typeof (data as Record<string, unknown>).message === "string") {
-      return (data as Record<string, string>).message;
-    }
-    return error.message;
-  }
-
-  return "Could not start secure payment. Please try again.";
-}
+const PAYPAL_LINKS: Record<string, string> = {
+  starter: "https://www.paypal.com/checkoutnow?business=danelloosthuizen3@gmail.com&item_name=SEOaxe+Starter+Plan&amount=39&currency_code=ZAR",
+  agency: "https://www.paypal.com/checkoutnow?business=danelloosthuizen3@gmail.com&item_name=SEOaxe+Agency+Plan&amount=99&currency_code=ZAR",
+};
 
 export default function Checkout() {
   const { isAuthenticated, user } = useAuth();
   const [location] = useLocation();
-  const [isStartingPayment, setIsStartingPayment] = useState(false);
-  const [paymentError, setPaymentError] = useState<string | null>(null);
   const search = typeof window !== "undefined" ? window.location.search : "";
   const params = new URLSearchParams(search);
   const planParam = params.get("plan");
-  const returnedFromPayment = params.get("payment") === "return";
   const selectedPlan = getPlanDefinition(planParam) ?? getPlanDefinition("starter");
   const pricingLocale = detectPricingLocale();
 
@@ -77,25 +61,7 @@ export default function Checkout() {
   const alreadyOnPlan = user?.plan === selectedPlan.slug;
   const signupHref = `/signup?redirect=${buildAuthRedirect(currentPath)}`;
   const loginHref = `/login?redirect=${buildAuthRedirect(currentPath)}`;
-
-  async function startPayment() {
-    const planSlug = selectedPlan?.slug;
-    if (!planSlug || planSlug === "free") return;
-
-    setIsStartingPayment(true);
-    setPaymentError(null);
-    try {
-      const response = await customFetch<StitchCheckoutResponse>("/api/payments/stitch/checkout", {
-        method: "POST",
-        responseType: "json",
-        body: JSON.stringify({ plan: planSlug }),
-      });
-      window.location.assign(response.paymentUrl);
-    } catch (error) {
-      setPaymentError(getPaymentErrorMessage(error));
-      setIsStartingPayment(false);
-    }
-  }
+  const paypalLink = selectedPlan.slug ? PAYPAL_LINKS[selectedPlan.slug] : null;
 
   return (
     <div className="min-h-screen flex flex-col bg-muted/20">
@@ -162,36 +128,51 @@ export default function Checkout() {
                     </Button>
                   </CardFooter>
                 </Card>
-              ) : (
+              ) : paypalLink ? (
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-xl">
                       <CreditCard className="h-5 w-5 text-primary" />
-                      Secure Stitch payment
+                      Secure PayPal payment
                     </CardTitle>
                     <CardDescription>
-                      Your account is linked. We&apos;ll create a secure Stitch checkout for your plan.
+                      Your account is linked. Click below to complete payment via PayPal for your plan.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="rounded-lg border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
                       Signed in as <span className="font-medium text-foreground">{user?.email}</span>
                     </div>
-                    {returnedFromPayment && (
-                      <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
-                        Thanks. If payment completed successfully, your plan will unlock as soon as Stitch sends the paid webhook.
-                      </div>
-                    )}
-                    {paymentError && (
-                      <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-                        {paymentError}
-                      </div>
-                    )}
+                    <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
+                      After payment, email danelloosthuizen3@gmail.com with your transaction ID to activate your plan.
+                    </div>
                   </CardContent>
                   <CardFooter>
-                    <Button className="w-full sm:w-auto" onClick={startPayment} disabled={isStartingPayment || alreadyOnPlan}>
-                      {isStartingPayment ? "Starting payment..." : "Continue to payment"}
-                      <ArrowRight className="ml-2 h-4 w-4" />
+                    <Button className="w-full sm:w-auto" asChild disabled={alreadyOnPlan}>
+                      <a href={paypalLink} target="_blank" rel="noopener noreferrer">
+                        Pay with PayPal
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </a>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ) : (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-xl">
+                      <ShieldCheck className="h-5 w-5 text-primary" />
+                      Free plan
+                    </CardTitle>
+                    <CardDescription>
+                      You can start with the free plan and upgrade later.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardFooter>
+                    <Button asChild className="w-full sm:w-auto">
+                      <Link href="/app">
+                        Open workspace
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -243,8 +224,8 @@ export default function Checkout() {
             <div className="mt-4 grid gap-4 md:grid-cols-3">
               {[
                 "Pick your plan and confirm the account it should belong to.",
-                "Complete payment through the secure Stitch checkout for that plan.",
-                "Stitch confirms the paid webhook and unlocks the right limits on your account.",
+                "Complete payment via PayPal for your chosen plan.",
+                "Email your transaction ID to danelloosthuizen3@gmail.com to activate your plan.",
               ].map((step, index) => (
                 <div key={step} className="rounded-xl border bg-muted/20 p-4 text-sm">
                   <div className="mb-2 flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary">
