@@ -237,10 +237,13 @@ export function SinglePageOptimizer() {
     
     setFeedbackVerdict(null);
     optimizeMutation.mutate({ data: { html: htmlInput, filename: "index.html" } }, {
-      onError: () => {
+      onError: (err: any) => {
+        const errorMessage = err?.data?.message || err?.message || "Optimization failed, please try again.";
+        const errorCode = err?.data?.code || "";
+        
         toast({
-          title: "Error",
-          description: "Optimization failed, please try again.",
+          title: "Repair Failed",
+          description: `${errorMessage} ${errorCode ? `(Code: ${errorCode})` : ""}`,
           variant: "destructive"
         });
       }
