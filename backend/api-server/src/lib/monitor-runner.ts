@@ -1,6 +1,6 @@
 import { db, monitoredSitesTable, siteSnapshotsTable, monitorReportsTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
-import { getModel, extractJson } from "./gemini";
+import { runSeoaxeJsonTask } from "./seoaxe-ai";
 import { sendEmail, renderReportEmail, renderLowScoreAlertEmail } from "./email";
 import type { Logger } from "pino";
 
@@ -104,8 +104,10 @@ async function crawlSite(startUrl: string, maxPages: number): Promise<{ url: str
 }
 
 async function scoreAndGapsForPage(html: string, topic: string | null, audience: string | null): Promise<{ score: number; gaps: string[] }> {
-  const model = getModel();
-  const prompt = `You are an SEO analyst. Look at this HTML page and return ONLY a JSON object:
+  try {
+    const data = await runSeoaxeJsonTask<{ score: number; gaps: string[] }>({
+      taskName: "monitor-page-score-gaps",
+      taskPrompt: `You are an SEO analyst. Look at this HTML page and return ONLY a JSON object:
 {
   "score": <0-100 overall SEO+AEO quality score>,
   "gaps": ["<short search-query-style description of a content gap>", ...]
@@ -114,19 +116,22 @@ Rules:
 - Return 0-6 gaps. Only include gaps that are genuinely missing or thin on this page.
 - Each gap should be a concise question or topic phrase, max 12 words.
 ${topic ? `- Topic / niche: ${topic}` : ""}
-${audience ? `- Audience: ${audience}` : ""}
+${audience ? `- Audience: ${audience}` : ""}`,
+      html,
+      htmlLabel: "HTML",
+      primaryHtmlLimit: 60_000,
+      fallbackHtmlLimit: 30_000,
+      timeoutMs: 28_000,
+      fallbackTimeoutMs: 12_000,
+      extraParts: [
+        topic ? `Topic / niche: ${topic}` : undefined,
+        audience ? `Audience: ${audience}` : undefined,
+      ],
+    });
 
-HTML:
-\`\`\`html
-${html.slice(0, 60_000)}
-\`\`\``;
-  const result = await model.generateContent(prompt);
-  const text = result.response.text();
-  try {
-    const parsed = extractJson<{ score: number; gaps: string[] }>(text);
-    const score = Math.max(0, Math.min(100, Math.round(Number(parsed.score) || 0)));
-    const gaps = Array.isArray(parsed.gaps)
-      ? parsed.gaps
+    const score = Math.max(0, Math.min(100, Math.round(Number(data.score) || 0)));
+    const gaps = Array.isArray(data.gaps)
+      ? data.gaps
           .filter((g): g is string => typeof g === "string")
           .map((g) => g.trim().slice(0, 140))
           .filter(Boolean)

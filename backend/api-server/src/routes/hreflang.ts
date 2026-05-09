@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { ApplyHreflangBody, ApplyHreflangResponse } from "@workspace/api-zod";
-import { getModel, extractJson } from "../lib/gemini";
+import { runSeoaxeJsonTask } from "../lib/seoaxe-ai";
 import { requireAuthenticatedUser } from "../middleware/auth";
 
 const router: IRouter = Router();
@@ -45,16 +45,22 @@ router.post("/hreflang", async (req, res) => {
 
   let detected: DetectionResult = { languageCode: "en", confidence: 0 };
   try {
-    const model = getModel();
-    const result = await model.generateContent([DETECT_PROMPT, "Page text:\n" + htmlToText(html)]);
-    const text = result.response.text();
-    try {
-      detected = extractJson<DetectionResult>(text);
-    } catch (err) {
-      req.log.warn({ err, text: text.slice(0, 200) }, "hreflang detect parse failed");
+    const data = await runSeoaxeJsonTask<DetectionResult>({
+      taskName: "hreflang-language-detect",
+      taskPrompt: DETECT_PROMPT,
+      html: htmlToText(html),
+      htmlLabel: "Page text",
+      primaryHtmlLimit: 6000,
+      fallbackHtmlLimit: 3000,
+      timeoutMs: 15_000,
+      fallbackTimeoutMs: 7000,
+      log: req.log,
+    });
+    if (data?.languageCode) {
+      detected = data;
     }
   } catch (err) {
-    req.log.warn({ err }, "Gemini language detect failed");
+    req.log.warn({ err }, "hreflang language detect failed");
   }
 
   const lang = detected.languageCode?.toLowerCase().slice(0, 8) || "en";
