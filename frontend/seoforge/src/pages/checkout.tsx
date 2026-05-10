@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { ArrowRight, Check, CreditCard, LockKeyhole, ShieldCheck, Loader2 } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
