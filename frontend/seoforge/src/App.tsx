@@ -52,6 +52,7 @@ const PAYPAL_OPTIONS = {
 };
 
 const paypalClientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
+const isProduction = import.meta.env.PROD; // Vite sets this to true in production
 
 function ProtectedRoute({ component: Component }: { component: ComponentType }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -117,12 +118,50 @@ function Router() {
 }
 
 function App() {
+  const [paypalLoaded, setPaypalLoaded] = useState(false);
+  
+  // Debug PayPal configuration
+  useEffect(() => {
+    if (paypalClientId) {
+      const clientIdStart = paypalClientId.substring(0, 2);
+      const isSandboxId = clientIdStart === 'AZ';
+      const isProdId = clientIdStart === 'A' && !isSandboxId;
+      console.log('PayPal Debug:', {
+        clientIdStart,
+        isSandboxId,
+        isProdId,
+        environment: isProduction ? 'production' : 'development',
+        mismatch: (isProduction && isSandboxId) || (!isProduction && isProdId)
+      });
+    }
+  }, []);
+  
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           {paypalClientId ? (
-            <PayPalScriptProvider options={PAYPAL_OPTIONS}>
+            <PayPalScriptProvider 
+              options={{
+                clientId: paypalClientId,
+                currency: "USD",
+                intent: "capture",
+                // Temporarily remove disable-funding to see if it causes issues
+                // "disable-funding": "credit,card",
+              }}
+              onSuccess={() => {
+                console.log("PayPal script loaded successfully");
+                console.log("PayPal client ID starts with:", paypalClientId?.substring(0, 2));
+                console.log("Environment:", isProduction ? 'production' : 'development');
+                setPaypalLoaded(true);
+              }}
+              onError={(err) => {
+                console.error("PayPal script failed to load:", err);
+                // Log the client ID format for debugging (without exposing the full ID)
+                const clientIdStart = paypalClientId?.substring(0, 2) || 'undefined';
+                console.log("PayPal client ID starts with:", clientIdStart, "Environment:", isProduction ? 'production' : 'development');
+              }}
+            >
               <TooltipProvider>
                 <GlobalSEO />
                 <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
