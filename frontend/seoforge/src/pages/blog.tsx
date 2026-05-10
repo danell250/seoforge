@@ -1846,7 +1846,7 @@ export default function Blog() {
         <Helmet>
           <title>{articleTitle}</title>
           <meta name="description" content={articleDescription} />
-          <meta name="robots" content={isGenerated ? "noindex, nofollow" : "index, follow"} />
+          <meta name="robots" content="index, follow" />
           <link rel="canonical" href={articleUrl} />
           <meta property="og:title" content={articleTitle} />
           <meta property="og:description" content={articleDescription} />

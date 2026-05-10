@@ -25,7 +25,7 @@ export default function Checkout() {
   
   // Debug PayPal script status
   useEffect(() => {
-    console.log("PayPal script status:", { isResolved, isRejected, isPending });
+
   }, [isResolved, isRejected, isPending]);
   const search = typeof window !== "undefined" ? window.location.search : "";
   const params = new URLSearchParams(search);
@@ -38,9 +38,7 @@ export default function Checkout() {
   }, [location]);
 
   const createPayPalOrder = async () => {
-    console.log("Creating PayPal order for plan:", selectedPlan?.slug);
-    console.log("API URL: /api/payments/paypal/create-order");
-    console.log("PayPal client ID configured:", !!paypalClientId);
+
     try {
       const response = await customFetch<{ id: string }>("/api/payments/paypal/create-order", {
         method: "POST",
@@ -48,14 +46,13 @@ export default function Checkout() {
         body: JSON.stringify({ plan: selectedPlan?.slug }),
       });
       
-      console.log("Create order response:", response);
-      console.log("Response data:", JSON.stringify(response, null, 2));
+
 
       if (!response || !response.id) {
         throw new Error("Invalid response from PayPal order creation");
       }
 
-      console.log("PayPal order created successfully:", response.id);
+
       return response.id;
     } catch (err) {
       console.error("PayPal create order failed:", err);
@@ -71,7 +68,7 @@ export default function Checkout() {
   };
 
   const onPayPalApprove = async (data: { orderID: string }) => {
-    console.log("PayPal approved, capturing order", data.orderID);
+
     setIsProcessing(true);
     try {
       const captureResponse = await customFetch("/api/payments/paypal/capture-order", {
@@ -79,7 +76,7 @@ export default function Checkout() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId: data.orderID }),
       });
-      console.log("Capture order response:", captureResponse);
+
       
       await refreshSession();
       
@@ -282,13 +279,7 @@ export default function Checkout() {
                             const isSandboxId = clientIdStart === 'AZ';
                             const isProd = import.meta.env.PROD;
                             
-                            console.log("PayPal debug info:", {
-                              clientIdStart,
-                              isSandboxId,
-                              isProd,
-                              paypalClientIdLength: paypalClientId?.length,
-                              paypalClientIdDefined: !!paypalClientId
-                            });
+
                             
                             let errorMessage = "Something went wrong. Please try again.";
                             if (isProd && isSandboxId) {
@@ -306,7 +297,7 @@ export default function Checkout() {
                             });
                           }}
                           onCancel={(data) => {
-                            console.log("PayPal payment cancelled:", data);
+
                             toast({
                               title: "Payment cancelled",
                               description: "You cancelled the PayPal payment.",
@@ -314,7 +305,7 @@ export default function Checkout() {
                             });
                           }}
                           onClick={(data, actions) => {
-                            console.log("PayPal button clicked:", data);
+
                             return actions.resolve();
                           }}
                         />

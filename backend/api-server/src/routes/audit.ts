@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { requireAuthenticatedUser, getAuthenticatedUser } from "../middleware/auth";
-import { db, usersTable } from "@workspace/db";
+import { db, usersTable, auditEventsTable } from "@workspace/db";
 import { and, count, eq, gte } from "drizzle-orm";
 
 const router: IRouter = Router();
@@ -22,15 +22,34 @@ function normalizeUrl(raw: string): string {
   return s;
 }
 
-async function checkAuditLimit(userId: number, log: any): Promise<{ allowed: boolean; limit: number; plan: string }> {
+async function checkAuditLimit(userId: number, log: any): Promise<{ allowed: boolean; limit: number; current: number; plan: string }> {
   try {
     const [user] = await db.select({ plan: usersTable.plan }).from(usersTable).where(eq(usersTable.id, userId));
     const plan = user?.plan || "free";
     const limit = AUDIT_LIMITS[plan as keyof typeof AUDIT_LIMITS] ?? AUDIT_LIMITS.free;
-    return { allowed: true, limit, plan };
+
+    // Count current month's audits
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const [result] = await db
+      .select({ count: count() })
+      .from(auditEventsTable)
+      .where(
+        and(
+          eq(auditEventsTable.userId, userId),
+          gte(auditEventsTable.createdAt, startOfMonth),
+        ),
+      );
+
+    const current = result?.count || 0;
+    const allowed = current < limit;
+
+    return { allowed, limit, current, plan };
   } catch (err) {
     log?.warn?.({ err }, "Audit limit check failed, allowing");
-    return { allowed: true, limit: 1, plan: "free" };
+    return { allowed: true, limit: 1, current: 0, plan: "free" };
   }
 }
 
@@ -369,6 +388,11 @@ function runAudit(url: string, html: string, origin: string): AuditResult {
 }
 
 router.post("/audit", requireAuthenticatedUser, async (req, res) => {
+  const user = getAuthenticatedUser(req);
+  if (!user) {
+    return res.status(401).json({ message: "Authentication required" });
+  }
+
   const url = typeof req.body?.url === "string" ? normalizeUrl(req.body.url) : "";
   if (!url) {
     return res.status(400).json({ message: "URL is required" });
@@ -381,12 +405,36 @@ router.post("/audit", requireAuthenticatedUser, async (req, res) => {
     return res.status(400).json({ message: "Invalid URL" });
   }
 
+  // Check audit limits
+  const limitCheck = await checkAuditLimit(user.id, req.log);
+  if (!limitCheck.allowed) {
+    return res.status(403).json({
+      message: `You've reached your monthly limit of ${limitCheck.limit} page audits on the ${limitCheck.plan} plan. Upgrade to audit more pages.`,
+      code: "AUDIT_LIMIT_EXCEEDED",
+      limit: limitCheck.limit,
+      current: limitCheck.current,
+      plan: limitCheck.plan,
+    });
+  }
+
   const html = await fetchHtml(url);
   if (!html) {
     return res.status(500).json({ message: "Could not fetch the page. Please check the URL and try again." });
   }
 
   const result = runAudit(url, html, origin);
+
+  // Record the audit event
+  try {
+    await db.insert(auditEventsTable).values({
+      userId: user.id,
+      url: url,
+    });
+  } catch (dbErr) {
+    req.log.error({ err: dbErr }, "Failed to record audit event");
+    // Continue anyway - don't fail the audit due to logging failure
+  }
+
   return res.json(result);
 });
 

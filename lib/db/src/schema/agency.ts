@@ -36,3 +36,12 @@ export const sitemapUrlsTable = pgTable("sitemap_urls", {
 });
 
 export type SitemapUrl = typeof sitemapUrlsTable.$inferSelect;
+
+export const auditEventsTable = pgTable("audit_events", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  url: text("url").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export type AuditEvent = typeof auditEventsTable.$inferSelect;

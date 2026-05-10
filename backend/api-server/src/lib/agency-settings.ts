@@ -3,6 +3,7 @@ import { DEFAULT_AGENCY_SETTINGS, normalizeBrandName } from "@workspace/api-zod"
 import { eq } from "drizzle-orm";
 import { logger } from "./logger";
 import { isMissingRelationError } from "./db-errors";
+import type { AgencySettings } from "@workspace/db";
 
 export async function ensureAgencySettingsSchema() {
   try {
@@ -73,7 +74,7 @@ export async function normalizeStoredAgencyBrandName() {
     await db.transaction(async (tx: any) => {
       const rows = await tx.select().from(agencySettingsTable);
       await Promise.all(
-        rows.map(async (row) => {
+        rows.map(async (row: AgencySettings) => {
           const nextBrandName = normalizeBrandName(row.brandName);
           if (nextBrandName === row.brandName) {
             return;
