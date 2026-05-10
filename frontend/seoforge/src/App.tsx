@@ -1,6 +1,7 @@
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { useEffect, type ComponentType } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { HelmetProvider } from "react-helmet-async";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
@@ -39,6 +40,7 @@ import { GlobalSEO } from "@/components/seo";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 const queryClient = new QueryClient();
 
@@ -113,20 +115,23 @@ function Router() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <PayPalScriptProvider options={PAYPAL_OPTIONS}>
-          <TooltipProvider>
-            <GlobalSEO />
-            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-              <Router />
-            </WouterRouter>
-            <Toaster />
-            <Analytics />
-          </TooltipProvider>
-        </PayPalScriptProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <PayPalScriptProvider options={PAYPAL_OPTIONS}>
+            <TooltipProvider>
+              <GlobalSEO />
+              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                <Router />
+              </WouterRouter>
+              <Toaster />
+              <Analytics />
+              <SpeedInsights />
+            </TooltipProvider>
+          </PayPalScriptProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 }
 

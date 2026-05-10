@@ -124,6 +124,103 @@ export async function generateContentWithGroq(
   }
 }
 
+export async function* generateContentWithGroqStream(
+  messages: GroqMessage[],
+  model = "llama-3.3-70b-versatile",
+  temperature = 0.3,
+  maxTokens = 8192,
+  timeoutMs = 45_000,
+): AsyncGenerator<string> {
+  if (!GROQ_API_KEY) {
+    throw new GroqApiError("GROQ_API_KEY environment variable is required but was not provided.", 500);
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(GROQ_API_URL, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${GROQ_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        temperature,
+        max_tokens: maxTokens,
+        stream: true,
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      let errorMessage = `Groq API error (${response.status})`;
+      try {
+        const errorJson = JSON.parse(errorText);
+        if (errorJson.error?.message) {
+          errorMessage = `Groq API: ${errorJson.error.message}`;
+        } else if (errorJson.message) {
+          errorMessage = `Groq API: ${errorJson.message}`;
+        }
+      } catch {
+        if (errorText) errorMessage += `: ${errorText}`;
+      }
+      throw new GroqApiError(errorMessage, response.status, errorText);
+    }
+
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error("No response body from Groq stream");
+    }
+
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      
+      buffer += decoder.decode(value, { stream: true });
+      
+      // Process the buffer line by line
+      const lines = buffer.split("\n");
+      buffer = lines.pop() || ""; // Keep the last incomplete line in buffer
+      
+      for (const line of lines) {
+        if (line.startsWith("data: ")) {
+          const data = line.slice(6);
+          if (data === "[DONE]") {
+            continue;
+          }
+          try {
+            const parsed = JSON.parse(data);
+            const delta = parsed.choices?.[0]?.delta?.content;
+            if (delta) {
+              yield delta;
+            }
+          } catch {
+            // Ignore invalid JSON lines
+          }
+        }
+      }
+    }
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err instanceof Error && err.name === "AbortError") {
+      throw new GroqTimeoutError(timeoutMs);
+    }
+    if (err instanceof GroqApiError) {
+      throw err;
+    }
+    throw new GroqApiError(err instanceof Error ? err.message : "Unknown Groq error", 500);
+  }
+}
+
 export async function generateSeoaxeOptimization(
   systemPrompt: string,
   userPrompt: string,

@@ -5,8 +5,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Clock, User, ChevronLeft } from "lucide-react";
 import { useEffect } from "react";
 import { Link, useLocation } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { SITE_URL } from "@/lib/brand-metadata";
 import { generatedArticles } from "@/lib/generated-blog-articles";
+import { FAQPageSchema, SpeakableSchema } from "@/components/seo";
 
 const author = {
   name: "SEOaxe Team",
@@ -1714,93 +1716,34 @@ const originalArticles: BlogArticle[] = [
 
 const articles: BlogArticle[] = [...originalArticles, ...generatedArticles];
 
-function setMeta(name: string, value: string) {
-  let tag = document.querySelector(`meta[name="${name}"]`);
-  if (!tag) {
-    tag = document.createElement("meta");
-    tag.setAttribute("name", name);
-    document.head.appendChild(tag);
-  }
-  tag.setAttribute("content", value);
-}
-
-function setProperty(property: string, value: string) {
-  let tag = document.querySelector(`meta[property="${property}"]`);
-  if (!tag) {
-    tag = document.createElement("meta");
-    tag.setAttribute("property", property);
-    document.head.appendChild(tag);
-  }
-  tag.setAttribute("content", value);
-}
-
-function setCanonical(url: string) {
-  let link = document.querySelector('link[rel="canonical"]');
-  if (!link) {
-    link = document.createElement("link");
-    link.setAttribute("rel", "canonical");
-    document.head.appendChild(link);
-  }
-  link.setAttribute("href", url);
-}
-
-function useBlogSeo(article: BlogArticle | null) {
-  useEffect(() => {
-    const url = article ? `${SITE_URL}/blog/${article.slug}` : `${SITE_URL}/blog`;
-    const title = article ? `${article.title} | SEOaxe Blog` : "SEOaxe Blog | SEO & AEO Repair Guides";
-    const description = article
-      ? article.excerpt
-      : "SEOaxe blog articles on SEO repair, AEO, schema, technical SEO, Search Console, and page-level optimization.";
-
-    document.title = title;
-    setMeta("description", description);
-    setMeta("robots", "index, follow");
-    setCanonical(url);
-    setProperty("og:title", title);
-    setProperty("og:description", description);
-    setProperty("og:url", url);
-    setProperty("twitter:title", title);
-    setProperty("twitter:description", description);
-    setProperty("twitter:url", url);
-
-    // Inject JSON-LD schema only if NOT in an article view to avoid duplicates
-    // In article view, the article's own schema (if any) is part of its HTML content.
-    const schemaId = 'blog-page-schema';
-    if (!article) {
-      const script = document.createElement('script');
-      script.type = 'application/ld+json';
-      script.text = JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "Blog",
-        "name": "SEOaxe Blog",
-        "description": "Insights on SEO, AEO, and website repair for the modern search landscape.",
-        "url": `${SITE_URL}/blog`,
-        "publisher": {
-          "@type": "Organization",
-          "name": "SEOaxe",
-          "logo": {
-            "@type": "ImageObject",
-            "url": `${SITE_URL}/logo.png`
+function ArticleView({ article }: { article: BlogArticle }) {
+  // Extract FAQ questions from the article content (optional fallback)
+  const extractFaqQuestions = (html: string) => {
+    const questions: Array<{ name: string; answer: string }> = [];
+    // Look for h3/h4 followed by p tags that are FAQ-style
+    const h3Matches = html.match(/<h3[^>]*>(.*?)<\/h3>\s*<p[^>]*>(.*?)<\/p>/gis);
+    if (h3Matches) {
+      h3Matches.forEach(match => {
+        const qMatch = match.match(/<h3[^>]*>(.*?)<\/h3>/i);
+        const aMatch = match.match(/<p[^>]*>(.*?)<\/p>/i);
+        if (qMatch && aMatch) {
+          const q = qMatch[1].replace(/<[^>]+>/g, "").trim();
+          const a = aMatch[1].replace(/<[^>]+>/g, "").trim();
+          if (q && a && q.length > 5 && a.length > 20) {
+            questions.push({ name: q, answer: a });
           }
         }
       });
-      script.id = schemaId;
-      document.head.appendChild(script);
     }
-    
-    return () => {
-      const existingScript = document.getElementById(schemaId);
-      if (existingScript) existingScript.remove();
-    };
-  }, [article]);
-}
-
-function ArticleView({ article }: { article: BlogArticle }) {
-  // Clean the content for display (remove any script tags that might be present)
-  const displayContent = article.content.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, "");
+    return questions;
+  };
+  
+  const faqQuestions = extractFaqQuestions(article.content);
 
   return (
     <div className="max-w-3xl mx-auto">
+      <SpeakableSchema cssSelector={[".prose p:first-of-type", ".prose h3 + p"]} />
+      {faqQuestions.length > 0 && <FAQPageSchema questions={faqQuestions} />}
       <Link
         href="/blog"
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
@@ -1846,7 +1789,7 @@ function ArticleView({ article }: { article: BlogArticle }) {
         {/* Content */}
         <div 
           className="prose-headings:font-semibold prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3 prose-p:text-muted-foreground prose-p:leading-relaxed prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:my-1 prose-pre:bg-slate-900 prose-pre:text-slate-100 prose-pre:p-4 prose-pre:rounded-lg prose-pre:overflow-x-auto prose-code:text-pink-600 prose-code:bg-pink-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-table:w-full prose-table:text-sm prose-th:text-left prose-th:font-semibold prose-th:p-2 prose-th:bg-muted prose-td:p-2 prose-td:border-t prose-a:text-primary hover:prose-a:underline"
-          dangerouslySetInnerHTML={{ __html: displayContent }}
+          dangerouslySetInnerHTML={{ __html: article.content }}
         />
       </article>
 
@@ -1886,11 +1829,73 @@ export default function Blog() {
     : null;
   const selectedArticle = slug ? articles.find((article) => article.slug === slug) ?? null : null;
 
-  useBlogSeo(selectedArticle);
+  // Removed useBlogSeo hook - now using Helmet directly in components
+
+  const isGeneratedArticle = (article: BlogArticle) => {
+    return generatedArticles.some(ga => ga.id === article.id && ga.slug === article.slug);
+  };
 
   if (slug && selectedArticle) {
+    const articleUrl = `${SITE_URL}/blog/${selectedArticle.slug}`;
+    const articleTitle = `${selectedArticle.title} | SEOaxe Blog`;
+    const articleDescription = selectedArticle.excerpt;
+    const isGenerated = isGeneratedArticle(selectedArticle);
+
     return (
       <div className="min-h-screen flex flex-col font-sans">
+        <Helmet>
+          <title>{articleTitle}</title>
+          <meta name="description" content={articleDescription} />
+          <meta name="robots" content={isGenerated ? "noindex, nofollow" : "index, follow"} />
+          <link rel="canonical" href={articleUrl} />
+          <meta property="og:title" content={articleTitle} />
+          <meta property="og:description" content={articleDescription} />
+          <meta property="og:url" content={articleUrl} />
+          <meta property="og:type" content="article" />
+          <meta property="og:image" content={`${SITE_URL}/opengraph.jpg`} />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+          <meta property="article:author" content={author.name} />
+          <meta property="article:published_time" content={new Date(selectedArticle.date).toISOString()} />
+          <meta property="article:section" content={selectedArticle.category} />
+          <meta property="twitter:title" content={articleTitle} />
+          <meta property="twitter:description" content={articleDescription} />
+          <meta property="twitter:url" content={articleUrl} />
+          <meta property="twitter:image" content={`${SITE_URL}/opengraph.jpg`} />
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Article",
+              "headline": selectedArticle.title,
+              "description": selectedArticle.excerpt,
+              "author": {
+                "@type": "Person",
+                "name": author.name,
+                "jobTitle": author.role
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "SEOaxe",
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": `${SITE_URL}/logo.png`
+                }
+              },
+              "datePublished": new Date(selectedArticle.date).toISOString(),
+              "dateModified": new Date(selectedArticle.date).toISOString(),
+              "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": articleUrl
+              },
+              "url": articleUrl,
+              "articleSection": selectedArticle.category,
+              "wordCount": selectedArticle.content.split(/\s+/).length,
+              "timeRequired": `PT${selectedArticle.readTime.split(' ')[0]}M`,
+              "image": `${SITE_URL}/android-chrome-512x512.png`,
+              "keywords": selectedArticle.category
+            })}
+          </script>
+        </Helmet>
         <Navbar />
         <main className="flex-1 py-12 px-4">
           <div className="container mx-auto">
@@ -1923,6 +1928,22 @@ export default function Blog() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans">
+      <Helmet>
+        <title>SEOaxe Blog | SEO & AEO Repair Guides</title>
+        <meta name="description" content="SEOaxe blog articles on SEO repair, AEO, schema, technical SEO, Search Console, and page-level optimization." />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={`${SITE_URL}/blog`} />
+        <meta property="og:title" content="SEOaxe Blog | SEO & AEO Repair Guides" />
+        <meta property="og:description" content="SEOaxe blog articles on SEO repair, AEO, schema, technical SEO, Search Console, and page-level optimization." />
+        <meta property="og:url" content={`${SITE_URL}/blog`} />
+        <meta property="og:image" content={`${SITE_URL}/opengraph.jpg`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="twitter:title" content="SEOaxe Blog | SEO & AEO Repair Guides" />
+        <meta property="twitter:description" content="SEOaxe blog articles on SEO repair, AEO, schema, technical SEO, Search Console, and page-level optimization." />
+        <meta property="twitter:url" content={`${SITE_URL}/blog`} />
+        <meta property="twitter:image" content={`${SITE_URL}/opengraph.jpg`} />
+      </Helmet>
       <Navbar />
       
       <main className="flex-1 py-12 px-4">

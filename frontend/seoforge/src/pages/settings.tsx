@@ -74,6 +74,9 @@ export default function Settings() {
   const [preferredMarkets, setPreferredMarkets] = useState("");
   const [primaryCms, setPrimaryCms] = useState("custom");
   const [optimizationStyle, setOptimizationStyle] = useState("balanced");
+  const [customSubdomain, setCustomSubdomain] = useState("");
+  const [customEmailDomain, setCustomEmailDomain] = useState("");
+  const [enableClientPortal, setEnableClientPortal] = useState(false);
 
   useEffect(() => {
     if (data) {
@@ -87,6 +90,9 @@ export default function Settings() {
       setPreferredMarkets(data.preferredMarkets ?? DEFAULT_AGENCY_SETTINGS.preferredMarkets);
       setPrimaryCms(data.primaryCms ?? DEFAULT_AGENCY_SETTINGS.primaryCms);
       setOptimizationStyle(data.optimizationStyle ?? DEFAULT_AGENCY_SETTINGS.optimizationStyle);
+      setCustomSubdomain(data.customSubdomain ?? "");
+      setCustomEmailDomain(data.customEmailDomain ?? "");
+      setEnableClientPortal(data.enableClientPortal ?? DEFAULT_AGENCY_SETTINGS.enableClientPortal);
     }
   }, [data]);
 
@@ -112,6 +118,9 @@ export default function Settings() {
           preferredMarkets: preferredMarkets.trim() || null,
           primaryCms: primaryCms.trim() || null,
           optimizationStyle: optimizationStyle.trim() || null,
+          customSubdomain: customSubdomain.trim() || null,
+          customEmailDomain: customEmailDomain.trim() || null,
+          enableClientPortal,
         },
       },
       {
@@ -135,6 +144,9 @@ export default function Settings() {
     setPreferredMarkets(DEFAULT_AGENCY_SETTINGS.preferredMarkets);
     setPrimaryCms(DEFAULT_AGENCY_SETTINGS.primaryCms);
     setOptimizationStyle(DEFAULT_AGENCY_SETTINGS.optimizationStyle);
+    setCustomSubdomain(DEFAULT_AGENCY_SETTINGS.customSubdomain ?? "");
+    setCustomEmailDomain(DEFAULT_AGENCY_SETTINGS.customEmailDomain ?? "");
+    setEnableClientPortal(DEFAULT_AGENCY_SETTINGS.enableClientPortal);
   };
 
   const handleExportExamples = async () => {
@@ -283,6 +295,31 @@ export default function Settings() {
                       <option value="balanced">Balanced</option>
                       <option value="aggressive">Aggressive</option>
                     </select>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-sm font-medium mb-2 block">Custom subdomain</label>
+                    <Input
+                      value={customSubdomain}
+                      onChange={(e) => setCustomSubdomain(e.target.value)}
+                      placeholder="clients.youragency.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Custom email domain</label>
+                    <Input
+                      value={customEmailDomain}
+                      onChange={(e) => setCustomEmailDomain(e.target.value)}
+                      placeholder="youragency.com"
+                    />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <label className="text-sm font-medium">Enable client portal</label>
+                    <input
+                      type="checkbox"
+                      checked={enableClientPortal}
+                      onChange={(e) => setEnableClientPortal(e.target.checked)}
+                      className="h-5 w-5 rounded border-input"
+                    />
                   </div>
                 </CardContent>
                 <CardFooter className="bg-muted/30 border-t px-6 py-4 flex justify-between items-center">

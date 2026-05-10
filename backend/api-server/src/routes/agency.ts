@@ -28,6 +28,9 @@ function toResponse(row: typeof agencySettingsTable.$inferSelect) {
     preferredMarkets: row.preferredMarkets,
     primaryCms: row.primaryCms,
     optimizationStyle: row.optimizationStyle,
+    customSubdomain: row.customSubdomain,
+    customEmailDomain: row.customEmailDomain,
+    enableClientPortal: row.enableClientPortal,
   };
 }
 
@@ -69,6 +72,9 @@ router.put("/agency-settings", requireAuthenticatedUser, async (req, res) => {
       preferredMarkets: parsed.data.preferredMarkets ?? null,
       primaryCms: parsed.data.primaryCms ?? null,
       optimizationStyle: parsed.data.optimizationStyle ?? null,
+      customSubdomain: parsed.data.customSubdomain ?? null,
+      customEmailDomain: parsed.data.customEmailDomain ?? null,
+      enableClientPortal: parsed.data.enableClientPortal ?? false,
       updatedAt: new Date(),
     })
     .where(eq(agencySettingsTable.id, SINGLETON_ID))

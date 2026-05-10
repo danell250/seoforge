@@ -1,4 +1,4 @@
-import { pgTable, serial, text, integer, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, integer, timestamp, jsonb } from "drizzle-orm/pg-core";
 
 export const optimizationsTable = pgTable("optimizations", {
   id: serial("id").primaryKey(),
@@ -6,6 +6,10 @@ export const optimizationsTable = pgTable("optimizations", {
   filename: text("filename"),
   title: text("title"),
   sourceUrl: text("source_url"),
+  inputHtmlHash: text("input_html_hash"), // SHA256 of input HTML for caching
+  inputHtml: text("input_html"), // Original input HTML
+  outputHtml: text("output_html"), // Optimized output HTML
+  changes: jsonb("changes"), // Array of change strings
   scoreTechnical: integer("score_technical").notNull(),
   scoreContent: integer("score_content").notNull(),
   scoreAeo: integer("score_aeo").notNull(),

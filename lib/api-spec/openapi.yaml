@@ -625,6 +625,25 @@ components:
           description: Description of African language optimizations applied
         africanLanguageSupport:
           $ref: "#/components/schemas/AfricanLanguageSupport"
+        optimizationId:
+          type: integer
+        pageType:
+          type: string
+        aiReview:
+          type: object
+          properties:
+            summary:
+              type: string
+            score:
+              type: integer
+            passedChecks:
+              type: array
+              items:
+                type: string
+            flags:
+              type: array
+              items:
+                type: string
       required:
         - optimizedHtml
         - changes
@@ -912,6 +931,27 @@ components:
         websiteUrl:
           type: string
           nullable: true
+        brandVoice:
+          type: string
+          nullable: true
+        preferredMarkets:
+          type: string
+          nullable: true
+        primaryCms:
+          type: string
+          nullable: true
+        optimizationStyle:
+          type: string
+          nullable: true
+        customSubdomain:
+          type: string
+          nullable: true
+        customEmailDomain:
+          type: string
+          nullable: true
+        enableClientPortal:
+          type: boolean
+          nullable: true
       required:
         - brandName
         - tagline
@@ -938,6 +978,27 @@ components:
           nullable: true
         websiteUrl:
           type: string
+          nullable: true
+        brandVoice:
+          type: string
+          nullable: true
+        preferredMarkets:
+          type: string
+          nullable: true
+        primaryCms:
+          type: string
+          nullable: true
+        optimizationStyle:
+          type: string
+          nullable: true
+        customSubdomain:
+          type: string
+          nullable: true
+        customEmailDomain:
+          type: string
+          nullable: true
+        enableClientPortal:
+          type: boolean
           nullable: true
       required:
         - brandName

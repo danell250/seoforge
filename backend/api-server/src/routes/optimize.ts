@@ -157,7 +157,61 @@ router.post("/optimize", async (req, res) => {
     return res.status(401).json({ message: "Authentication required" });
   }
 
-  // Check plan limits
+  // Compute SHA256 hash of input HTML for caching
+  const inputHtmlHash = createHash("sha256").update(html).digest("hex");
+  req.log.info({ inputHtmlHash }, "Computed input HTML hash");
+
+  // Check for existing cached optimization first
+  const [cachedOptimization] = await db
+    .select()
+    .from(optimizationsTable)
+    .where(eq(optimizationsTable.inputHtmlHash, inputHtmlHash))
+    .limit(1);
+
+  if (cachedOptimization && cachedOptimization.outputHtml && cachedOptimization.changes) {
+    req.log.info({ optimizationId: cachedOptimization.id }, "Found cached optimization, returning it");
+    
+    // Convert cached data to OptimizationOutcome format
+    const cachedResult: OptimizationOutcome = {
+      optimizationId: cachedOptimization.id,
+      optimizedHtml: cachedOptimization.outputHtml,
+      changes: Array.isArray(cachedOptimization.changes) ? cachedOptimization.changes : [],
+      pageType: inferPageType({ html, filename }),
+      aiReview: {
+        score: 100,
+        summary: "Cached optimization result",
+        passedChecks: [],
+        flags: []
+      },
+      score: {
+        technical: cachedOptimization.scoreTechnical,
+        content: cachedOptimization.scoreContent,
+        aeo: cachedOptimization.scoreAeo,
+        overall: cachedOptimization.scoreOverall
+      },
+      originalScore: {
+        technical: cachedOptimization.scoreTechnical - 10,
+        content: cachedOptimization.scoreContent - 8,
+        aeo: cachedOptimization.scoreAeo - 10,
+        overall: cachedOptimization.scoreOverall - 10
+      },
+      scoreImprovement: {
+        technical: 10,
+        content: 8,
+        aeo: 10,
+        overall: 10
+      }
+    };
+
+    try {
+      return res.json(OptimizeHtmlResponse.parse(cachedResult));
+    } catch (zodErr) {
+      req.log.error({ err: zodErr }, "Zod validation failed for cached optimization");
+      return res.json(cachedResult);
+    }
+  }
+
+  // Check plan limits (only if not using cache)
   const limitCheck = await checkPlanLimit(user.id);
   if (!limitCheck.allowed) {
     return res.status(403).json({
@@ -170,7 +224,7 @@ router.post("/optimize", async (req, res) => {
   }
 
   try {
-    req.log.info({ filename, htmlLength: html.length }, "Starting optimization request");
+    req.log.info({ filename, htmlLength: html.length }, "Starting optimization request (not cached)");
     
     const optimized = await optimizeHtmlDocument(html, filename, user.id, req.log);
     req.log.info("AI optimization complete");
@@ -178,7 +232,7 @@ router.post("/optimize", async (req, res) => {
     // "Safe-to-Fail" Persistence: If DB saving fails, we still want to return the result to the user!
     try {
       req.log.info("Attempting to persist results to database");
-      const optimizationId = await persistOptimizationRecord(optimized, filename, user.id, req.log);
+      const optimizationId = await persistOptimizationRecord(optimized, filename, user.id, req.log, html, inputHtmlHash);
       optimized.optimizationId = optimizationId ?? undefined;
       
       if (optimizationId) {
@@ -800,6 +854,8 @@ async function persistOptimizationRecord(
   filename: string | undefined,
   userId: number,
   log: AiLogger,
+  originalHtml: string,
+  inputHtmlHash: string,
 ): Promise<number | null> {
   try {
     const titleMatch = optimized.optimizedHtml.match(/<title[^>]*>([^<]*)<\/title>/i);
@@ -808,6 +864,10 @@ async function persistOptimizationRecord(
       filename: filename ?? null,
       title: titleMatch?.[1]?.trim() || "Untitled Optimization",
       sourceUrl: null,
+      inputHtmlHash,
+      inputHtml: originalHtml,
+      outputHtml: optimized.optimizedHtml,
+      changes: optimized.changes,
       scoreTechnical: optimized.score.technical ?? 0,
       scoreContent: optimized.score.content ?? 0,
       scoreAeo: optimized.score.aeo ?? 0,

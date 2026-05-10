@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
 import {
   ArrowRight,
   BadgeCheck,
@@ -23,6 +24,7 @@ import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SITE_URL } from "@/lib/brand-metadata";
+import { FAQPageSchema } from "@/components/seo";
 
 type PageSlug =
   | "seo-repair-engine"
@@ -464,61 +466,29 @@ const pages: Record<PageSlug, SeoPage> = {
 
 export const seoLibraryPages = Object.values(pages);
 
-function setMeta(name: string, value: string) {
-  let tag = document.querySelector(`meta[name="${name}"]`);
-  if (!tag) {
-    tag = document.createElement("meta");
-    tag.setAttribute("name", name);
-    document.head.appendChild(tag);
-  }
-  tag.setAttribute("content", value);
-}
-
-function setProperty(property: string, value: string) {
-  let tag = document.querySelector(`meta[property="${property}"]`);
-  if (!tag) {
-    tag = document.createElement("meta");
-    tag.setAttribute("property", property);
-    document.head.appendChild(tag);
-  }
-  tag.setAttribute("content", value);
-}
-
-function setCanonical(url: string) {
-  let link = document.querySelector('link[rel="canonical"]');
-  if (!link) {
-    link = document.createElement("link");
-    link.setAttribute("rel", "canonical");
-    document.head.appendChild(link);
-  }
-  link.setAttribute("href", url);
-}
-
-function usePageSeo(page: SeoPage) {
-  useEffect(() => {
-    const url = `${SITE_URL}/${page.slug}`;
-    document.title = `${page.eyebrow} | SEOaxe`;
-    setMeta("description", page.description);
-    setMeta("robots", "index, follow");
-    setCanonical(url);
-    setProperty("og:title", `${page.eyebrow} | SEOaxe`);
-    setProperty("og:description", page.description);
-    setProperty("og:url", url);
-    setProperty("twitter:title", `${page.eyebrow} | SEOaxe`);
-    setProperty("twitter:description", page.description);
-    setProperty("twitter:url", url);
-  }, [page]);
-}
-
 function SeoLibraryPage({ slug }: { slug: PageSlug }) {
   const page = pages[slug];
   const Icon = page.icon;
-  usePageSeo(page);
 
+  const pageUrl = `${SITE_URL}/${page.slug}`;
+  const pageTitle = `${page.eyebrow} | SEOaxe`;
   const related = seoLibraryPages.filter((item) => item.slug !== slug).slice(0, 4);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={page.description} />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={pageUrl} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={page.description} />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="twitter:title" content={pageTitle} />
+        <meta property="twitter:description" content={page.description} />
+        <meta property="twitter:url" content={pageUrl} />
+      </Helmet>
+      <FAQPageSchema questions={page.faq.map(q => ({ name: q.question, answer: q.answer }))} />
       <Navbar />
       <main className="flex-1">
         <section className="border-b bg-muted/20">

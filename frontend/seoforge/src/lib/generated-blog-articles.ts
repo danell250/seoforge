@@ -124,17 +124,27 @@ function buildContent(topic: string, category: string): string {
   `;
 }
 
+function truncateExcerpt(text: string, maxLength: number = 155): string {
+  if (text.length <= maxLength) return text;
+  // Truncate to maxLength and remove partial word at the end
+  const truncated = text.substring(0, maxLength);
+  const lastSpace = truncated.lastIndexOf(" ");
+  // If we found a space, use it; otherwise just use the truncated text
+  return lastSpace > 0 ? truncated.substring(0, lastSpace) + "." : truncated + ".";
+}
+
 export const generatedBlogSlugs = topics.map(slugify);
 
 export const generatedArticles: GeneratedBlogArticle[] = topics.map((topic, index) => {
   const category = categoryFor(topic, index);
   const day = String((index % 28) + 1).padStart(2, "0");
+  const rawExcerpt = `A practical guide to ${topic.toLowerCase()} with a page-level repair checklist, common mistakes, and a deployable SEOaxe workflow.`;
 
   return {
     id: 1000 + index,
     slug: slugify(topic),
     title: `${topic}: Complete SEOaxe Guide`,
-    excerpt: `A practical guide to ${topic.toLowerCase()} with a page-level repair checklist, common mistakes, and a deployable SEOaxe workflow.`,
+    excerpt: truncateExcerpt(rawExcerpt),
     category,
     date: `May ${day}, 2026`,
     readTime: "7 min read",

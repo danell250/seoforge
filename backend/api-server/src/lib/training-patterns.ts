@@ -25,7 +25,7 @@ export async function buildAcceptedExamplesPrompt(
       ),
     )
     .orderBy(desc(sql`COALESCE(${aiTrainingExamplesTable.evaluationScore}, 0)`), desc(aiTrainingExamplesTable.updatedAt))
-    .limit(3);
+    .limit(10);
 
   if (examples.length === 0) {
     return null;

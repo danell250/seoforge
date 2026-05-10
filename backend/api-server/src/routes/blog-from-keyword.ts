@@ -145,8 +145,8 @@ router.post("/blog-from-keyword", async (req, res) => {
         htmlLabel: "Target Keyword",
         primaryHtmlLimit: 10_000,
         fallbackHtmlLimit: 5_000,
-        timeoutMs: 90_000, // Increased for deeper content
-        fallbackTimeoutMs: 60_000,
+        timeoutMs: 45_000, // Reduced to fit Vercel function limits
+        fallbackTimeoutMs: 25_000,
         extraParts: [
           `Target Keyword: ${keyword}`,
           `Word Count Target: 2000-3000 words (comprehensive, beats thin content)`,

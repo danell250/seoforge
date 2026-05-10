@@ -14,6 +14,9 @@ export async function ensureAgencySettingsSchema() {
         ADD COLUMN IF NOT EXISTS preferred_markets text,
         ADD COLUMN IF NOT EXISTS primary_cms text,
         ADD COLUMN IF NOT EXISTS optimization_style text,
+        ADD COLUMN IF NOT EXISTS custom_subdomain text,
+        ADD COLUMN IF NOT EXISTS custom_email_domain text,
+        ADD COLUMN IF NOT EXISTS enable_client_portal boolean DEFAULT false,
         ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now()
     `);
   } catch (error) {

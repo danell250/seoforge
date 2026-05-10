@@ -53,6 +53,7 @@ export * from './optimizationListResult';
 export * from './optimizationRecord';
 export * from './optimizeRequest';
 export * from './optimizeResponse';
+export * from './optimizeResponseAiReview';
 export * from './scanCompetitorRequest';
 export * from './scoreImprovement';
 export * from './seoScore';

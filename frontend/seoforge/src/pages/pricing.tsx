@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X } from "lucide-react";
 import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { useEffect, useMemo, useState } from "react";
 import { BRAND_NAME, PRODUCT_DESCRIPTION, SITE_URL } from "@/lib/brand-metadata";
 import { useAuth } from "@/hooks/use-auth";
@@ -13,6 +14,7 @@ import {
   type PricingLocale,
 } from "@/lib/local-pricing";
 import { PLAN_DEFINITIONS } from "@/lib/plans";
+import { generateAfricanHreflang, DEFAULT_SUPPORTED_LANGUAGES } from "@/lib/hreflang";
 
 interface PricingContextResponse {
   currency: PricingLocale["currency"];
@@ -264,6 +266,25 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <title>SEOaxe Pricing - Live SEO audit plans</title>
+        <meta name="description" content="SEOaxe pricing: Free, Starter, and Agency plans for teams that want live URL audits, schema guidance, AEO improvements, audit receipts, and health scoring in one workflow." />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={`${SITE_URL}/pricing`} />
+        {generateAfricanHreflang(`${SITE_URL}/pricing`, DEFAULT_SUPPORTED_LANGUAGES).map((tag, idx) => (
+          <link key={idx} rel="alternate" hrefLang={tag.hreflang} href={tag.href} />
+        ))}
+        <meta property="og:title" content="SEOaxe Pricing - Live SEO audit plans" />
+        <meta property="og:description" content="SEOaxe pricing: Free, Starter, and Agency plans for teams that want live URL audits, schema guidance, AEO improvements, audit receipts, and health scoring in one workflow." />
+        <meta property="og:url" content={`${SITE_URL}/pricing`} />
+        <meta property="og:image" content={`${SITE_URL}/opengraph.jpg`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="twitter:title" content="SEOaxe Pricing - Live SEO audit plans" />
+        <meta property="twitter:description" content="SEOaxe pricing: Free, Starter, and Agency plans for teams that want live URL audits, schema guidance, AEO improvements, audit receipts, and health scoring in one workflow." />
+        <meta property="twitter:url" content={`${SITE_URL}/pricing`} />
+        <meta property="twitter:image" content={`${SITE_URL}/opengraph.jpg`} />
+      </Helmet>
       <Navbar />
       <script
         id="pricing-product-schema"

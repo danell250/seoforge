@@ -1,4 +1,4 @@
-import { OrganizationSchema, WebsiteSchema, FAQPageSchema, SoftwareApplicationSchema, LocalBusinessSchema } from "./structured-data";
+import { OrganizationSchema, WebsiteSchema, FAQPageSchema, SoftwareApplicationSchema, LocalBusinessSchema, HowToSchema, SpeakableSchema } from "./structured-data";
 
 export function GlobalSEO() {
   return (
@@ -7,6 +7,7 @@ export function GlobalSEO() {
       <WebsiteSchema />
       <SoftwareApplicationSchema />
       <LocalBusinessSchema />
+      <FAQPageSchema />
     </>
   );
 }

@@ -19,6 +19,7 @@ import paymentsRouter from "./payments";
 import auditRouter from "./audit";
 import intentRouter from "./intent";
 import toolsRouter from "./tools";
+import aiFeedbackRouter from "./ai-feedback";
 
 const router: IRouter = Router();
 
@@ -42,5 +43,6 @@ router.use(paymentsRouter);
 router.use(auditRouter);
 router.use(intentRouter);
 router.use(toolsRouter);
+router.use(aiFeedbackRouter);
 
 export default router;

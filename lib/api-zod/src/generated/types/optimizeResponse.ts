@@ -6,12 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { AfricanLanguageSupport } from './africanLanguageSupport';
+import type { OptimizeResponseAiReview } from './optimizeResponseAiReview';
 import type { ScoreImprovement } from './scoreImprovement';
 import type { SeoScore } from './seoScore';
 
 export interface OptimizeResponse {
-  /** Saved optimization record id */
-  optimizationId?: number;
   optimizedHtml: string;
   changes: string[];
   score: SeoScore;
@@ -19,18 +18,12 @@ export interface OptimizeResponse {
   originalScore: SeoScore;
   /** Points gained from optimization */
   scoreImprovement: ScoreImprovement;
-  /** Detected page type used for SEOaxe rule packs */
-  pageType?: 'homepage' | 'landing' | 'blog' | 'product' | 'service' | 'location' | 'docs' | 'generic';
-  /** Automatic SEOaxe review of the optimized output */
-  aiReview?: {
-    score: number;
-    summary: string;
-    passedChecks: string[];
-    flags: string[];
-  };
   /** ISO 639-1 language code (en, af, zu, xh, pcm, sw) */
   detectedLanguage?: string;
   /** Description of African language optimizations applied */
   languageGuidance?: string;
   africanLanguageSupport?: AfricanLanguageSupport;
+  optimizationId?: number;
+  pageType?: string;
+  aiReview?: OptimizeResponseAiReview;
 }

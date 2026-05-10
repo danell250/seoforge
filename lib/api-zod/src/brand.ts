@@ -9,6 +9,9 @@ export const DEFAULT_AGENCY_SETTINGS = {
   preferredMarkets: "Global English-speaking markets",
   primaryCms: "custom",
   optimizationStyle: "balanced",
+  customSubdomain: null,
+  customEmailDomain: null,
+  enableClientPortal: false,
 } as const;
 
 const LEGACY_BRAND_NAMES = new Set(["SEOForge", "SEODomination"]);

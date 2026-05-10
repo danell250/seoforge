@@ -53,27 +53,64 @@ export function BlogGenerator() {
     setPosts([]);
     setCurrentIndex(0);
 
-    for (let i = 0; i < keywordList.length; i++) {
-      const kw = keywordList[i];
-      setCurrentIndex(i + 1);
-      setCurrentPost(null);
+    const concurrencyLimit = 5;
+    let completedCount = 0;
+    const results: BlogPost[] = [];
 
-      try {
-        const result = await customFetch<BlogPost>("/api/blog-from-keyword", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ keyword: kw, tone }),
-        });
-        setPosts((prev) => [...prev, result]);
-        setCurrentPost(result);
-      } catch (err: any) {
-        toast({
-          title: `Failed to generate: ${kw}`,
-          description: err?.data?.message || "Please try again",
-          variant: "destructive",
-        });
+    async function promisePool<T>(
+      items: string[],
+      processor: (item: string) => Promise<T | null>,
+      limit: number
+    ): Promise<(T | null)[]> {
+      const results: (T | null)[] = [];
+      const executing = new Set<Promise<void>>();
+
+      for (const item of items) {
+        const promise = (async () => {
+          const result = await processor(item);
+          results.push(result);
+        })();
+
+        executing.add(promise);
+        promise.finally(() => executing.delete(promise));
+
+        if (executing.size >= limit) {
+          await Promise.race(executing);
+        }
       }
+
+      await Promise.all(executing);
+      return results;
     }
+
+    const processed = await promisePool(
+      keywordList,
+      async (kw) => {
+        try {
+          const result = await customFetch<BlogPost>("/api/blog-from-keyword", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ keyword: kw, tone }),
+          });
+          results.push(result);
+          setPosts([...results]);
+          setCurrentPost(result);
+          completedCount++;
+          setCurrentIndex(completedCount);
+          return result;
+        } catch (err: any) {
+          toast({
+            title: `Failed to generate: ${kw}`,
+            description: err?.data?.message || "Please try again",
+            variant: "destructive",
+          });
+          completedCount++;
+          setCurrentIndex(completedCount);
+          return null;
+        }
+      },
+      concurrencyLimit
+    );
 
     setGenerating(false);
     setCurrentIndex(0);

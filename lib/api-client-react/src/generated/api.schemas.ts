@@ -54,6 +54,13 @@ export interface ScoreImprovement {
   overall: number;
 }
 
+export type OptimizeResponseAiReview = {
+  summary?: string;
+  score?: number;
+  passedChecks?: string[];
+  flags?: string[];
+};
+
 /**
  * Detected African language code
  */
@@ -121,23 +128,7 @@ export interface AfricanLanguageSupport {
   hreflangTags: string;
 }
 
-export type OptimizeResponsePageType = typeof OptimizeResponsePageType[keyof typeof OptimizeResponsePageType];
-
-
-export const OptimizeResponsePageType = {
-  homepage: 'homepage',
-  landing: 'landing',
-  blog: 'blog',
-  product: 'product',
-  service: 'service',
-  location: 'location',
-  docs: 'docs',
-  generic: 'generic',
-} as const;
-
 export interface OptimizeResponse {
-  /** Saved optimization record id */
-  optimizationId?: number;
   optimizedHtml: string;
   changes: string[];
   score: SeoScore;
@@ -145,20 +136,14 @@ export interface OptimizeResponse {
   originalScore: SeoScore;
   /** Points gained from optimization */
   scoreImprovement: ScoreImprovement;
-  /** Detected page type used for SEOaxe rule packs */
-  pageType?: OptimizeResponsePageType;
-  /** Automatic SEOaxe review of the optimized output */
-  aiReview?: {
-    score: number;
-    summary: string;
-    passedChecks: string[];
-    flags: string[];
-  };
   /** ISO 639-1 language code (en, af, zu, xh, pcm, sw) */
   detectedLanguage?: string;
   /** Description of African language optimizations applied */
   languageGuidance?: string;
   africanLanguageSupport?: AfricanLanguageSupport;
+  optimizationId?: number;
+  pageType?: string;
+  aiReview?: OptimizeResponseAiReview;
 }
 
 export interface ScanCompetitorRequest {
@@ -273,6 +258,9 @@ export interface AgencySettings {
   preferredMarkets?: string | null;
   primaryCms?: string | null;
   optimizationStyle?: string | null;
+  customSubdomain?: string | null;
+  customEmailDomain?: string | null;
+  enableClientPortal?: boolean | null;
 }
 
 export interface AgencySettingsInput {
@@ -295,6 +283,9 @@ export interface AgencySettingsInput {
   preferredMarkets?: string | null;
   primaryCms?: string | null;
   optimizationStyle?: string | null;
+  customSubdomain?: string | null;
+  customEmailDomain?: string | null;
+  enableClientPortal?: boolean | null;
 }
 
 export interface SitemapUrlRecord {
@@ -543,3 +534,4 @@ export interface BlogGenerationResult {
   /** Human-readable language name */
   languageName?: string;
 }
+

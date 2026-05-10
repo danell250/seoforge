@@ -15,6 +15,8 @@ import {
 } from "../lib/stitch-express";
 import { verifySvixSignature } from "../lib/svix";
 import crypto from "crypto";
+import * as crc32 from "buffer-crc32";
+import https from "https";
 
 import { ordersController } from "../lib/paypal";
 import { CheckoutPaymentIntent } from "@paypal/paypal-server-sdk";
@@ -34,6 +36,57 @@ const ZAR_PRICES: Record<string, number> = {
   starter: 599,
   agency: 1499,
 };
+
+function downloadCertificate(url: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, (res) => {
+        const chunks: Buffer[] = [];
+        res.on("data", (chunk) => chunks.push(chunk));
+        res.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+      })
+      .on("error", reject);
+  });
+}
+
+const certCache = new Map<string, { cert: string; expiresAt: number }>();
+
+async function verifyPayPalSignature({
+  body,
+  headers,
+  webhookId,
+}: {
+  body: Buffer;
+  headers: Record<string, string | string[] | undefined>;
+  webhookId: string;
+}): Promise<boolean> {
+  const transmissionId = headers["paypal-transmission-id"] as string;
+  const transmissionTime = headers["paypal-transmission-time"] as string;
+  const certUrl = headers["paypal-cert-url"] as string;
+  const signature = headers["paypal-transmission-sig"] as string;
+
+  if (!transmissionId || !transmissionTime || !certUrl || !signature) {
+    return false;
+  }
+
+  const checksum = crc32.unsigned(body).toString();
+  const expected = [transmissionId, transmissionTime, webhookId, checksum].join("|");
+
+  let certificate: string;
+  const cached = certCache.get(certUrl);
+  if (cached && cached.expiresAt > Date.now()) {
+    certificate = cached.cert;
+  } else {
+    certificate = await downloadCertificate(certUrl);
+    certCache.set(certUrl, { cert: certificate, expiresAt: Date.now() + 60 * 60 * 1000 });
+  }
+
+  const verifier = crypto.createVerify("RSA-SHA256");
+  verifier.update(expected);
+  verifier.end();
+
+  return verifier.verify(certificate, signature, "base64");
+}
 
 router.get("/payments/health", (req, res) => {
   return res.json({ status: "ok", paypalConfigured: !!process.env.PAYPAL_CLIENT_ID });
@@ -102,10 +155,10 @@ function isPaidWebhook(payload: unknown): boolean {
 }
 
 router.post("/payments/paypal/webhook", async (req, res) => {
-  const webhookSecret = process.env.PAYPAL_WEBHOOK_SECRET?.trim();
-  if (!webhookSecret) {
-    req.log.error("PAYPAL_WEBHOOK_SECRET is not configured");
-    return res.status(500).json({ message: "Webhook secret is not configured" });
+  const webhookId = process.env.PAYPAL_WEBHOOK_ID?.trim();
+  if (!webhookId) {
+    req.log.error("PAYPAL_WEBHOOK_ID is not configured");
+    return res.status(500).json({ message: "Webhook ID is not configured" });
   }
 
   const rawBody = (req as RequestWithRawBody).rawBody;
@@ -114,25 +167,14 @@ router.post("/payments/paypal/webhook", async (req, res) => {
     return res.status(400).json({ message: "Missing request body" });
   }
 
-  // Verify PayPal webhook signature
-  const paypalTransmissionId = req.headers["paypal-transmission-id"] as string;
-  const paypalCertUrl = req.headers["paypal-cert-url"] as string;
-  const paypalAuthAlgo = req.headers["paypal-auth-algo"] as string;
-  const paypalTransmissionSig = req.headers["paypal-transmission-sig"] as string;
-  const paypalTransmissionTime = req.headers["paypal-transmission-time"] as string;
+  // Verify PayPal webhook signature with proper CRC32 and certificate
+  const isValid = await verifyPayPalSignature({
+    body: rawBody,
+    headers: req.headers,
+    webhookId,
+  });
 
-  if (!paypalTransmissionId || !paypalCertUrl || !paypalAuthAlgo || !paypalTransmissionSig || !paypalTransmissionTime) {
-    req.log.warn("PayPal webhook missing required headers");
-    return res.status(400).json({ message: "Missing required PayPal headers" });
-  }
-
-  // Simple signature verification (in production, use PayPal SDK for full verification)
-  const expectedSig = crypto
-    .createHmac("sha256", webhookSecret)
-    .update(`${paypalTransmissionId}|${paypalTransmissionTime}|${rawBody.toString()}`)
-    .digest("base64");
-
-  if (paypalTransmissionSig !== expectedSig) {
+  if (!isValid) {
     req.log.warn("PayPal webhook signature verification failed");
     return res.status(400).json({ message: "Invalid webhook signature" });
   }

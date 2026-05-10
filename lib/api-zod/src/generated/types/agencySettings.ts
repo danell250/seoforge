@@ -17,4 +17,7 @@ export interface AgencySettings {
   preferredMarkets?: string | null;
   primaryCms?: string | null;
   optimizationStyle?: string | null;
+  customSubdomain?: string | null;
+  customEmailDomain?: string | null;
+  enableClientPortal?: boolean | null;
 }

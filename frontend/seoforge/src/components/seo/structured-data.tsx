@@ -67,44 +67,39 @@ export function WebsiteSchema() {
   );
 }
 
-export function FAQPageSchema() {
+export function FAQPageSchema(props?: { questions?: Array<{ name: string; answer: string }> }) {
+  const defaultQuestions = [
+    {
+      name: `What is ${BRAND_NAME}?`,
+      answer: `${BRAND_NAME} is a live SEO audit engine for existing website pages. It scans public URLs and returns prioritized SEO, AEO, schema, hreflang, sitemap, content gap, and health score guidance without requiring source files.`
+    },
+    {
+      name: "How does live SEO auditing work?",
+      answer: "SEOaxe analyzes an existing public page, identifies the missing search signals, and returns a guided audit. The platform can generate meta title and description recommendations, JSON-LD structured data guidance, AEO answer blocks, XML sitemaps, robots.txt files, and a before/after SEO health score."
+    },
+    {
+      name: "Is SEOaxe free?",
+      answer: "Yes, SEOaxe is free to start with no credit card required. Create a free account to audit live pages, then upgrade if you need premium features like multi-page crawling, competitor analysis, site monitoring, and white-label reporting."
+    },
+    {
+      name: `Does ${BRAND_NAME} support websites in different regions and languages?`,
+      answer: GLOBAL_SUPPORT_ANSWER
+    }
+  ];
+  
+  const questions = props?.questions ?? defaultQuestions;
+  
   const faqData = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": `What is ${BRAND_NAME}?`,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": `${BRAND_NAME} is a live SEO audit engine for existing website pages. It scans public URLs and returns prioritized SEO, AEO, schema, hreflang, sitemap, content gap, and health score guidance without requiring source files.`
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How does live SEO auditing work?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "SEOaxe analyzes an existing public page, identifies the missing search signals, and returns a guided audit. The platform can generate meta title and description recommendations, JSON-LD structured data guidance, AEO answer blocks, XML sitemaps, robots.txt files, and a before/after SEO health score."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Is SEOaxe free?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes, SEOaxe is free to start with no credit card required. Create a free account to audit live pages, then upgrade if you need premium features like multi-page crawling, competitor analysis, site monitoring, and white-label reporting."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": `Does ${BRAND_NAME} support websites in different regions and languages?`,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": GLOBAL_SUPPORT_ANSWER
-        }
+    "mainEntity": questions.map(q => ({
+      "@type": "Question",
+      "name": q.name,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": q.answer
       }
-    ]
+    }))
   };
 
   return (
@@ -149,6 +144,73 @@ export function SoftwareApplicationSchema() {
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareData) }}
+    />
+  );
+}
+
+export function HowToSchema(props: {
+  name: string;
+  description: string;
+  steps: Array<{ name: string; text: string; url?: string; image?: string }>;
+  totalTime?: string;
+  estimatedCost?: { currency: string; value: string };
+}) {
+  const howToData: any = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": props.name,
+    "description": props.description,
+    "step": props.steps.map((step, i) => ({
+      "@type": "HowToStep",
+      "position": i + 1,
+      "name": step.name,
+      "text": step.text,
+      ...(step.url && { "url": step.url }),
+      ...(step.image && { "image": step.image })
+    }))
+  };
+  
+  if (props.totalTime) {
+    howToData.totalTime = props.totalTime;
+  }
+  
+  if (props.estimatedCost) {
+    howToData.estimatedCost = {
+      "@type": "MonetaryAmount",
+      "currency": props.estimatedCost.currency,
+      "value": props.estimatedCost.value
+    };
+  }
+  
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(howToData) }}
+    />
+  );
+}
+
+export function SpeakableSchema(props: { cssSelector?: string[]; xpath?: string[] }) {
+  const speakableData: any = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "speakable": {
+      "@type": "SpeakableSpecification"
+    }
+  };
+  
+  if (props.cssSelector && props.cssSelector.length > 0) {
+    speakableData.speakable.cssSelector = props.cssSelector;
+  }
+  
+  if (props.xpath && props.xpath.length > 0) {
+    speakableData.speakable.xpath = props.xpath;
+  }
+  
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableData) }}
     />
   );
 }

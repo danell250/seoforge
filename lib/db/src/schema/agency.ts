@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, integer, boolean } from "drizzle-orm/pg-core";
 
 export const agencySettingsTable = pgTable("agency_settings", {
   id: serial("id").primaryKey(),
@@ -12,6 +12,9 @@ export const agencySettingsTable = pgTable("agency_settings", {
   preferredMarkets: text("preferred_markets"),
   primaryCms: text("primary_cms"),
   optimizationStyle: text("optimization_style"),
+  customSubdomain: text("custom_subdomain"),
+  customEmailDomain: text("custom_email_domain"),
+  enableClientPortal: boolean("enable_client_portal").default(false),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 

@@ -3,10 +3,13 @@ import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { FAQPageSchema } from "@/components/seo";
+import { generateAfricanHreflang, DEFAULT_SUPPORTED_LANGUAGES } from "@/lib/hreflang";
+import { SITE_URL } from "@/lib/brand-metadata";
 import {
   ArrowRight,
   Bot,
@@ -29,16 +32,6 @@ export default function Home() {
 
   useEffect(() => {
     document.body.classList.add("seoaxe-home");
-    document.title = "SEOaxe - Live SEO Audit and AEO Guidance";
-    const description =
-      "Audit live website pages from a URL. Get SEO, AEO, schema, sitemap, content gap, and competitor guidance without requesting source files.";
-    const metaDesc = document.querySelector('meta[name="description"]');
-    metaDesc?.setAttribute("content", description);
-    document.querySelector('meta[name="title"]')?.setAttribute("content", document.title);
-    document.querySelector('meta[property="og:title"]')?.setAttribute("content", "SEOaxe - Live SEO Audit and AEO Guidance");
-    document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
-    document.querySelector('meta[property="twitter:title"]')?.setAttribute("content", "SEOaxe - Live SEO Audit and AEO Guidance");
-    document.querySelector('meta[property="twitter:description"]')?.setAttribute("content", description);
     return () => document.body.classList.remove("seoaxe-home");
   }, []);
 
@@ -68,6 +61,25 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans">
+      <Helmet>
+        <title>Free SEO Audit Tool — Fix Existing Pages | SEOaxe</title>
+        <meta name="description" content="Audit live website pages from a URL. Get SEO, AEO, schema, sitemap, content gap, and competitor guidance without requesting source files." />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={SITE_URL} />
+        {generateAfricanHreflang(SITE_URL, DEFAULT_SUPPORTED_LANGUAGES).map((tag, idx) => (
+          <link key={idx} rel="alternate" hrefLang={tag.hreflang} href={tag.href} />
+        ))}
+        <meta property="og:title" content="Free SEO Audit Tool — Fix Existing Pages | SEOaxe" />
+        <meta property="og:description" content="Audit live website pages from a URL. Get SEO, AEO, schema, sitemap, content gap, and competitor guidance without requesting source files." />
+        <meta property="og:url" content={SITE_URL} />
+        <meta property="og:image" content={`${SITE_URL}/opengraph.jpg`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="twitter:title" content="Free SEO Audit Tool — Fix Existing Pages | SEOaxe" />
+        <meta property="twitter:description" content="Audit live website pages from a URL. Get SEO, AEO, schema, sitemap, content gap, and competitor guidance without requesting source files." />
+        <meta property="twitter:url" content={SITE_URL} />
+        <meta property="twitter:image" content={`${SITE_URL}/opengraph.jpg`} />
+      </Helmet>
       <Navbar />
       <FAQPageSchema />
       

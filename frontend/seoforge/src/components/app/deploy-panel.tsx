@@ -23,21 +23,61 @@ export function DeployPanel() {
   const { toast } = useToast();
   const [html, setHtml] = useState("");
 
-  const [wpSite, setWpSite] = useState("");
-  const [wpUser, setWpUser] = useState("");
-  const [wpPass, setWpPass] = useState("");
-  const [wpType, setWpType] = useState<"pages" | "posts">("pages");
+  const [wpSite, setWpSite] = useState(() => localStorage.getItem("seoforge:wp-site") || "");
+  const [wpUser, setWpUser] = useState(() => localStorage.getItem("seoforge:wp-user") || "");
+  const [wpPass, setWpPass] = useState(() => localStorage.getItem("seoforge:wp-pass") || "");
+  const [wpType, setWpType] = useState<"pages" | "posts">((localStorage.getItem("seoforge:wp-type") as "pages" | "posts") || "pages");
   const [wpId, setWpId] = useState("");
 
-  const [shop, setShop] = useState("");
-  const [token, setToken] = useState("");
+  const [shop, setShop] = useState(() => localStorage.getItem("seoforge:shopify-shop") || "");
+  const [token, setToken] = useState(() => localStorage.getItem("seoforge:shopify-token") || "");
   const [pageId, setPageId] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("seoforge:wp-site", wpSite);
+  }, [wpSite]);
+
+  useEffect(() => {
+    localStorage.setItem("seoforge:wp-user", wpUser);
+  }, [wpUser]);
+
+  useEffect(() => {
+    localStorage.setItem("seoforge:wp-pass", wpPass);
+  }, [wpPass]);
+
+  useEffect(() => {
+    localStorage.setItem("seoforge:wp-type", wpType);
+  }, [wpType]);
+
+  useEffect(() => {
+    localStorage.setItem("seoforge:shopify-shop", shop);
+  }, [shop]);
+
+  useEffect(() => {
+    localStorage.setItem("seoforge:shopify-token", token);
+  }, [token]);
 
   const wp = useDeployToWordpress();
   const sh = useDeployToShopify();
   const [importedFrom, setImportedFrom] = useState<string | null>(null);
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
+
+  const clearCredentials = () => {
+    localStorage.removeItem("seoforge:wp-site");
+    localStorage.removeItem("seoforge:wp-user");
+    localStorage.removeItem("seoforge:wp-pass");
+    localStorage.removeItem("seoforge:wp-type");
+    localStorage.removeItem("seoforge:shopify-shop");
+    localStorage.removeItem("seoforge:shopify-token");
+    setWpSite("");
+    setWpUser("");
+    setWpPass("");
+    setWpType("pages");
+    setShop("");
+    setToken("");
+    toast({ title: "Credentials cleared", description: "All saved deployment credentials have been removed from this browser." });
+  };
 
   const persistQueue = (next: QueueItem[]) => {
     setQueue(next);
@@ -161,14 +201,21 @@ export function DeployPanel() {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <Card className="border-2 border-primary/10 shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-2xl flex items-center gap-2">
-            <Rocket className="h-6 w-6 text-primary" />
-            Publish to WordPress or Shopify
-          </CardTitle>
-          <CardDescription>
-            Paste or upload finished web content, then send it to an existing WordPress page or Shopify page. Credentials stay in this browser session and are never stored.
-          </CardDescription>
+        <CardHeader className="border-b bg-muted/30">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-2xl flex items-center gap-2">
+                <Rocket className="h-6 w-6 text-primary" />
+                Publish to WordPress or Shopify
+              </CardTitle>
+              <CardDescription>
+                Paste or upload finished web content, then send it to an existing WordPress page or Shopify page. Credentials are saved locally in your browser for convenience.
+              </CardDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={clearCredentials}>
+              <Trash2 className="h-4 w-4 mr-2" /> Clear credentials
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {importedFrom && (
