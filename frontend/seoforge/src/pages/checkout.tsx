@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { getPlanDefinition, PLAN_DEFINITIONS } from "@/lib/plans";
-import { detectPricingLocale, formatLocalPrice } from "@/lib/local-pricing";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { customFetch } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
@@ -26,7 +25,6 @@ export default function Checkout() {
   const params = new URLSearchParams(search);
   const planParam = params.get("plan");
   const selectedPlan = getPlanDefinition(planParam) ?? getPlanDefinition("starter");
-  const pricingLocale = detectPricingLocale();
 
   const currentPath = useMemo(() => {
     if (typeof window === "undefined") return location;
@@ -93,7 +91,7 @@ export default function Checkout() {
   };
 
   const priceLabel = selectedPlan
-    ? formatLocalPrice(selectedPlan.amountZar, pricingLocale)
+    ? `$${selectedPlan.amountUsd}${selectedPlan.period === "forever" ? "" : "/month"}`
     : null;
 
   if (!selectedPlan) {

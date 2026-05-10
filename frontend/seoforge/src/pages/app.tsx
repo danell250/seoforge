@@ -12,6 +12,7 @@ import { SinglePageOptimizer } from "@/components/app/single-page-optimizer";
 import { ZipUpload } from "@/components/app/zip-upload";
 import { HtmlGuide } from "@/components/app/html-guide";
 import { DeployPanel } from "@/components/app/deploy-panel";
+import { KeywordResearch } from "@/components/app/keyword-research";
 import { type ReactNode, useEffect, useState } from "react";
 import { useGetAgencySettings } from "@workspace/api-client-react";
 import { Bot, Globe, Languages, Search, ShieldCheck, Sparkles, Radar, FileQuestion, FileEdit, FileArchive, BookOpen, UploadCloud, Settings } from "lucide-react";

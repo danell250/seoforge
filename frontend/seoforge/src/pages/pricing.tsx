@@ -5,33 +5,15 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Check, X } from "lucide-react";
 import { Link } from "wouter";
 import { Helmet } from "react-helmet-async";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { BRAND_NAME, PRODUCT_DESCRIPTION, SITE_URL } from "@/lib/brand-metadata";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  detectPricingLocale,
-  formatLocalPrice,
-  type PricingLocale,
-} from "@/lib/local-pricing";
 import { PLAN_DEFINITIONS } from "@/lib/plans";
 import { generateAfricanHreflang, DEFAULT_SUPPORTED_LANGUAGES } from "@/lib/hreflang";
 
-interface PricingContextResponse {
-  currency: PricingLocale["currency"];
-  locale: string;
-  region: string | null;
-  plans: {
-    free: number;
-    starter: number;
-    agency: number;
-  };
-}
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
-
-function buildProductSchema(pricingContext: PricingContextResponse | null) {
-  const activeCurrency = pricingContext?.currency ?? "ZAR";
-  const prices = pricingContext?.plans ?? { free: 16.38, starter: 299, agency: 999 };
+function buildProductSchema() {
+  const activeCurrency = "USD";
+  const prices = { free: 0, starter: 1, professional: 37, agency: 92 };
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -69,11 +51,11 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
         "name": "Free Plan",
         "price": prices.free.toFixed(2),
         "priceCurrency": activeCurrency,
-        "description": "3 live page audits per month with basic checks and audit receipts",
+        "description": "1 live page audit per month with basic technical SEO checks",
         "availability": "https://schema.org/InStock",
         "hasMerchantReturnPolicy": {
           "@type": "MerchantReturnPolicy",
-          "applicableCountry": "ZA",
+          "applicableCountry": "US",
           "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
           "merchantReturnDays": 14,
           "returnMethod": "https://schema.org/ReturnByMail",
@@ -103,7 +85,7 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
           },
           "shippingDestination": {
             "@type": "DefinedRegion",
-            "addressCountry": "ZA"
+            "addressCountry": "US"
           }
         }
       },
@@ -113,11 +95,11 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
         "price": prices.starter.toFixed(2),
         "priceCurrency": activeCurrency,
         "priceValidUntil": "2026-12-31",
-        "description": "20 live page audits per month with AEO answer blocks and copyable snippets",
+        "description": "3 live page audits per month with basic checks and audit receipts",
         "availability": "https://schema.org/InStock",
         "hasMerchantReturnPolicy": {
           "@type": "MerchantReturnPolicy",
-          "applicableCountry": "ZA",
+          "applicableCountry": "US",
           "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
           "merchantReturnDays": 14,
           "returnMethod": "https://schema.org/ReturnByMail",
@@ -147,7 +129,51 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
           },
           "shippingDestination": {
             "@type": "DefinedRegion",
-            "addressCountry": "ZA"
+            "addressCountry": "US"
+          }
+        }
+      },
+      {
+        "@type": "Offer",
+        "name": "Professional Plan",
+        "price": prices.professional.toFixed(2),
+        "priceCurrency": activeCurrency,
+        "priceValidUntil": "2026-12-31",
+        "description": "50 live page audits per month with AEO answer blocks and copyable snippets",
+        "availability": "https://schema.org/InStock",
+        "hasMerchantReturnPolicy": {
+          "@type": "MerchantReturnPolicy",
+          "applicableCountry": "US",
+          "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+          "merchantReturnDays": 14,
+          "returnMethod": "https://schema.org/ReturnByMail",
+          "returnFees": "https://schema.org/FreeReturn"
+        },
+        "shippingDetails": {
+          "@type": "OfferShippingDetails",
+          "shippingRate": {
+            "@type": "MonetaryAmount",
+            "value": "0",
+            "currency": activeCurrency
+          },
+          "deliveryTime": {
+            "@type": "ShippingDeliveryTime",
+            "handlingTime": {
+              "@type": "QuantitativeValue",
+              "minValue": 0,
+              "maxValue": 0,
+              "unitCode": "DAY"
+            },
+            "transitTime": {
+              "@type": "QuantitativeValue",
+              "minValue": 0,
+              "maxValue": 0,
+              "unitCode": "DAY"
+            }
+          },
+          "shippingDestination": {
+            "@type": "DefinedRegion",
+            "addressCountry": "US"
           }
         }
       },
@@ -161,7 +187,7 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
         "availability": "https://schema.org/InStock",
         "hasMerchantReturnPolicy": {
           "@type": "MerchantReturnPolicy",
-          "applicableCountry": "ZA",
+          "applicableCountry": "US",
           "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
           "merchantReturnDays": 14,
           "returnMethod": "https://schema.org/ReturnByMail",
@@ -191,7 +217,7 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
           },
           "shippingDestination": {
             "@type": "DefinedRegion",
-            "addressCountry": "ZA"
+            "addressCountry": "US"
           }
         }
       },
@@ -201,55 +227,22 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
 
 export default function Pricing() {
   const { isAuthenticated } = useAuth();
-  const [pricingLocale] = useState(() => detectPricingLocale());
-  const [pricingContext, setPricingContext] = useState<PricingContextResponse | null>(null);
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    void fetch(`${API_BASE_URL}/pricing-context?locale=${encodeURIComponent(pricingLocale.locale)}`, {
-      signal: controller.signal,
-      credentials: "include",
-    })
-      .then(async (response) => {
-        if (!response.ok) {
-          throw new Error(`Pricing context request failed with ${response.status}`);
-        }
-        return response.json() as Promise<PricingContextResponse>;
-      })
-      .then((data) => setPricingContext(data))
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === "AbortError") {
-          return;
-        }
-        setPricingContext(null);
-      });
-
-    return () => controller.abort();
-  }, [pricingLocale.locale]);
-
-  const displayLocale = pricingContext
-    ? { currency: pricingContext.currency, locale: pricingContext.locale, region: pricingContext.region }
-    : pricingLocale;
 
   const plans = useMemo(
     () =>
       PLAN_DEFINITIONS.map((plan) => ({
         ...plan,
-        price: formatLocalPrice(
-          pricingContext?.plans[plan.slug] ?? plan.amountZar,
-          displayLocale,
-        ),
+        price: `$${plan.amountUsd}${plan.period === "forever" ? "" : "/month"}`,
         href:
           isAuthenticated
               ? `/checkout?plan=${plan.slug}`
               : `/login?redirect=${encodeURIComponent(`/checkout?plan=${plan.slug}`)}`,
       })),
-    [displayLocale, isAuthenticated, pricingContext],
+    [isAuthenticated],
   );
   const productSchema = useMemo(
-    () => buildProductSchema(pricingContext),
-    [pricingContext],
+    () => buildProductSchema(null),
+    [],
   );
 
   useEffect(() => {

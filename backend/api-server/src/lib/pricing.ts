@@ -64,31 +64,31 @@ const REGION_TO_CURRENCY: Record<string, SupportedCurrency> = {
   ZA: "ZAR",
 };
 
-const ZAR_PER_CURRENCY: Record<SupportedCurrency, number> = {
-  AED: 5.04,
-  AUD: 12.22,
-  BRL: 3.39,
-  CAD: 13.53,
-  CHF: 20.5,
-  CNY: 2.58,
-  DKK: 2.72,
-  EGP: 0.37,
-  EUR: 20.3,
-  GBP: 23.75,
-  HKD: 2.36,
-  INR: 0.22,
-  JPY: 0.12,
-  KES: 0.14,
-  MXN: 1.09,
-  NGN: 0.012,
-  NOK: 1.72,
-  NZD: 11.18,
-  PLN: 4.76,
-  SAR: 4.93,
-  SEK: 1.75,
-  SGD: 13.76,
-  USD: 18.5,
-  ZAR: 1,
+const USD_PER_CURRENCY: Record<SupportedCurrency, number> = {
+  AED: 0.27,
+  AUD: 0.66,
+  BRL: 0.18,
+  CAD: 0.73,
+  CHF: 1.11,
+  CNY: 0.14,
+  DKK: 0.15,
+  EGP: 0.02,
+  EUR: 1.10,
+  GBP: 1.28,
+  HKD: 0.13,
+  INR: 0.012,
+  JPY: 0.0065,
+  KES: 0.0076,
+  MXN: 0.059,
+  NGN: 0.00065,
+  NOK: 0.093,
+  NZD: 0.60,
+  PLN: 0.26,
+  SAR: 0.27,
+  SEK: 0.095,
+  SGD: 0.74,
+  USD: 1,
+  ZAR: 0.054,
 };
 
 function detectRegionFromLocale(locale: string): string | null {
@@ -107,8 +107,8 @@ export function resolvePricingLocale(inputLocale?: string) {
   return { currency, locale, region };
 }
 
-export function convertFromZar(amountZar: number, currency: SupportedCurrency): number {
-  return amountZar / (ZAR_PER_CURRENCY[currency] ?? ZAR_PER_CURRENCY[DEFAULT_CURRENCY]);
+export function convertFromUsd(amountUsd: number, currency: SupportedCurrency): number {
+  return amountUsd * (USD_PER_CURRENCY[currency] ?? USD_PER_CURRENCY[DEFAULT_CURRENCY]);
 }
 
 export function buildPricingContext(inputLocale?: string) {
@@ -116,9 +116,10 @@ export function buildPricingContext(inputLocale?: string) {
   return {
     ...resolved,
     plans: {
-      free: convertFromZar(0, resolved.currency),
-      starter: convertFromZar(599, resolved.currency),
-      agency: convertFromZar(1499, resolved.currency),
+      free: convertFromUsd(0, resolved.currency),
+      starter: convertFromUsd(1, resolved.currency),
+      professional: convertFromUsd(37, resolved.currency),
+      agency: convertFromUsd(92, resolved.currency),
     },
   };
 }

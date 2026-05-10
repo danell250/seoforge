@@ -1,9 +1,9 @@
-export type PlanSlug = "free" | "starter" | "agency";
+export type PlanSlug = "free" | "starter" | "professional" | "agency";
 
 export interface PlanDefinition {
   slug: PlanSlug;
   name: string;
-  amountZar: number;
+  amountUsd: number;
   period: "forever" | "month";
   description: string;
   features: string[];
@@ -15,14 +15,12 @@ export const PLAN_DEFINITIONS: readonly PlanDefinition[] = [
   {
     slug: "free",
     name: "Free",
-    amountZar: 0,
+    amountUsd: 0,
     period: "forever",
     description: "Perfect for trying our core SEO audit features.",
     features: [
-      "3 live page audits per month",
+      "1 live page audit per month",
       "Basic technical SEO checks",
-      "Standard JSON-LD schema guidance",
-      "Audit receipt for every page",
       "Community support",
     ],
     cta: "Get Started Free",
@@ -30,8 +28,24 @@ export const PLAN_DEFINITIONS: readonly PlanDefinition[] = [
   },
   {
     slug: "starter",
+    name: "Starter",
+    amountUsd: 1,
+    period: "month",
+    description: "Perfect for individuals and small projects.",
+    features: [
+      "3 live page audits per month",
+      "Basic technical SEO checks",
+      "Standard JSON-LD schema guidance",
+      "Audit receipt for every page",
+      "Community support",
+    ],
+    cta: "Start Starter",
+    popular: false,
+  },
+  {
+    slug: "professional",
     name: "Professional",
-    amountZar: 599,
+    amountUsd: 37,
     period: "month",
     description: "For serious website owners and small businesses.",
     features: [
@@ -49,7 +63,7 @@ export const PLAN_DEFINITIONS: readonly PlanDefinition[] = [
   {
     slug: "agency",
     name: "Agency",
-    amountZar: 1499,
+    amountUsd: 92,
     period: "month",
     description: "For SEO agencies and large-scale operations.",
     features: [
@@ -62,13 +76,13 @@ export const PLAN_DEFINITIONS: readonly PlanDefinition[] = [
       "Priority phone & Slack support",
       "Custom branding options",
     ],
-    cta: "Start Agency Plan",
+    cta: "Start Agency",
     popular: false,
   },
 ] as const;
 
 export function isPlanSlug(value: string | null): value is PlanSlug {
-  return value === "free" || value === "starter" || value === "agency";
+  return value === "free" || value === "starter" || value === "professional" || value === "agency";
 }
 
 export function getPlanDefinition(plan: string | null): PlanDefinition | null {
