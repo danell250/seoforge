@@ -41,7 +41,6 @@ export default function Checkout() {
     console.log("Creating PayPal order for plan:", selectedPlan?.slug);
     console.log("API URL: /api/payments/paypal/create-order");
     console.log("PayPal client ID configured:", !!paypalClientId);
-    setIsProcessing(true);
     try {
       const response = await customFetch<{ id: string }>("/api/payments/paypal/create-order", {
         method: "POST",
@@ -69,19 +68,19 @@ export default function Checkout() {
         variant: "destructive",
       });
       throw err;
-    } finally {
-      setIsProcessing(false);
     }
   };
 
   const onPayPalApprove = async (data: { orderID: string }) => {
+    console.log("PayPal approved, capturing order", data.orderID);
     setIsProcessing(true);
     try {
-      await customFetch("/api/payments/paypal/capture-order", {
+      const captureResponse = await customFetch("/api/payments/paypal/capture-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId: data.orderID }),
       });
+      console.log("Capture order response:", captureResponse);
       
       await refreshSession();
       
@@ -92,6 +91,7 @@ export default function Checkout() {
       
       navigate("/app");
     } catch (err) {
+      console.error("PayPal capture failed:", err);
       toast({
         title: "Payment capture failed",
         description: "Your payment was successful but we couldn't activate your plan. Please contact support.",
