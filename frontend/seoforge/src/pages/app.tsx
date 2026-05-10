@@ -2,8 +2,6 @@ import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { CompetitorScanner } from "@/components/app/competitor-scanner";
 import { SiteCrawler } from "@/components/app/site-crawler";
 import { AeoAnswerBlock } from "@/components/app/aeo-answer-block";
@@ -45,16 +43,6 @@ export default function AppWorkspace() {
       window.history.replaceState(null, "", `#${val}`);
     }
   };
-
-  const userInitials = user?.displayName
-    ? user.displayName
-        .split(" ")
-        .map((part) => part[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase()
-    : user?.email?.charAt(0).toUpperCase() ?? "A";
-  const workspaceCredits = agencySettings?.credits ?? 8432;
 
   function ComingSoonTool({ title, description }: { title: string; description: string }) {
     return (
@@ -210,81 +198,12 @@ export default function AppWorkspace() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-muted/20">
+    <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100">
       <Navbar />
       <main className="flex-1 px-4 py-6">
         <div className="container mx-auto max-w-7xl">
-          <div className="mb-5 grid gap-4 xl:grid-cols-[1.5fr_0.9fr]">
-            <Card className="rounded-3xl border bg-background p-6 shadow-sm">
-              <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
-                <div className="space-y-2">
-                  <p className="text-xs uppercase tracking-[0.32em] text-muted-foreground">Workspace overview</p>
-                  <h2 className="text-3xl font-semibold text-foreground">SEOaxe Workshop</h2>
-                  <p className="max-w-2xl text-sm text-muted-foreground">
-                    Build, audit, and optimize SEO pages from a single centralized workspace.
-                  </p>
-                </div>
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <div className="rounded-3xl border bg-muted px-4 py-3 text-sm text-foreground">
-                    <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Credits</p>
-                    <p className="mt-1 text-xl font-semibold">{workspaceCredits.toLocaleString()}</p>
-                  </div>
-                  <div className="flex items-center gap-3 rounded-3xl border bg-muted px-4 py-3">
-                    <Avatar>
-                      <AvatarFallback>{userInitials}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{user?.displayName ?? "Workspace user"}</p>
-                      <p className="text-xs text-muted-foreground">{agencySettings?.websiteUrl ?? "Your website"}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                {[
-                  { label: "SEO Score", value: "87" },
-                  { label: "Keyword Score", value: "85" },
-                  { label: "Content Score", value: "90" },
-                  { label: "Technical Score", value: "82" },
-                ].map((metric) => (
-                  <div key={metric.label} className="rounded-3xl border bg-muted/60 p-4 text-center">
-                    <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">{metric.label}</p>
-                    <p className="mt-2 text-3xl font-semibold text-foreground">{metric.value}</p>
-                  </div>
-                ))}
-              </div>
-            </Card>
-
-            <Card className="rounded-3xl border bg-background p-6 shadow-sm">
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.32em] text-muted-foreground">Quick actions</p>
-                    <h3 className="text-xl font-semibold text-foreground">Launch a tool</h3>
-                  </div>
-                  <Badge variant="secondary">Quick start</Badge>
-                </div>
-                <div className="grid gap-3">
-                  <div className="grid gap-2">
-                    <label className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Analyze page</label>
-                    <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
-                      <Input placeholder="https://yourwebsite.com/your-page" />
-                      <Button onClick={() => handleTabChange("single-page")}>Analyze</Button>
-                    </div>
-                  </div>
-                  <div className="grid gap-2">
-                    <label className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Generate blog</label>
-                    <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
-                      <Input placeholder="The future of artificial intelligence" />
-                      <Button onClick={() => handleTabChange("blog-gen")}>Generate</Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
           <div className="grid gap-5 md:grid-cols-[240px_minmax(0,1fr)]">
-            <aside className="rounded-xl border bg-background p-3 md:sticky md:top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
+            <aside className="rounded-3xl border border-slate-800 bg-slate-950 p-4 shadow-2xl md:sticky md:top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
               <div className="mb-3 px-2">
                 <div className="flex items-center justify-between gap-2">
                   <div>
@@ -297,13 +216,13 @@ export default function AppWorkspace() {
                 <div className="mt-2 space-y-2">
                   {agencySettings?.websiteUrl ? (
                     <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-1 text-xs text-foreground truncate">
-                        <Globe className="h-3 w-3 shrink-0 text-muted-foreground" />
+                      <div className="flex items-center gap-1 text-xs text-slate-300 truncate">
+                        <Globe className="h-3 w-3 shrink-0 text-slate-400" />
                         <a 
                           href={agencySettings.websiteUrl.startsWith("http") ? agencySettings.websiteUrl : `https://${agencySettings.websiteUrl}`} 
                           target="_blank" 
                           rel="noreferrer"
-                          className="truncate hover:underline"
+                          className="truncate text-slate-200 hover:text-white"
                         >
                           {agencySettings.websiteUrl.replace(/^https?:\/\//, "")}
                         </a>
@@ -311,7 +230,7 @@ export default function AppWorkspace() {
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="h-6 px-1" 
+                        className="h-6 w-6 rounded-full border border-slate-700 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white" 
                         onClick={() => window.location.href = "/settings"}
                       >
                         <Settings className="h-3 w-3" />
@@ -334,7 +253,7 @@ export default function AppWorkspace() {
               <nav className="space-y-3">
                 {groups.map((group) => (
                   <div key={group.title}>
-                    <p className="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    <p className="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
                       {group.title}
                     </p>
                     <div className="space-y-1">
@@ -344,8 +263,14 @@ export default function AppWorkspace() {
                         return (
                           <Button
                             key={item.value}
-                            variant={activeItem ? "default" : "ghost"}
-                            className="w-full justify-start gap-2"
+                            variant="ghost"
+                            className={
+                              `w-full justify-start gap-2 rounded-2xl px-3 py-3 text-sm transition-all ${
+                                activeItem
+                                  ? "bg-slate-800 text-white shadow-xl"
+                                  : "text-slate-200 hover:bg-slate-900 hover:text-white"
+                              }`
+                            }
                             onClick={() => handleTabChange(item.value)}
                           >
                             <Icon className="h-4 w-4" />
@@ -359,10 +284,10 @@ export default function AppWorkspace() {
               </nav>
             </aside>
 
-            <section className="min-w-0">
-              <div className="mb-4 border-b border-border/70 pb-2 text-sm text-muted-foreground">
-                <span className="font-medium text-foreground">{active.title}</span>
-                <span className="mx-2 text-border">/</span>
+            <section className="min-w-0 rounded-3xl bg-slate-50 p-6 shadow-[0_30px_70px_-40px_rgba(15,23,42,0.4)] text-slate-900">
+              <div className="mb-4 border-b border-slate-200 pb-2 text-sm text-slate-500">
+                <span className="font-medium text-slate-900">{active.title}</span>
+                <span className="mx-2 text-slate-300">/</span>
                 <span>{active.description}</span>
               </div>
               {contentByTab[tab] ?? contentByTab["site-crawler"]}

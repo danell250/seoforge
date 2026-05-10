@@ -141,25 +141,13 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           {paypalClientId ? (
-            <PayPalScriptProvider 
+            <PayPalScriptProvider
               options={{
                 clientId: paypalClientId,
                 currency: "USD",
                 intent: "capture",
                 // Temporarily remove disable-funding to see if it causes issues
                 // "disable-funding": "credit,card",
-              }}
-              onSuccess={() => {
-                console.log("PayPal script loaded successfully");
-                console.log("PayPal client ID starts with:", paypalClientId?.substring(0, 2));
-                console.log("Environment:", isProduction ? 'production' : 'development');
-                setPaypalLoaded(true);
-              }}
-              onError={(err) => {
-                console.error("PayPal script failed to load:", err);
-                // Log the client ID format for debugging (without exposing the full ID)
-                const clientIdStart = paypalClientId?.substring(0, 2) || 'undefined';
-                console.log("PayPal client ID starts with:", clientIdStart, "Environment:", isProduction ? 'production' : 'development');
               }}
             >
               <TooltipProvider>

@@ -49,7 +49,6 @@ export default function Checkout() {
       });
       
       console.log("Create order response:", response);
-      console.log("Response status:", response?.status);
       console.log("Response data:", JSON.stringify(response, null, 2));
 
       if (!response || !response.id) {
@@ -263,7 +262,6 @@ export default function Checkout() {
                       </div>
                     ) : (
                       <div className="py-2 space-y-4">
-                        {console.log("Rendering PayPal buttons")}
                         {usdPrice && (
                           <div className="rounded-lg bg-muted/30 p-3 text-center border border-dashed border-primary/20">
                             <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">PayPal Amount</p>
