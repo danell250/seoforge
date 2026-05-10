@@ -72,7 +72,7 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
         "hasMerchantReturnPolicy": {
           "@type": "MerchantReturnPolicy",
           "applicableCountry": "ZA",
-          "returnPolicyCategory": "https://schema.org/UnconditionalReturn",
+          "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
           "merchantReturnDays": 14,
           "returnMethod": "https://schema.org/ReturnByMail",
           "returnFees": "https://schema.org/FreeReturn"
@@ -116,7 +116,7 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
         "hasMerchantReturnPolicy": {
           "@type": "MerchantReturnPolicy",
           "applicableCountry": "ZA",
-          "returnPolicyCategory": "https://schema.org/UnconditionalReturn",
+          "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
           "merchantReturnDays": 14,
           "returnMethod": "https://schema.org/ReturnByMail",
           "returnFees": "https://schema.org/FreeReturn"
@@ -160,7 +160,7 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
         "hasMerchantReturnPolicy": {
           "@type": "MerchantReturnPolicy",
           "applicableCountry": "ZA",
-          "returnPolicyCategory": "https://schema.org/UnconditionalReturn",
+          "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
           "merchantReturnDays": 14,
           "returnMethod": "https://schema.org/ReturnByMail",
           "returnFees": "https://schema.org/FreeReturn"
