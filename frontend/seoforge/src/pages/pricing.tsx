@@ -13,7 +13,7 @@ import { generateAfricanHreflang, DEFAULT_SUPPORTED_LANGUAGES } from "@/lib/href
 
 function buildProductSchema() {
   const activeCurrency = "USD";
-  const prices = { free: 0, starter: 1, professional: 37, agency: 92 };
+  const prices = { free: 0, starter: 3, professional: 37, agency: 92 };
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -290,7 +290,7 @@ export default function Pricing() {
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Audit live pages without agency pricing</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Start with the website you already have. Prices are shown in your local currency based on your browser locale.
+              Start with the website you already have. All prices are in USD.
             </p>
           </div>
 

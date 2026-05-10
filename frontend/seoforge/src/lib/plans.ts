@@ -29,7 +29,7 @@ export const PLAN_DEFINITIONS: readonly PlanDefinition[] = [
   {
     slug: "starter",
     name: "Starter",
-    amountUsd: 1,
+    amountUsd: 3,
     period: "month",
     description: "Perfect for individuals and small projects.",
     features: [

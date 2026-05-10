@@ -15,7 +15,7 @@ const router: IRouter = Router();
 
 const USD_PRICES: Record<string, number> = {
   free: 0,
-  starter: 1,
+  starter: 3,
   professional: 37,
   agency: 92,
 };
