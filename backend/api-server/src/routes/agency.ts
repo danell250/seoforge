@@ -7,14 +7,13 @@ import {
   UpdateAgencySettingsBody,
 } from "@workspace/api-zod";
 import { eq } from "drizzle-orm";
-import { requireAuthenticatedUser } from "../middleware/auth";
+import { getAuthenticatedUser, requireAuthenticatedUser } from "../middleware/auth";
 import { isMissingRelationError } from "../lib/db-errors";
 import { ensureAgencySettingsRow, getAgencySettingsRow } from "../lib/agency-settings";
 
 const router: IRouter = Router();
 
 const DEFAULT_SETTINGS = DEFAULT_AGENCY_SETTINGS;
-const SINGLETON_ID = 1;
 
 function toResponse(row: typeof agencySettingsTable.$inferSelect) {
   return {
@@ -34,16 +33,17 @@ function toResponse(row: typeof agencySettingsTable.$inferSelect) {
   };
 }
 
-router.get("/agency-settings", requireAuthenticatedUser, async (_req, res) => {
+router.get("/agency-settings", requireAuthenticatedUser, async (req, res) => {
   try {
-    const row = await getAgencySettingsRow();
+    const user = getAuthenticatedUser(req);
+    const row = await getAgencySettingsRow(user!.id);
     if (!row) {
       return res.json(GetAgencySettingsResponse.parse(DEFAULT_SETTINGS));
     }
     return res.json(GetAgencySettingsResponse.parse(toResponse(row)));
   } catch (err) {
     if (isMissingRelationError(err, "agency_settings")) {
-      _req.log.warn(
+      req.log.warn(
         { table: "agency_settings" },
         "Agency settings table is missing. Returning defaults until the schema is pushed.",
       );
@@ -54,11 +54,12 @@ router.get("/agency-settings", requireAuthenticatedUser, async (_req, res) => {
 });
 
 router.put("/agency-settings", requireAuthenticatedUser, async (req, res) => {
+  const user = getAuthenticatedUser(req);
   const parsed = UpdateAgencySettingsBody.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ message: "Invalid request body" });
   }
-  await ensureAgencySettingsRow();
+  await ensureAgencySettingsRow(user!.id);
   const [updated] = await db
     .update(agencySettingsTable)
     .set({
@@ -77,7 +78,7 @@ router.put("/agency-settings", requireAuthenticatedUser, async (req, res) => {
       enableClientPortal: parsed.data.enableClientPortal ?? false,
       updatedAt: new Date(),
     })
-    .where(eq(agencySettingsTable.id, SINGLETON_ID))
+    .where(eq(agencySettingsTable.userId, user!.id))
     .returning();
   return res.json(GetAgencySettingsResponse.parse(toResponse(updated)));
 });

@@ -15,6 +15,7 @@ import { DeployPanel } from "@/components/app/deploy-panel";
 import { KeywordResearch } from "@/components/app/keyword-research";
 import { type ReactNode, useEffect, useState } from "react";
 import { useGetAgencySettings } from "@workspace/api-client-react";
+import { useAuth } from "@/hooks/use-auth";
 import { Bot, Globe, Languages, Search, ShieldCheck, Sparkles, Radar, FileQuestion, FileEdit, FileArchive, BookOpen, UploadCloud, Settings } from "lucide-react";
 
 export default function AppWorkspace() {
@@ -23,6 +24,7 @@ export default function AppWorkspace() {
     : "site-crawler";
   const [tab, setTab] = useState(initial);
   const { data: agencySettings } = useGetAgencySettings();
+  const { user } = useAuth();
 
   useEffect(() => {
     const onHash = () => {
@@ -154,7 +156,14 @@ export default function AppWorkspace() {
           <div className="grid gap-5 md:grid-cols-[240px_minmax(0,1fr)]">
             <aside className="rounded-xl border bg-background p-3 md:sticky md:top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
               <div className="mb-3 px-2">
-                <h1 className="text-sm font-semibold tracking-tight text-foreground">Workspace</h1>
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <h1 className="text-sm font-semibold tracking-tight text-foreground">Workspace</h1>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Signed in as {user?.displayName ?? user?.email ?? "your account"}
+                    </p>
+                  </div>
+                </div>
                 <div className="mt-2 space-y-2">
                   {agencySettings?.websiteUrl ? (
                     <div className="flex items-center justify-between gap-2">

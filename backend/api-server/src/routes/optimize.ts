@@ -8,7 +8,7 @@ import {
   type AfricanLanguage, 
   detectAfricanLanguageContent, 
   generateAfricanLanguagePrompt,
-  generateAfricanHreflang,
+  generateAfricanHreflang, 
   getAfricanLanguageConfig
 } from "../lib/african-languages";
 import { runSeoaxeJsonTask, type AiLogger } from "../lib/seoaxe-ai";
@@ -16,25 +16,25 @@ import { buildRulePackPrompt, inferPageType, type SeoaxePageType } from "../lib/
 import { evaluateOptimizationOutput, type OptimizationAiReview } from "../lib/ai-evals";
 import { buildWorkspaceMemoryPrompt, getWorkspaceMemory } from "../lib/workspace-memory";
 import { buildAcceptedExamplesPrompt } from "../lib/training-patterns";
+import { notifyPlanUsageWarning } from "../lib/email-notifications";
 
 const router: IRouter = Router();
 router.use(requireAuthenticatedUser);
 
-// Plan limits configuration
+// Plan limits configuration (optimizations per month)
 const PLAN_LIMITS = {
-  free: 3,
+  free: 1,
   starter: 20,
-  agency: Number.POSITIVE_INFINITY, // Unlimited
+  professional: 50,
+  agency: Number.POSITIVE_INFINITY,
 };
 
-async function checkPlanLimit(userId: number): Promise<{ allowed: boolean; limit: number; current: number; plan: string }> {
+async function checkPlanLimit(userId: number, userEmail?: string, log?: any): Promise<{ allowed: boolean; limit: number; current: number; plan: string; notifySent?: boolean }> {
   try {
-    // Get user's plan
-    const [user] = await db.select({ plan: usersTable.plan }).from(usersTable).where(eq(usersTable.id, userId));
+    const [user] = await db.select({ plan: usersTable.plan, email: usersTable.email }).from(usersTable).where(eq(usersTable.id, userId));
     const plan = user?.plan || "free";
     const limit = PLAN_LIMITS[plan as keyof typeof PLAN_LIMITS] ?? PLAN_LIMITS.free;
     
-    // Count current month's optimizations
     const startOfMonth = new Date();
     startOfMonth.setDate(1);
     startOfMonth.setHours(0, 0, 0, 0);
@@ -50,16 +50,36 @@ async function checkPlanLimit(userId: number): Promise<{ allowed: boolean; limit
       );
     
     const current = result?.count || 0;
+    const allowed = current < limit;
+    
+    if (!allowed && userEmail && process.env.BREVO_API_KEY) {
+      try {
+        const emailConfig = {
+          apiKey: process.env.BREVO_API_KEY,
+          fromEmail: process.env.EMAIL_FROM || "noreply@seoaxe.site",
+          fromName: "SEOaxe",
+        };
+        await notifyPlanUsageWarning(emailConfig, userId, userEmail, {
+          percent: 100,
+          used: current,
+          limit,
+          planName: plan.charAt(0).toUpperCase() + plan.slice(1),
+          renewDate: startOfMonth.toLocaleDateString(),
+        });
+      } catch (notifyErr) {
+        log?.warn?.({ err: notifyErr }, "Failed to send limit notification");
+      }
+    }
     
     return {
-      allowed: current < limit,
+      allowed,
       limit,
       current,
       plan,
     };
   } catch (err) {
     console.error("Plan limit check failed, defaulting to allowed:", err);
-    return { allowed: true, limit: 3, current: 0, plan: "free" };
+    return { allowed: true, limit: 1, current: 0, plan: "free" };
   }
 }
 
@@ -211,17 +231,17 @@ router.post("/optimize", async (req, res) => {
     }
   }
 
-  // Check plan limits (only if not using cache)
-  const limitCheck = await checkPlanLimit(user.id);
-  if (!limitCheck.allowed) {
-    return res.status(403).json({
-      message: `You've reached your monthly limit of ${limitCheck.limit} page optimizations on the ${limitCheck.plan} plan. Upgrade to optimize more pages.`,
-      code: "PLAN_LIMIT_EXCEEDED",
-      limit: limitCheck.limit,
-      current: limitCheck.current,
-      plan: limitCheck.plan,
-    });
-  }
+// Check plan limits (only if not using cache)
+   const limitCheck = await checkPlanLimit(user.id, user.email, req.log);
+   if (!limitCheck.allowed) {
+     return res.status(403).json({
+       message: `You've reached your monthly limit of ${limitCheck.limit} page optimizations on the ${limitCheck.plan} plan. Upgrade to optimize more pages.`,
+       code: "PLAN_LIMIT_EXCEEDED",
+       limit: limitCheck.limit,
+       current: limitCheck.current,
+       plan: limitCheck.plan,
+     });
+   }
 
   try {
     req.log.info({ filename, htmlLength: html.length }, "Starting optimization request (not cached)");
@@ -280,7 +300,7 @@ async function optimizeHtmlDocument(
   
   let workspaceMemory = null;
   try {
-    workspaceMemory = await getWorkspaceMemory();
+    workspaceMemory = await getWorkspaceMemory(userId);
   } catch (e) {
     log.error({ err: e }, "Failed to load workspace memory");
   }

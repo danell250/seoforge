@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { GenerateAeoBlockBody, GenerateAeoBlockResponse } from "@workspace/api-zod";
-import { requireAuthenticatedUser } from "../middleware/auth";
+import { getAuthenticatedUser, requireAuthenticatedUser } from "../middleware/auth";
 import { runSeoaxeJsonTask } from "../lib/seoaxe-ai";
 import { buildRulePackPrompt, inferPageType } from "../lib/page-rules";
 import { buildWorkspaceMemoryPrompt, getWorkspaceMemory } from "../lib/workspace-memory";

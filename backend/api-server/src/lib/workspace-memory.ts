@@ -13,9 +13,9 @@ export interface WorkspaceMemory {
   websiteUrl: string | null;
 }
 
-export async function getWorkspaceMemory(): Promise<WorkspaceMemory> {
+export async function getWorkspaceMemory(userId?: number): Promise<WorkspaceMemory> {
   try {
-    const row = await getAgencySettingsRow();
+    const row = await getAgencySettingsRow(userId);
     return normalizeWorkspaceMemory(row);
   } catch (error) {
     if (isMissingRelationError(error, "agency_settings")) {

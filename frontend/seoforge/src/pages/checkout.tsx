@@ -117,7 +117,6 @@ export default function Checkout() {
   const alreadyOnPlan = user?.plan === selectedPlan.slug;
   const signupHref = `/signup?redirect=${buildAuthRedirect(currentPath)}`;
   const loginHref = `/login?redirect=${buildAuthRedirect(currentPath)}`;
-  const hasPaidPlan = user?.plan && user.plan !== "free";
   const paypalClientId = import.meta.env.VITE_PAYPAL_CLIENT_ID || "";
   const isPaypalConfigured = paypalClientId.length > 0;
 
@@ -144,15 +143,15 @@ export default function Checkout() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-xl">
                       <LockKeyhole className="h-5 w-5 text-primary" />
-                      Sign in before payment
+                      Sign in to complete your purchase
                     </CardTitle>
                     <CardDescription>
-                      We need your account first so your plan lands in the right workspace after checkout.
+                      Your plan will be attached to your account after payment.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="rounded-lg border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
-                      You&apos;ll return here automatically after you sign in or create your account.
+                      You'll return here automatically after signing in.
                     </div>
                     <div className="flex flex-col gap-3 sm:flex-row">
                       <Button asChild className="flex-1">
@@ -164,7 +163,55 @@ export default function Checkout() {
                     </div>
                   </CardContent>
                 </Card>
-              ) : hasPaidPlan ? (
+              ) : selectedPlan.slug === "free" ? (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-xl">
+                      <ShieldCheck className="h-5 w-5 text-primary" />
+                      Free plan selected
+                    </CardTitle>
+                    <CardDescription>
+                      Start optimizing your pages with the free plan. Upgrade anytime.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardFooter className="flex-col items-start gap-3">
+                    <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
+                      Signed in as <span className="font-medium text-foreground">{user?.email}</span>
+                    </div>
+                    <Button asChild className="w-full sm:w-auto">
+                      <Link href="/app">
+                        Open workspace
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ) : alreadyOnPlan ? (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-xl">
+                      <Check className="h-5 w-5 text-green-600" />
+                      Already on this plan
+                    </CardTitle>
+                    <CardDescription>
+                      Your account already has the {selectedPlan.name} plan active.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="rounded-lg border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+                      Signed in as <span className="font-medium text-foreground">{user?.email}</span>
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button asChild className="w-full sm:w-auto">
+                      <Link href="/app">
+                        Go to workspace
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ) : (
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-xl">
@@ -172,7 +219,7 @@ export default function Checkout() {
                       Secure PayPal payment
                     </CardTitle>
                     <CardDescription>
-                      Complete payment via PayPal. Your plan will activate automatically.
+                      Complete payment via PayPal. Your plan activates automatically.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -184,12 +231,11 @@ export default function Checkout() {
                       <div className="flex flex-col items-center justify-center py-8 space-y-4">
                         <Loader2 className="h-8 w-8 animate-spin text-primary" />
                         <p className="text-sm font-medium">Setting up payment...</p>
-                        <p className="text-xs text-muted-foreground">Please wait while we prepare your PayPal checkout.</p>
                       </div>
                     ) : !isPaypalConfigured ? (
                       <div className="rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 p-4 text-center">
                         <p className="text-sm font-medium text-red-800 dark:text-red-200">PayPal not configured</p>
-                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">Please set VITE_PAYPAL_CLIENT_ID environment variable to enable payments.</p>
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">Please set VITE_PAYPAL_CLIENT_ID environment variable.</p>
                       </div>
                     ) : (
                       <div className="py-2 space-y-4">
@@ -197,7 +243,6 @@ export default function Checkout() {
                           <div className="rounded-lg bg-muted/30 p-3 text-center border border-dashed border-primary/20">
                             <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">PayPal Amount</p>
                             <p className="text-lg font-bold text-primary">${usdPrice.toFixed(2)} USD</p>
-                            <p className="text-[10px] text-muted-foreground">Converted from {priceLabel} for payment</p>
                           </div>
                         )}
                         <PayPalButtons
@@ -207,40 +252,19 @@ export default function Checkout() {
                           onError={(err) => {
                             console.error("PayPal button error:", err);
                             toast({
-                              title: "PayPal Error",
-                              description: "There was an error with PayPal. Please try again.",
+                              title: "Payment error",
+                              description: "Something went wrong. Please try again.",
                               variant: "destructive",
                             });
                           }}
-                          disabled={alreadyOnPlan || isProcessing}
                         />
                       </div>
                     )}
 
                     <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
-                      After payment, your {selectedPlan?.name} plan will be activated immediately.
+                      Your {selectedPlan?.name} plan activates immediately after payment.
                     </div>
                   </CardContent>
-                </Card>
-              ) : (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-xl">
-                      <ShieldCheck className="h-5 w-5 text-primary" />
-                      Free plan
-                    </CardTitle>
-                    <CardDescription>
-                      You can start with the free plan and upgrade later.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardFooter>
-                    <Button asChild className="w-full sm:w-auto">
-                      <Link href="/app">
-                        Open workspace
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </CardFooter>
                 </Card>
               )}
             </section>

@@ -1,7 +1,17 @@
 import { Router, type IRouter } from "express";
-import { requireAuthenticatedUser } from "../middleware/auth";
+import { requireAuthenticatedUser, getAuthenticatedUser } from "../middleware/auth";
+import { db, usersTable } from "@workspace/db";
+import { and, count, eq, gte } from "drizzle-orm";
 
 const router: IRouter = Router();
+
+// Audit limits per month
+const AUDIT_LIMITS = {
+  free: 1,
+  starter: 3,
+  professional: 50,
+  agency: Number.POSITIVE_INFINITY,
+};
 
 const FETCH_TIMEOUT_MS = 15000;
 const MAX_BYTES = 500_000;
@@ -10,6 +20,18 @@ function normalizeUrl(raw: string): string {
   let s = raw.trim();
   if (!/^https?:\/\//i.test(s)) s = "https://" + s;
   return s;
+}
+
+async function checkAuditLimit(userId: number, log: any): Promise<{ allowed: boolean; limit: number; plan: string }> {
+  try {
+    const [user] = await db.select({ plan: usersTable.plan }).from(usersTable).where(eq(usersTable.id, userId));
+    const plan = user?.plan || "free";
+    const limit = AUDIT_LIMITS[plan as keyof typeof AUDIT_LIMITS] ?? AUDIT_LIMITS.free;
+    return { allowed: true, limit, plan };
+  } catch (err) {
+    log?.warn?.({ err }, "Audit limit check failed, allowing");
+    return { allowed: true, limit: 1, plan: "free" };
+  }
 }
 
 async function fetchHtml(url: string): Promise<string | null> {
