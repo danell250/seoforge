@@ -48,6 +48,7 @@ const PAYPAL_OPTIONS = {
   clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || "",
   currency: "USD",
   intent: "capture",
+  "disable-funding": "credit,card",
 };
 
 function ProtectedRoute({ component: Component }: { component: ComponentType }) {

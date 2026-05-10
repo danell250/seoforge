@@ -35,25 +35,23 @@ export default function Checkout() {
     console.log("Creating PayPal order for plan:", selectedPlan?.slug);
     setIsProcessing(true);
     try {
-      const response = await customFetch<{ id: string; purchase_units: any[] }>("/api/payments/paypal/create-order", {
+      const response = await customFetch<{ id: string }>("/api/payments/paypal/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan: selectedPlan?.slug }),
       });
-      
-      // Update USD price for display
-      const amount = response.purchase_units?.[0]?.amount?.value;
-      if (amount) {
-        setUsdPrice(parseFloat(amount));
+
+      if (!response || !response.id) {
+        throw new Error("Invalid response from PayPal order creation");
       }
 
-      console.log("PayPal order created:", response.id);
+      console.log("PayPal order created successfully:", response.id);
       return response.id;
     } catch (err) {
       console.error("PayPal create order failed:", err);
       toast({
         title: "Payment setup failed",
-        description: "Could not initialize PayPal payment. Please try again.",
+        description: err instanceof Error ? err.message : "Could not initialize PayPal payment. Please try again.",
         variant: "destructive",
       });
       throw err;
@@ -119,7 +117,9 @@ export default function Checkout() {
   const alreadyOnPlan = user?.plan === selectedPlan.slug;
   const signupHref = `/signup?redirect=${buildAuthRedirect(currentPath)}`;
   const loginHref = `/login?redirect=${buildAuthRedirect(currentPath)}`;
-  const hasPaidPlan = selectedPlan.slug !== "free";
+  const hasPaidPlan = user?.plan && user.plan !== "free";
+  const paypalClientId = import.meta.env.VITE_PAYPAL_CLIENT_ID || "";
+  const isPaypalConfigured = paypalClientId.length > 0;
 
   return (
     <div className="min-h-screen flex flex-col bg-muted/20">
@@ -186,6 +186,11 @@ export default function Checkout() {
                         <p className="text-sm font-medium">Setting up payment...</p>
                         <p className="text-xs text-muted-foreground">Please wait while we prepare your PayPal checkout.</p>
                       </div>
+                    ) : !isPaypalConfigured ? (
+                      <div className="rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 p-4 text-center">
+                        <p className="text-sm font-medium text-red-800 dark:text-red-200">PayPal not configured</p>
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">Please set VITE_PAYPAL_CLIENT_ID environment variable to enable payments.</p>
+                      </div>
                     ) : (
                       <div className="py-2 space-y-4">
                         {usdPrice && (
@@ -199,6 +204,14 @@ export default function Checkout() {
                           style={{ layout: "vertical", label: "pay" }}
                           createOrder={createPayPalOrder}
                           onApprove={onPayPalApprove}
+                          onError={(err) => {
+                            console.error("PayPal button error:", err);
+                            toast({
+                              title: "PayPal Error",
+                              description: "There was an error with PayPal. Please try again.",
+                              variant: "destructive",
+                            });
+                          }}
                           disabled={alreadyOnPlan || isProcessing}
                         />
                       </div>
