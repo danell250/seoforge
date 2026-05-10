@@ -1,5 +1,5 @@
 export const BRAND_NAME = "SEOaxe";
-export const SITE_URL = "https://www.seoaxe.site";
+export const SITE_URL = "https://seoaxe.site";
 export const SUPPORT_EMAIL = "support@seoaxe.site";
 export const PRODUCT_DESCRIPTION = "Live SEO audit engine that scores existing website pages and produces reviewable SEO, AEO, schema, sitemap, and content recommendations.";
 export const PRODUCT_AUTOMATION_DESCRIPTION =

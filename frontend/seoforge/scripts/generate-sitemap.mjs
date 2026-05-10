@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const siteUrl = "https://www.seoaxe.site";
+const siteUrl = "https://seoaxe.site";
 const lastmod = "2026-05-08";
 
 const publicPages = [

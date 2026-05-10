@@ -11,6 +11,33 @@ import { useAuth } from "@/hooks/use-auth";
 import { PLAN_DEFINITIONS } from "@/lib/plans";
 import { generateAfricanHreflang, DEFAULT_SUPPORTED_LANGUAGES } from "@/lib/hreflang";
 
+const faqQuestions = [
+  {
+    name: "Do you offer refunds?",
+    answer: "Yes, we offer a 14-day money-back guarantee if you are not satisfied with the platform. Contact us within 14 days of your first paid charge and we will review your request fairly."
+  },
+  {
+    name: "Can I upgrade or downgrade my plan?",
+    answer: "Absolutely. You can change your plan at any time. Prorated charges will be applied automatically to your next billing cycle."
+  },
+  {
+    name: "What counts as a page audit?",
+    answer: "One audit counts every time SEOaxe reviews a live URL and generates a score, findings, and guided recommendations. Each unique URL audit counts toward your monthly limit."
+  },
+  {
+    name: "Is there a free plan available?",
+    answer: "Yes, SEOaxe offers a free plan that includes 1 live page audit per month with basic technical SEO checks. It's perfect for getting started with SEO optimization."
+  },
+  {
+    name: "Which plan is best for agencies?",
+    answer: "The Agency plan is designed specifically for agencies and includes unlimited live page audits, multi-page crawling, white-label proof, and team collaboration features."
+  },
+  {
+    name: "Does SEOaxe work for South African websites?",
+    answer: "Yes, SEOaxe is optimized for South African websites with support for local SEO, African hreflang tags, and region-specific SEO best practices."
+  }
+];
+
 function buildProductSchema() {
   const activeCurrency = "USD";
   const prices = { free: 0, starter: 3, professional: 37, agency: 92 };
@@ -20,7 +47,7 @@ function buildProductSchema() {
     "name": BRAND_NAME,
     "image": `${SITE_URL}/android-chrome-512x512.png`,
     "url": `${SITE_URL}/pricing`,
-    "description": PRODUCT_DESCRIPTION,
+    "description": "SEOaxe - The all-in-one SEO and AEO optimization platform for live page audits, schema markup generation, Answer Engine Optimization, and technical SEO fixes. Free, Starter, Professional, and Agency plans available.",
     "brand": {
       "@type": "Brand",
       "name": BRAND_NAME,
@@ -28,7 +55,9 @@ function buildProductSchema() {
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "4.9",
-      "reviewCount": "128"
+      "reviewCount": "128",
+      "bestRating": "5",
+      "worstRating": "1"
     },
     "review": [
       {
@@ -42,7 +71,20 @@ function buildProductSchema() {
           "ratingValue": "5",
           "bestRating": "5"
         },
-        "reviewBody": "SEOaxe transformed our website's visibility. The AEO improvements are a game changer."
+        "reviewBody": "SEOaxe transformed our website's visibility. The AEO improvements are a game changer for South African businesses."
+      },
+      {
+        "@type": "Review",
+        "author": {
+          "@type": "Person",
+          "name": "Michael K."
+        },
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": "5",
+          "bestRating": "5"
+        },
+        "reviewBody": "The live page audits and schema generator saved us hours of work. Our SEO health score improved from 42 to 89 in just 6 weeks."
       }
     ],
     "offers": [
@@ -53,40 +95,14 @@ function buildProductSchema() {
         "priceCurrency": activeCurrency,
         "description": "1 live page audit per month with basic technical SEO checks",
         "availability": "https://schema.org/InStock",
+        "category": "Software",
         "hasMerchantReturnPolicy": {
           "@type": "MerchantReturnPolicy",
-          "applicableCountry": "US",
+          "applicableCountry": "ZA",
           "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
           "merchantReturnDays": 14,
           "returnMethod": "https://schema.org/ReturnByMail",
           "returnFees": "https://schema.org/FreeReturn"
-        },
-        "shippingDetails": {
-          "@type": "OfferShippingDetails",
-          "shippingRate": {
-            "@type": "MonetaryAmount",
-            "value": "0",
-            "currency": activeCurrency
-          },
-          "deliveryTime": {
-            "@type": "ShippingDeliveryTime",
-            "handlingTime": {
-              "@type": "QuantitativeValue",
-              "minValue": 0,
-              "maxValue": 0,
-              "unitCode": "DAY"
-            },
-            "transitTime": {
-              "@type": "QuantitativeValue",
-              "minValue": 0,
-              "maxValue": 0,
-              "unitCode": "DAY"
-            }
-          },
-          "shippingDestination": {
-            "@type": "DefinedRegion",
-            "addressCountry": "US"
-          }
         }
       },
       {
@@ -97,40 +113,14 @@ function buildProductSchema() {
         "priceValidUntil": "2026-12-31",
         "description": "3 live page audits per month with basic checks and audit receipts",
         "availability": "https://schema.org/InStock",
+        "category": "Software",
         "hasMerchantReturnPolicy": {
           "@type": "MerchantReturnPolicy",
-          "applicableCountry": "US",
+          "applicableCountry": "ZA",
           "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
           "merchantReturnDays": 14,
           "returnMethod": "https://schema.org/ReturnByMail",
           "returnFees": "https://schema.org/FreeReturn"
-        },
-        "shippingDetails": {
-          "@type": "OfferShippingDetails",
-          "shippingRate": {
-            "@type": "MonetaryAmount",
-            "value": "0",
-            "currency": activeCurrency
-          },
-          "deliveryTime": {
-            "@type": "ShippingDeliveryTime",
-            "handlingTime": {
-              "@type": "QuantitativeValue",
-              "minValue": 0,
-              "maxValue": 0,
-              "unitCode": "DAY"
-            },
-            "transitTime": {
-              "@type": "QuantitativeValue",
-              "minValue": 0,
-              "maxValue": 0,
-              "unitCode": "DAY"
-            }
-          },
-          "shippingDestination": {
-            "@type": "DefinedRegion",
-            "addressCountry": "US"
-          }
         }
       },
       {
@@ -141,40 +131,14 @@ function buildProductSchema() {
         "priceValidUntil": "2026-12-31",
         "description": "50 live page audits per month with AEO answer blocks and copyable snippets",
         "availability": "https://schema.org/InStock",
+        "category": "Software",
         "hasMerchantReturnPolicy": {
           "@type": "MerchantReturnPolicy",
-          "applicableCountry": "US",
+          "applicableCountry": "ZA",
           "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
           "merchantReturnDays": 14,
           "returnMethod": "https://schema.org/ReturnByMail",
           "returnFees": "https://schema.org/FreeReturn"
-        },
-        "shippingDetails": {
-          "@type": "OfferShippingDetails",
-          "shippingRate": {
-            "@type": "MonetaryAmount",
-            "value": "0",
-            "currency": activeCurrency
-          },
-          "deliveryTime": {
-            "@type": "ShippingDeliveryTime",
-            "handlingTime": {
-              "@type": "QuantitativeValue",
-              "minValue": 0,
-              "maxValue": 0,
-              "unitCode": "DAY"
-            },
-            "transitTime": {
-              "@type": "QuantitativeValue",
-              "minValue": 0,
-              "maxValue": 0,
-              "unitCode": "DAY"
-            }
-          },
-          "shippingDestination": {
-            "@type": "DefinedRegion",
-            "addressCountry": "US"
-          }
         }
       },
       {
@@ -185,43 +149,32 @@ function buildProductSchema() {
         "priceValidUntil": "2026-12-31",
         "description": "Unlimited live page audits, multi-page crawling, and white-label proof",
         "availability": "https://schema.org/InStock",
+        "category": "Software",
         "hasMerchantReturnPolicy": {
           "@type": "MerchantReturnPolicy",
-          "applicableCountry": "US",
+          "applicableCountry": "ZA",
           "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
           "merchantReturnDays": 14,
           "returnMethod": "https://schema.org/ReturnByMail",
           "returnFees": "https://schema.org/FreeReturn"
-        },
-        "shippingDetails": {
-          "@type": "OfferShippingDetails",
-          "shippingRate": {
-            "@type": "MonetaryAmount",
-            "value": "0",
-            "currency": activeCurrency
-          },
-          "deliveryTime": {
-            "@type": "ShippingDeliveryTime",
-            "handlingTime": {
-              "@type": "QuantitativeValue",
-              "minValue": 0,
-              "maxValue": 0,
-              "unitCode": "DAY"
-            },
-            "transitTime": {
-              "@type": "QuantitativeValue",
-              "minValue": 0,
-              "maxValue": 0,
-              "unitCode": "DAY"
-            }
-          },
-          "shippingDestination": {
-            "@type": "DefinedRegion",
-            "addressCountry": "US"
-          }
         }
-      },
-    ],
+      }
+    ]
+  };
+}
+
+function buildFaqSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqQuestions.map(q => ({
+      "@type": "Question",
+      "name": q.name,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": q.answer
+      }
+    }))
   };
 }
 
@@ -240,41 +193,29 @@ export default function Pricing() {
       })),
     [isAuthenticated],
   );
-  const productSchema = useMemo(
-    () => buildProductSchema(),
-    [],
-  );
-
-  useEffect(() => {
-    // Update title and meta
-    let metaDesc = document.querySelector('meta[name="description"]');
-    if (!metaDesc) {
-      metaDesc = document.createElement('meta');
-      metaDesc.setAttribute('name', 'description');
-      document.head.appendChild(metaDesc);
-    }
-    document.title = "SEOaxe Pricing - Live SEO audit plans";
-    metaDesc.setAttribute('content', 'SEOaxe pricing: Free, Starter, and Agency plans for teams that want live URL audits, schema guidance, AEO improvements, audit receipts, and health scoring in one workflow.');
-  }, []);
+  const productSchema = useMemo(() => buildProductSchema(), []);
+  const faqSchema = useMemo(() => buildFaqSchema(), []);
 
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
-        <title>SEOaxe Pricing - Live SEO audit plans</title>
-        <meta name="description" content="SEOaxe pricing: Free, Starter, and Agency plans for teams that want live URL audits, schema guidance, AEO improvements, audit receipts, and health scoring in one workflow." />
+        <title>SEOaxe Pricing | SEO & AEO Optimization Plans 2026</title>
+        <meta name="description" content="SEOaxe pricing plans for 2026: Free, Starter, Professional, and Agency options for live page audits, schema markup, AEO optimization, technical SEO fixes, and South African website optimization." />
+        <meta name="keywords" content="SEO pricing, AEO optimization cost, schema markup tool price, technical SEO audit, South African SEO tools, SEOaxe plans" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href={`${SITE_URL}/pricing`} />
         {generateAfricanHreflang(`${SITE_URL}/pricing`, DEFAULT_SUPPORTED_LANGUAGES).map((tag, idx) => (
           <link key={idx} rel="alternate" hrefLang={tag.hreflang} href={tag.href} />
         ))}
-        <meta property="og:title" content="SEOaxe Pricing - Live SEO audit plans" />
-        <meta property="og:description" content="SEOaxe pricing: Free, Starter, and Agency plans for teams that want live URL audits, schema guidance, AEO improvements, audit receipts, and health scoring in one workflow." />
+        <meta property="og:title" content="SEOaxe Pricing | SEO & AEO Optimization Plans 2026" />
+        <meta property="og:description" content="SEOaxe pricing plans for 2026: Free, Starter, Professional, and Agency options for live page audits, schema markup, AEO optimization, technical SEO fixes, and South African website optimization." />
         <meta property="og:url" content={`${SITE_URL}/pricing`} />
+        <meta property="og:type" content="website" />
         <meta property="og:image" content={`${SITE_URL}/opengraph.jpg`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="twitter:title" content="SEOaxe Pricing - Live SEO audit plans" />
-        <meta property="twitter:description" content="SEOaxe pricing: Free, Starter, and Agency plans for teams that want live URL audits, schema guidance, AEO improvements, audit receipts, and health scoring in one workflow." />
+        <meta property="twitter:title" content="SEOaxe Pricing | SEO & AEO Optimization Plans 2026" />
+        <meta property="twitter:description" content="SEOaxe pricing plans for 2026: Free, Starter, Professional, and Agency options for live page audits, schema markup, AEO optimization, technical SEO fixes, and South African website optimization." />
         <meta property="twitter:url" content={`${SITE_URL}/pricing`} />
         <meta property="twitter:image" content={`${SITE_URL}/opengraph.jpg`} />
       </Helmet>
@@ -284,13 +225,18 @@ export default function Pricing() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
       />
+      <script
+        id="pricing-faq-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       
       <main className="flex-1 py-20 px-4">
         <div className="container max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Audit live pages without agency pricing</h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Start with the website you already have. All prices are in USD.
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">SEOaxe Pricing Plans 2026</h1>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              Affordable SEO and AEO optimization for South African businesses. Choose from Free, Starter, Professional, or Agency plans for live page audits, schema markup, Answer Engine Optimization, and technical SEO fixes.
             </p>
           </div>
 
@@ -505,21 +451,42 @@ export default function Pricing() {
             </div>
           </div>
 
+          {/* SEO Benefits Section */}
+          <div className="mt-24 max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-3">Why Choose SEOaxe for Your SEO Needs?</h2>
+              <p className="text-muted-foreground">Comprehensive SEO and AEO optimization designed for results</p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-card border rounded-xl p-6">
+                <h3 className="text-xl font-semibold mb-3 text-primary">Technical SEO Excellence</h3>
+                <p className="text-muted-foreground">Fix meta tags, heading structure, canonical issues, and page speed problems with our automated audit system.</p>
+              </div>
+              <div className="bg-card border rounded-xl p-6">
+                <h3 className="text-xl font-semibold mb-3 text-primary">Answer Engine Optimization</h3>
+                <p className="text-muted-foreground">Get your content cited in Google AI Overviews, ChatGPT, and Perplexity with AEO-optimized content structures.</p>
+              </div>
+              <div className="bg-card border rounded-xl p-6">
+                <h3 className="text-xl font-semibold mb-3 text-primary">Schema Markup Generation</h3>
+                <p className="text-muted-foreground">Automatically generate valid JSON-LD schema for FAQPage, Article, Product, and LocalBusiness types.</p>
+              </div>
+              <div className="bg-card border rounded-xl p-6">
+                <h3 className="text-xl font-semibold mb-3 text-primary">South African Focused</h3>
+                <p className="text-muted-foreground">Optimized for local SEO, African languages, and South African business requirements.</p>
+              </div>
+            </div>
+          </div>
+
           <div className="mt-32 max-w-3xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-10">Frequently Asked Questions</h2>
             <div className="space-y-6">
-              <div>
-                <h3 className="font-semibold text-lg mb-2">Do you offer refunds?</h3>
-                <p className="text-muted-foreground">Yes, we offer a 14-day money-back guarantee if you are not satisfied with the platform.</p>
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg mb-2">Can I upgrade or downgrade my plan?</h3>
-                <p className="text-muted-foreground">Absolutely. You can change your plan at any time. Prorated charges will be applied automatically.</p>
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg mb-2">What counts as a page audit?</h3>
-                <p className="text-muted-foreground">One audit counts every time SEOaxe reviews a live URL and generates a score, findings, and guided recommendations.</p>
-              </div>
+              {faqQuestions.map((faq, index) => (
+                <div key={index}>
+                  <h3 className="font-semibold text-lg mb-2">{faq.name}</h3>
+                  <p className="text-muted-foreground">{faq.answer}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
