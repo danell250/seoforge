@@ -1,5 +1,9 @@
 import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { CompetitorScanner } from "@/components/app/competitor-scanner";
 import { SiteCrawler } from "@/components/app/site-crawler";
 import { AeoAnswerBlock } from "@/components/app/aeo-answer-block";
@@ -42,6 +46,33 @@ export default function AppWorkspace() {
     }
   };
 
+  const userInitials = user?.displayName
+    ? user.displayName
+        .split(" ")
+        .map((part) => part[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : user?.email?.charAt(0).toUpperCase() ?? "A";
+  const workspaceCredits = agencySettings?.credits ?? 8432;
+
+  function ComingSoonTool({ title, description }: { title: string; description: string }) {
+    return (
+      <Card className="rounded-3xl border p-6 shadow-sm">
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Badge variant="outline">Coming soon</Badge>
+          <p className="mt-3 text-sm text-muted-foreground">
+            This tool is not live yet, but it is on the roadmap for your SEO workspace.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const tabMeta: Record<string, { title: string; description: string }> = {
     "aeo-block": {
       title: "FAQ generator",
@@ -59,6 +90,10 @@ export default function AppWorkspace() {
       title: "Compare a competitor",
       description: "See how a competing page stacks up and where your page can improve.",
     },
+    keyword: {
+      title: "Keyword research",
+      description: "Explore keyword opportunities for your site and content.",
+    },
     hreflang: {
       title: "Language targeting",
       description: "Add the right language and country tags for multi-region pages.",
@@ -66,6 +101,22 @@ export default function AppWorkspace() {
     sitemap: {
       title: "Sitemap builder",
       description: "Create sitemap and robots guidance for the pages you want search engines to crawl.",
+    },
+    "ai-tools": {
+      title: "AI SEO tools",
+      description: "Use AI-powered optimization tools to improve content and metadata.",
+    },
+    "content-editor": {
+      title: "Content editor",
+      description: "Edit and optimize page content in one place.",
+    },
+    "backlink-checker": {
+      title: "Backlink checker",
+      description: "Inspect inbound links and spot potential SEO opportunities.",
+    },
+    "rank-tracker": {
+      title: "Rank tracker",
+      description: "Track keyword rankings and performance over time.",
     },
     monitor: {
       title: "Site monitoring",
@@ -112,6 +163,7 @@ export default function AppWorkspace() {
       title: "Growth",
       items: [
         { value: "competitor", label: "Compare competitor", icon: Search },
+        { value: "keyword", label: "Keyword research", icon: Search },
         { value: "content-gaps", label: "Find missing content", icon: FileQuestion },
         { value: "blog-gen", label: "Blog ideas", icon: Sparkles },
       ],
@@ -123,6 +175,10 @@ export default function AppWorkspace() {
         { value: "hreflang", label: "Language targeting", icon: Languages },
         { value: "sitemap", label: "Sitemap builder", icon: ShieldCheck },
         { value: "html-guide", label: "SEO guide", icon: BookOpen },
+        { value: "ai-tools", label: "AI SEO tools", icon: Sparkles },
+        { value: "content-editor", label: "Content editor", icon: FileEdit },
+        { value: "backlink-checker", label: "Backlink checker", icon: Globe },
+        { value: "rank-tracker", label: "Rank tracker", icon: Radar },
       ],
     },
     {
@@ -138,8 +194,13 @@ export default function AppWorkspace() {
     "aeo-block": <AeoAnswerBlock />,
     "content-gaps": <ContentGapDetector />,
     competitor: <CompetitorScanner />,
+    keyword: <KeywordResearch />,
     hreflang: <HreflangTool />,
     sitemap: <SitemapGenerator />,
+    "ai-tools": <ComingSoonTool title="AI SEO tools" description="Optimize metadata, schema, and content with AI-powered workflows." />,
+    "content-editor": <ComingSoonTool title="Content editor" description="Edit page content, format sections, and publish updates quickly." />,
+    "backlink-checker": <ComingSoonTool title="Backlink checker" description="Monitor your backlinks and identify link opportunities." />,
+    "rank-tracker": <ComingSoonTool title="Rank tracker" description="Track keyword performance and ranking progress over time." />,
     monitor: <SiteMonitor />,
     "blog-gen": <BlogGenerator />,
     "single-page": <SinglePageOptimizer />,
@@ -153,6 +214,75 @@ export default function AppWorkspace() {
       <Navbar />
       <main className="flex-1 px-4 py-6">
         <div className="container mx-auto max-w-7xl">
+          <div className="mb-5 grid gap-4 xl:grid-cols-[1.5fr_0.9fr]">
+            <Card className="rounded-3xl border bg-background p-6 shadow-sm">
+              <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
+                <div className="space-y-2">
+                  <p className="text-xs uppercase tracking-[0.32em] text-muted-foreground">Workspace overview</p>
+                  <h2 className="text-3xl font-semibold text-foreground">SEOaxe Workshop</h2>
+                  <p className="max-w-2xl text-sm text-muted-foreground">
+                    Build, audit, and optimize SEO pages from a single centralized workspace.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <div className="rounded-3xl border bg-muted px-4 py-3 text-sm text-foreground">
+                    <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Credits</p>
+                    <p className="mt-1 text-xl font-semibold">{workspaceCredits.toLocaleString()}</p>
+                  </div>
+                  <div className="flex items-center gap-3 rounded-3xl border bg-muted px-4 py-3">
+                    <Avatar>
+                      <AvatarFallback>{userInitials}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{user?.displayName ?? "Workspace user"}</p>
+                      <p className="text-xs text-muted-foreground">{agencySettings?.websiteUrl ?? "Your website"}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                {[
+                  { label: "SEO Score", value: "87" },
+                  { label: "Keyword Score", value: "85" },
+                  { label: "Content Score", value: "90" },
+                  { label: "Technical Score", value: "82" },
+                ].map((metric) => (
+                  <div key={metric.label} className="rounded-3xl border bg-muted/60 p-4 text-center">
+                    <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">{metric.label}</p>
+                    <p className="mt-2 text-3xl font-semibold text-foreground">{metric.value}</p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <Card className="rounded-3xl border bg-background p-6 shadow-sm">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.32em] text-muted-foreground">Quick actions</p>
+                    <h3 className="text-xl font-semibold text-foreground">Launch a tool</h3>
+                  </div>
+                  <Badge variant="secondary">Quick start</Badge>
+                </div>
+                <div className="grid gap-3">
+                  <div className="grid gap-2">
+                    <label className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Analyze page</label>
+                    <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+                      <Input placeholder="https://yourwebsite.com/your-page" />
+                      <Button onClick={() => handleTabChange("single-page")}>Analyze</Button>
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <label className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Generate blog</label>
+                    <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+                      <Input placeholder="The future of artificial intelligence" />
+                      <Button onClick={() => handleTabChange("blog-gen")}>Generate</Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
           <div className="grid gap-5 md:grid-cols-[240px_minmax(0,1fr)]">
             <aside className="rounded-xl border bg-background p-3 md:sticky md:top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
               <div className="mb-3 px-2">
