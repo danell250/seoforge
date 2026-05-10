@@ -241,7 +241,7 @@ export default function Pricing() {
     [isAuthenticated],
   );
   const productSchema = useMemo(
-    () => buildProductSchema(null),
+    () => buildProductSchema(),
     [],
   );
 

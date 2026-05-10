@@ -32,7 +32,7 @@ type TokenCache = {
   expiresAt: number;
 };
 
-export type PaidPlanSlug = "free" | "starter" | "agency";
+export type PaidPlanSlug = "free" | "starter" | "professional" | "agency";
 
 export type StitchPaymentPlan = {
   slug: PaidPlanSlug;
@@ -72,17 +72,22 @@ export const STITCH_PAYMENT_PLANS: Record<PaidPlanSlug, StitchPaymentPlan> = {
   free: {
     slug: "free",
     name: "Free",
-    amountCents: 1638,
+    amountCents: 0,
   },
   starter: {
     slug: "starter",
     name: "Starter",
-    amountCents: 29900,
+    amountCents: 100,
+  },
+  professional: {
+    slug: "professional",
+    name: "Professional",
+    amountCents: 3700,
   },
   agency: {
     slug: "agency",
     name: "Agency",
-    amountCents: 99900,
+    amountCents: 9200,
   },
 };
 
@@ -195,7 +200,7 @@ async function stitchFetch(path: string, init: RequestInit, retry = true): Promi
 }
 
 export function isPaidPlanSlug(value: unknown): value is PaidPlanSlug {
-  return value === "free" || value === "starter" || value === "agency";
+  return value === "free" || value === "starter" || value === "professional" || value === "agency";
 }
 
 export function buildStitchMerchantReference(plan: PaidPlanSlug, userId: number): string {
@@ -205,7 +210,7 @@ export function buildStitchMerchantReference(plan: PaidPlanSlug, userId: number)
 export function parseStitchMerchantReference(reference: unknown): { plan: PaidPlanSlug; userId: number } | null {
   if (typeof reference !== "string") return null;
 
-  const match = /^SEOaxe\s+(free|starter|agency)\s+u(\d+)\b/i.exec(reference.trim());
+  const match = /^SEOaxe\s+(free|starter|professional|agency)\s+u(\d+)\b/i.exec(reference.trim());
   if (!match) return null;
 
   const plan = match[1]?.toLowerCase();
