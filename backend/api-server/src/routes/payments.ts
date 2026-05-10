@@ -20,7 +20,7 @@ import https from "https";
 
 import { ordersController } from "../lib/paypal";
 import { CheckoutPaymentIntent } from "@paypal/paypal-server-sdk";
-import { convertFromZar } from "../lib/pricing";
+import { convertFromUsd } from "../lib/pricing";
 import { createRateLimit } from "../middleware/rate-limit";
 
 const router: IRouter = Router();
