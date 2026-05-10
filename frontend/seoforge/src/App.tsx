@@ -51,6 +51,8 @@ const PAYPAL_OPTIONS = {
   "disable-funding": "credit,card",
 };
 
+const paypalClientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
+
 function ProtectedRoute({ component: Component }: { component: ComponentType }) {
   const { isAuthenticated, isLoading } = useAuth();
   const [, navigate] = useLocation();
@@ -119,7 +121,19 @@ function App() {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <PayPalScriptProvider options={PAYPAL_OPTIONS}>
+          {paypalClientId ? (
+            <PayPalScriptProvider options={PAYPAL_OPTIONS}>
+              <TooltipProvider>
+                <GlobalSEO />
+                <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                  <Router />
+                </WouterRouter>
+                <Toaster />
+                <Analytics />
+                <SpeedInsights />
+              </TooltipProvider>
+            </PayPalScriptProvider>
+          ) : (
             <TooltipProvider>
               <GlobalSEO />
               <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
@@ -129,7 +143,7 @@ function App() {
               <Analytics />
               <SpeedInsights />
             </TooltipProvider>
-          </PayPalScriptProvider>
+          )}
         </AuthProvider>
       </QueryClientProvider>
     </HelmetProvider>

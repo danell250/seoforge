@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { requireAuthenticatedUser } from "../middleware/auth";
+import { requireAuthenticatedUser, getAuthenticatedUser } from "../middleware/auth";
 import { 
   type AfricanLanguage,
   detectAfricanLanguageContent,
