@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { getPlanDefinition, PLAN_DEFINITIONS } from "@/lib/plans";
-import { PayPalButtons } from "@paypal/react-paypal-js";
+import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { customFetch } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -21,6 +21,12 @@ export default function Checkout() {
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
   const [usdPrice, setUsdPrice] = useState<number | null>(null);
+  const [{ isResolved, isRejected, isPending }] = usePayPalScriptReducer();
+  
+  // Debug PayPal script status
+  useEffect(() => {
+    console.log("PayPal script status:", { isResolved, isRejected, isPending });
+  }, [isResolved, isRejected, isPending]);
   const search = typeof window !== "undefined" ? window.location.search : "";
   const params = new URLSearchParams(search);
   const planParam = params.get("plan");
@@ -245,8 +251,19 @@ export default function Checkout() {
                         <p className="text-sm font-medium text-red-800 dark:text-red-200">PayPal not configured</p>
                         <p className="text-xs text-red-600 dark:text-red-400 mt-1">Please set VITE_PAYPAL_CLIENT_ID environment variable.</p>
                       </div>
+                    ) : !isResolved ? (
+                      <div className="flex flex-col items-center justify-center py-8 space-y-4">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        <p className="text-sm font-medium">Loading PayPal...</p>
+                      </div>
+                    ) : isRejected ? (
+                      <div className="rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 p-4 text-center">
+                        <p className="text-sm font-medium text-red-800 dark:text-red-200">PayPal failed to load</p>
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">Please refresh the page and try again.</p>
+                      </div>
                     ) : (
                       <div className="py-2 space-y-4">
+                        {console.log("Rendering PayPal buttons")}
                         {usdPrice && (
                           <div className="rounded-lg bg-muted/30 p-3 text-center border border-dashed border-primary/20">
                             <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">PayPal Amount</p>
@@ -254,6 +271,7 @@ export default function Checkout() {
                           </div>
                         )}
                         <PayPalButtons
+                          key={`paypal-buttons-${selectedPlan?.slug}-${user?.id}`}
                           style={{ layout: "vertical", label: "pay" }}
                           createOrder={createPayPalOrder}
                           onApprove={onPayPalApprove}
@@ -288,6 +306,18 @@ export default function Checkout() {
                               description: errorMessage,
                               variant: "destructive",
                             });
+                          }}
+                          onCancel={(data) => {
+                            console.log("PayPal payment cancelled:", data);
+                            toast({
+                              title: "Payment cancelled",
+                              description: "You cancelled the PayPal payment.",
+                              variant: "default",
+                            });
+                          }}
+                          onClick={(data, actions) => {
+                            console.log("PayPal button clicked:", data);
+                            return actions.resolve();
                           }}
                         />
                       </div>

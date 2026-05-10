@@ -125,7 +125,7 @@ function App() {
     if (paypalClientId) {
       const clientIdStart = paypalClientId.substring(0, 2);
       const isSandboxId = clientIdStart === 'AZ';
-      const isProdId = clientIdStart === 'A' && !isSandboxId;
+      const isProdId = clientIdStart.startsWith('A') && !isSandboxId;
       console.log('PayPal Debug:', {
         clientIdStart,
         isSandboxId,
