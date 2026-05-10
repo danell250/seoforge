@@ -121,6 +121,8 @@ export function SoftwareApplicationSchema() {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": BRAND_NAME,
+    "url": SITE_URL,
+    "image": `${SITE_URL}/android-chrome-512x512.png`,
     "applicationCategory": "WebApplication",
     "operatingSystem": "Web Browser",
     "offers": {
