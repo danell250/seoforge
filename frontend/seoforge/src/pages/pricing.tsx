@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Check, X } from "lucide-react";
 import { Link } from "wouter";
 import { useEffect, useMemo, useState } from "react";
-import { BRAND_NAME, PRODUCT_DESCRIPTION } from "@/lib/brand-metadata";
+import { BRAND_NAME, PRODUCT_DESCRIPTION, SITE_URL } from "@/lib/brand-metadata";
 import { useAuth } from "@/hooks/use-auth";
 import {
   detectPricingLocale,
@@ -34,6 +34,8 @@ function buildProductSchema(pricingContext: PricingContextResponse | null) {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": BRAND_NAME,
+    "image": `${SITE_URL}/android-chrome-512x512.png`,
+    "url": `${SITE_URL}/pricing`,
     "description": PRODUCT_DESCRIPTION,
     "brand": {
       "@type": "Brand",
