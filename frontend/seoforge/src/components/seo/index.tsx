@@ -7,7 +7,6 @@ export function GlobalSEO() {
       <WebsiteSchema />
       <SoftwareApplicationSchema />
       <LocalBusinessSchema />
-      <FAQPageSchema />
     </>
   );
 }
