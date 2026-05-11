@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Pricing from "@/pages/pricing";
+import MediaKit from "@/pages/media-kit";
 import Checkout from "@/pages/checkout";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
@@ -84,6 +85,7 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/pricing" component={Pricing} />
+        <Route path="/media-kit" component={MediaKit} />
         <Route path="/checkout" component={() => <ProtectedRoute component={Checkout} />} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />

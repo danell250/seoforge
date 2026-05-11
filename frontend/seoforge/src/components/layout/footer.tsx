@@ -16,6 +16,7 @@ export function Footer() {
     { href: "/pricing", label: "Pricing" },
     { href: "/compare", label: "SEOaxe vs Competitors" },
     { href: "/blog", label: "Blog" },
+    { href: "/media-kit", label: "Media Kit" },
     { href: "/login", label: "Login" },
   ];
 

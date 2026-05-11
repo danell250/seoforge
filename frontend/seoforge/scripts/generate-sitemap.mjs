@@ -10,6 +10,7 @@ const publicPages = [
   ["compare", "weekly", "0.9"],
   ["blog", "daily", "0.8"],
   ["contact", "monthly", "0.7"],
+  ["media-kit", "monthly", "0.6"],
   ["seo-repair-engine", "weekly", "0.9"],
   ["html-seo-optimizer", "weekly", "0.85"],
   ["aeo-optimizer", "weekly", "0.85"],
