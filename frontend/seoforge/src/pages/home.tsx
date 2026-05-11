@@ -118,7 +118,6 @@ export default function Home() {
                 </div>
 
                 <div className="mt-5 flex flex-wrap items-center gap-6 text-xs text-slate-500">
-                  <div>✓ No file uploads</div>
                   <div>✓ Beginner friendly</div>
                   <div>✓ Deployable fixes</div>
                 </div>
