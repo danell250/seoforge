@@ -15,6 +15,7 @@ import { ZipUpload } from "@/components/app/zip-upload";
 import { HtmlGuide } from "@/components/app/html-guide";
 import { DeployPanel } from "@/components/app/deploy-panel";
 import { KeywordResearch } from "@/components/app/keyword-research";
+import { OnboardingWalkthrough } from "@/components/app/onboarding-walkthrough";
 import { type ReactNode, useEffect, useState } from "react";
 import { useGetAgencySettings } from "@workspace/api-client-react";
 import { useAuth } from "@/hooks/use-auth";
@@ -200,6 +201,7 @@ export default function AppWorkspace() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100 text-slate-900">
       <Navbar />
+      <OnboardingWalkthrough />
       <main className="flex-1 px-4 py-8">
         <div className="container mx-auto max-w-7xl">
           <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
