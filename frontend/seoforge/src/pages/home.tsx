@@ -57,22 +57,24 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
-        <title>SEOaxe — Live SEO Audit and AEO Guidance</title>
-        <meta name="description" content="SEOaxe provides live SEO audits and answer engine optimization (AEO) guidance. Optimize your website for Google search and AI overviews." />
+        <title>SEOaxe — Live SEO Audit & AEO Optimization | Fix Your Website Rankings</title>
+        <meta name="description" content="SEOaxe is a live SEO audit engine that scores existing website pages and produces reviewable SEO, AEO, schema, sitemap, and content recommendations. Optimize your website for Google search and AI overviews." />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href={SITE_URL} />
         {generateAfricanHreflang(SITE_URL, DEFAULT_SUPPORTED_LANGUAGES).map((tag, idx) => (
           <link key={idx} rel="alternate" hrefLang={tag.hreflang} href={tag.href} />
         ))}
-        <meta property="og:title" content="SEOaxe — Live SEO Audit and AEO Guidance" />
-        <meta property="og:description" content="SEOaxe provides live SEO audits and answer engine optimization (AEO) guidance. Optimize your website for Google search and AI overviews." />
+        <meta property="og:title" content="SEOaxe — Live SEO Audit & AEO Optimization | Fix Your Website Rankings" />
+        <meta property="og:description" content="SEOaxe is a live SEO audit engine that scores existing website pages and produces reviewable SEO, AEO, schema, sitemap, and content recommendations. Optimize your website for Google search and AI overviews." />
         <meta property="og:url" content={SITE_URL} />
         <meta property="og:type" content="website" />
         <meta property="og:image" content={`${SITE_URL}/opengraph.jpg`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="twitter:title" content="SEOaxe — Live SEO Audit and AEO Guidance" />
-        <meta property="twitter:description" content="SEOaxe provides live SEO audits and answer engine optimization (AEO) guidance. Optimize your website for Google search and AI overviews." />
+        <meta property="og:site_name" content="SEOaxe" />
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:title" content="SEOaxe — Live SEO Audit & AEO Optimization | Fix Your Website Rankings" />
+        <meta property="twitter:description" content="SEOaxe is a live SEO audit engine that scores existing website pages and produces reviewable SEO, AEO, schema, sitemap, and content recommendations. Optimize your website for Google search and AI overviews." />
         <meta property="twitter:url" content={SITE_URL} />
         <meta property="twitter:image" content={`${SITE_URL}/opengraph.jpg`} />
       </Helmet>
