@@ -219,7 +219,7 @@ export default function Home() {
                 Features
               </div>
               <h2 className="mt-4 text-3xl font-black tracking-tight md:text-4xl">
-                Built to fix SEO problems — not just report them.
+                Built to fix SEO problems, not just report them.
               </h2>
             </div>
 
