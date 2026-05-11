@@ -1,58 +1,59 @@
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
 import { Helmet } from "react-helmet-async";
-import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { FAQPageSchema } from "@/components/seo";
 import { generateAfricanHreflang, DEFAULT_SUPPORTED_LANGUAGES } from "@/lib/hreflang";
 import { SITE_URL } from "@/lib/brand-metadata";
-import { ArrowRight, Zap, Code2, Bot, BarChart3, Eye, LockOpen } from "lucide-react";
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
-
-  useEffect(() => {
-    document.body.classList.add("seoaxe-home");
-    return () => document.body.classList.remove("seoaxe-home");
-  }, []);
-
   const workspaceHref = isAuthenticated ? "/app" : "/login?redirect=%2Fapp";
 
   const features = [
-    { icon: Zap, title: "Instant audit from any URL", desc: "No file uploads. Paste the live page and get results immediately." },
-    { icon: Code2, title: "Copyable schema + meta fixes", desc: "Get the exact JSON-LD and HTML you need — ready to paste." },
-    { icon: Bot, title: "AEO for Google AI Overviews", desc: "Structure answers so AI search systems cite your pages." },
-    { icon: BarChart3, title: "Before/after proof", desc: "Score lift report you can show a client or your team." },
-  ];
-
-  const proofStats = [
-    { num: "+47 pts", desc: "average SEO score lift after first audit" },
-    { num: "50,000+", desc: "pages audited and repaired" },
-    { num: "30 sec", desc: "from URL to prioritized fix list" },
-  ];
-
-  const testimonials = [
     {
-      text: "I paste a URL and get told exactly what to fix. No jargon, no guesswork. My homepage went from 38 to 91 in one afternoon.",
-      author: "Thabo M.",
-      role: "E-commerce founder, Joburg",
-      initials: "TM",
-      color: "bg-blue-100 text-blue-700",
+      title: 'Live SEO Audits',
+      desc: 'Scan live websites and instantly detect ranking issues.',
     },
     {
-      text: "Finally a tool that actually gives you the code, not just a list of problems. My agency uses it for every client onboarding now.",
-      author: "Sarah R.",
-      role: "Digital agency owner, Cape Town",
-      initials: "SR",
-      color: "bg-green-100 text-green-700",
+      title: 'Copyable SEO Fixes',
+      desc: 'Get actionable fixes you can deploy immediately.',
     },
+    {
+      title: 'AI Blog Generator',
+      desc: 'Generate SEO-ready content around your target keywords.',
+    },
+    {
+      title: 'Technical SEO Tools',
+      desc: 'Create sitemaps, robots.txt, schema markup, and more.',
+    },
+  ];
+
+  const howItWorks = [
+    {
+      step: '01',
+      title: 'Enter Your Website',
+      desc: 'Paste any live URL into the audit engine.',
+    },
+    {
+      step: '02',
+      title: 'Detect SEO Issues',
+      desc: 'SEOaxe scans your page structure, metadata, speed, and content.',
+    },
+    {
+      step: '03',
+      title: 'Deploy The Fixes',
+      desc: 'Copy AI-generated recommendations and improve rankings fast.',
+    },
+  ];
+
+  const dashboardIssues = [
+    'Missing H1 heading detected',
+    'Meta description exceeds optimal length',
+    'No FAQ schema markup found',
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
+    <div className="min-h-screen flex flex-col">
       <Helmet>
         <title>SEOaxe — Live SEO Audit and AEO Guidance</title>
         <meta name="description" content="SEOaxe provides live SEO audits and answer engine optimization (AEO) guidance. Optimize your website for Google search and AI overviews." />
@@ -73,317 +74,290 @@ export default function Home() {
         <meta property="twitter:url" content={SITE_URL} />
         <meta property="twitter:image" content={`${SITE_URL}/opengraph.jpg`} />
       </Helmet>
-      <Navbar />
       <FAQPageSchema />
 
-      <main className="flex-1">
-        {/* Hero Section */}
-        <section className="py-14 px-8">
-          <div className="max-w-2xl mx-auto">
-            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-700 bg-blue-100 px-2.5 py-1 rounded-full mb-5">
-              <Eye className="w-3.5 h-3.5" />
-              Live SEO audit engine
+      <main className="min-h-screen bg-white text-slate-900 overflow-hidden">
+        {/* NAVBAR */}
+        <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white font-bold shadow-lg">
+                S
+              </div>
+              <div>
+                <div className="text-xl font-black tracking-tight">SEOaxe</div>
+                <div className="text-xs text-slate-500">AI SEO Optimization Engine</div>
+              </div>
             </div>
-            <h1 className="text-4xl font-semibold leading-tight mb-4 tracking-tight">
-              Paste your URL.<br />
-              <span className="text-blue-600">Get ranked fixes</span> in 30 seconds.
-            </h1>
-            <p className="text-base text-muted-foreground leading-relaxed mb-7 max-w-xl">
-              SEOaxe scans any live page and tells you exactly what's hurting your rankings — with copyable fixes you can apply today. No agency. No guesswork.
-            </p>
 
-            <div className="flex items-center gap-2.5 flex-wrap mb-8">
+            <nav className="hidden items-center gap-8 md:flex">
+              <a href="#features" className="text-sm font-medium text-slate-600 hover:text-black">
+                Features
+              </a>
+              <a href="#how" className="text-sm font-medium text-slate-600 hover:text-black">
+                How It Works
+              </a>
+              <a href="#faq" className="text-sm font-medium text-slate-600 hover:text-black">
+                FAQ
+              </a>
+            </nav>
+
+            <div className="flex items-center gap-3">
+              <Link href="/login">
+                <button className="rounded-xl border border-slate-200 px-5 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50">
+                  Login
+                </button>
+              </Link>
               <Link href={workspaceHref}>
-                <Button className="h-10 px-5 text-sm font-semibold bg-blue-600 hover:bg-blue-700">
-                  <ArrowRight className="w-4 h-4 mr-1.5" />
-                  Audit my site free
-                </Button>
-              </Link>
-              <Link href="/pricing">
-                <Button variant="outline" className="h-10 px-5 text-sm">
-                  See how it works
-                </Button>
+                <button className="rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition hover:bg-blue-700">
+                  Start Free Audit
+                </button>
               </Link>
             </div>
+          </div>
+        </header>
 
-            <div className="text-xs text-muted-foreground flex items-center gap-1">
-              <LockOpen className="w-3.5 h-3.5" />
-              Free to start, no credit card
+        {/* HERO */}
+        <section className="relative isolate">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.18),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.18),transparent_35%)]" />
+
+          <div className="mx-auto grid max-w-7xl gap-14 px-6 py-24 lg:grid-cols-2 lg:items-center lg:py-32">
+            <div>
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700">
+                Live AI SEO Audit Engine
+              </div>
+
+              <h1 className="max-w-2xl text-5xl font-black leading-tight tracking-tight md:text-7xl">
+                Your website already tells Google what’s wrong.
+                <span className="block bg-gradient-to-r from-blue-600 to-cyan-400 bg-clip-text text-transparent">
+                  SEOaxe shows you how to fix it.
+                </span>
+              </h1>
+
+              <p className="mt-8 max-w-xl text-lg leading-8 text-slate-600 md:text-xl">
+                Scan any live website and get instant SEO issue detection, copyable fixes, AI blog generation, multilingual optimization, and technical SEO guidance.
+              </p>
+
+              {/* INTERACTIVE HERO INPUT */}
+              <div className="mt-10 rounded-3xl border border-slate-200 bg-white p-4 shadow-2xl shadow-slate-200/60">
+                <div className="flex flex-col gap-4 md:flex-row">
+                  <input
+                    type="text"
+                    placeholder="Enter your website URL..."
+                    className="h-14 flex-1 rounded-2xl border border-slate-200 px-5 text-base outline-none transition focus:border-blue-500"
+                  />
+
+                  <Link href={workspaceHref}>
+                    <button className="h-14 rounded-2xl bg-blue-600 px-8 text-base font-bold text-white shadow-lg shadow-blue-500/30 transition hover:bg-blue-700">
+                      Analyze Free
+                    </button>
+                  </Link>
+                </div>
+
+                <div className="mt-5 flex flex-wrap items-center gap-6 text-sm text-slate-500">
+                  <div>✓ No file uploads</div>
+                  <div>✓ Beginner friendly</div>
+                  <div>✓ Deployable fixes</div>
+                </div>
+              </div>
+
+              <div className="mt-10 flex flex-wrap gap-8 text-sm font-semibold text-slate-500">
+                <div>
+                  <span className="text-2xl font-black text-slate-900">50K+</span>
+                  <div>Pages Audited</div>
+                </div>
+                <div>
+                  <span className="text-2xl font-black text-slate-900">+47</span>
+                  <div>Average SEO Score Increase</div>
+                </div>
+                <div>
+                  <span className="text-2xl font-black text-slate-900">Instant</span>
+                  <div>Issue Detection</div>
+                </div>
+              </div>
+            </div>
+
+            {/* DASHBOARD MOCKUP */}
+            <div className="relative">
+              <div className="absolute -left-10 top-10 h-40 w-40 rounded-full bg-blue-500/20 blur-3xl" />
+              <div className="absolute -bottom-10 right-0 h-52 w-52 rounded-full bg-cyan-400/20 blur-3xl" />
+
+              <div className="relative overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
+                <div className="border-b border-slate-100 bg-slate-50 px-6 py-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-lg font-bold">SEOaxe Audit</div>
+                      <div className="text-sm text-slate-500">seoaxe.site</div>
+                    </div>
+
+                    <div className="rounded-2xl bg-emerald-100 px-4 py-2 text-sm font-bold text-emerald-700">
+                      SEO Score 89/100
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid gap-6 p-6">
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <div className="rounded-2xl border border-red-100 bg-red-50 p-5">
+                      <div className="text-sm font-semibold text-red-500">Issues Found</div>
+                      <div className="mt-2 text-4xl font-black text-red-600">12</div>
+                    </div>
+
+                    <div className="rounded-2xl border border-yellow-100 bg-yellow-50 p-5">
+                      <div className="text-sm font-semibold text-yellow-600">Warnings</div>
+                      <div className="mt-2 text-4xl font-black text-yellow-600">7</div>
+                    </div>
+
+                    <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-5">
+                      <div className="text-sm font-semibold text-emerald-600">Passed Checks</div>
+                      <div className="mt-2 text-4xl font-black text-emerald-600">48</div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-3xl border border-slate-100 bg-slate-50 p-6">
+                    <div className="mb-5 flex items-center justify-between">
+                      <h3 className="text-xl font-black">Suggested Fixes</h3>
+                      <div className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
+                        AI Generated
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      {dashboardIssues.map((issue) => (
+                        <div
+                          key={issue}
+                          className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="h-3 w-3 rounded-full bg-red-500" />
+                            <span className="font-medium text-slate-700">{issue}</span>
+                          </div>
+
+                          <Link href={workspaceHref}>
+                            <button className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-black">
+                              View Fix
+                            </button>
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Demo Audit Box */}
-        <section className="px-8 mb-12">
-          <Card className="overflow-hidden border bg-card max-w-4xl mx-auto">
-            <div className="flex items-center gap-1.5 px-3.5 py-2.5 border-b bg-background">
-              <div className="w-2 h-2 rounded-full bg-red-400" />
-              <div className="w-2 h-2 rounded-full bg-amber-400" />
-              <div className="w-2 h-2 rounded-full bg-green-500" />
-              <div className="flex-1 bg-muted px-2.5 py-1 rounded border text-xs text-muted-foreground font-mono">
-                yourwebsite.co.za
+        {/* FEATURES */}
+        <section id="features" className="border-t border-slate-100 bg-slate-50 py-24">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="max-w-3xl">
+              <div className="text-sm font-bold uppercase tracking-[0.2em] text-blue-600">
+                Features
               </div>
-              <Button className="py-1 px-2.5 text-xs h-7 bg-blue-600 hover:bg-blue-700">
-                Scan
-              </Button>
+              <h2 className="mt-4 text-4xl font-black tracking-tight md:text-5xl">
+                Built to fix SEO problems — not just report them.
+              </h2>
             </div>
 
-            <div className="grid md:grid-cols-[1fr_200px]">
-              <div className="p-4 border-r">
-                <div className="text-xs font-semibold text-muted-foreground mb-2">4 issues found · sorted by impact</div>
-                
-                <div className="flex items-start gap-2 py-2 border-b text-xs">
-                  <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-red-100 text-red-700 whitespace-nowrap mt-0.5">Critical</span>
-                  <span>No schema markup — invisible to AI search</span>
-                </div>
-
-                <div className="flex items-start gap-2 py-2 border-b text-xs">
-                  <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-red-100 text-red-700 whitespace-nowrap mt-0.5">Critical</span>
-                  <span>Meta description missing on 3 key pages</span>
-                </div>
-
-                <div className="flex items-start gap-2 py-2 border-b text-xs">
-                  <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 whitespace-nowrap mt-0.5">Warning</span>
-                  <span>H1 tag doesn't match search intent</span>
-                </div>
-
-                <div className="flex items-start gap-2 py-2 text-xs">
-                  <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-green-100 text-green-700 whitespace-nowrap mt-0.5">Good</span>
-                  <span>Page speed is within acceptable range</span>
-                </div>
-              </div>
-
-              <div className="p-4">
-                <div className="text-xs text-muted-foreground mb-1">SEO health score</div>
-                <div className="flex items-baseline">
-                  <span className="text-4xl font-semibold text-blue-600 leading-none">87</span>
-                  <span className="text-sm text-muted-foreground">/100</span>
-                </div>
-                
-                <div className="mt-2.5 bg-muted rounded-full h-1.25 overflow-hidden">
-                  <div className="h-full w-[87%] bg-blue-600 rounded-full" />
-                </div>
-
-                <div className="mt-2.5 text-xs text-green-700 bg-green-100 px-1.75 py-0.75 rounded inline-block mb-3">
-                  ↑ +45 points after fixes
-                </div>
-
-                <div className="text-xs">
-                  <div className="flex justify-between py-0.75 text-muted-foreground">
-                    <span>Technical</span>
-                    <span className="text-green-700 font-semibold">+14</span>
+            <div className="mt-16 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+              {features.map((feature) => (
+                <div
+                  key={feature.title}
+                  className="group rounded-[28px] border border-slate-200 bg-white p-8 transition hover:-translate-y-1 hover:shadow-2xl"
+                >
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 text-2xl text-blue-700">
+                    ✦
                   </div>
-                  <div className="flex justify-between py-0.75 text-muted-foreground">
-                    <span>Content</span>
-                    <span className="text-green-700 font-semibold">+9</span>
-                  </div>
-                  <div className="flex justify-between py-0.75 text-muted-foreground">
-                    <span>AEO ready</span>
-                    <span className="text-green-700 font-semibold">+22</span>
-                  </div>
+
+                  <h3 className="mt-6 text-2xl font-black tracking-tight">
+                    {feature.title}
+                  </h3>
+
+                  <p className="mt-4 leading-7 text-slate-600">{feature.desc}</p>
                 </div>
-              </div>
-            </div>
-          </Card>
-        </section>
-
-        <div className="h-px bg-border mx-8" />
-
-        {/* Proof Grid Section */}
-        <section className="py-10 px-8">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground mb-5">
-              real results
-            </div>
-            
-            <div className="grid md:grid-cols-3 gap-3">
-              {proofStats.map((stat, i) => (
-                <Card key={i} className="bg-muted">
-                  <CardContent className="p-3.5 md:p-4">
-                    <div className="text-2xl font-semibold">{stat.num}</div>
-                    <div className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                      {stat.desc}
-                    </div>
-                  </CardContent>
-                </Card>
               ))}
             </div>
           </div>
         </section>
 
-        <div className="h-px bg-border mx-8" />
+        {/* HOW IT WORKS */}
+        <section id="how" className="py-24">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="text-center">
+              <div className="text-sm font-bold uppercase tracking-[0.2em] text-blue-600">
+                How It Works
+              </div>
 
-        {/* Features Section */}
-        <section className="py-10 px-8">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground mb-5">
-              what you get
+              <h2 className="mt-4 text-4xl font-black tracking-tight md:text-5xl">
+                SEO simplified into 3 steps.
+              </h2>
             </div>
-            
-            <div className="grid md:grid-cols-2 gap-2.5">
-              {features.map((feature, i) => (
-                <Card key={i} className="bg-card">
-                  <CardContent className="p-3">
-                    <div className="flex items-start gap-2.5">
-                      <div className="w-7 h-7 rounded-md bg-blue-100 flex items-center justify-center flex-shrink-0">
-                        <feature.icon className="w-3.5 h-3.5 text-blue-700" />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-semibold mb-0.5">{feature.title}</h3>
-                        <p className="text-xs text-muted-foreground leading-relaxed">{feature.desc}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+
+            <div className="mt-20 grid gap-8 md:grid-cols-3">
+              {howItWorks.map((item) => (
+                <div key={item.step} className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
+                  <div className="text-6xl font-black text-blue-100">{item.step}</div>
+                  <h3 className="mt-6 text-2xl font-black">{item.title}</h3>
+                  <p className="mt-4 leading-7 text-slate-600">{item.desc}</p>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
-        <div className="h-px bg-border mx-8" />
+        {/* CTA */}
+        <section className="px-6 pb-24">
+          <div className="mx-auto max-w-7xl overflow-hidden rounded-[40px] bg-gradient-to-r from-slate-950 to-blue-950 px-10 py-20 text-white shadow-2xl">
+            <div className="max-w-3xl">
+              <div className="inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-semibold backdrop-blur-xl">
+                Start Improving Your Rankings Today
+              </div>
 
-        {/* Comparison Section */}
-        <section className="py-10 px-8">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground mb-5">
-              vs the alternatives
-            </div>
-            
-            <div className="grid md:grid-cols-3 gap-2.5">
-              <Card className="bg-card">
-                <CardContent className="p-3.5">
-                  <div className="text-sm font-semibold mb-2.5">SEO Agency</div>
-                  <div className="space-y-0.75">
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground py-0.75">
-                      <span className="text-red-500">✕</span>
-                      R5,000–50,000/month
-                    </div>
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground py-0.75">
-                      <span className="text-red-500">✕</span>
-                      PDF reports, no code
-                    </div>
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground py-0.75">
-                      <span className="text-red-500">✕</span>
-                      6-month lock-in
-                    </div>
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground py-0.75">
-                      <span className="text-red-500">✕</span>
-                      Weeks to see results
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <h2 className="mt-6 text-4xl font-black tracking-tight md:text-6xl">
+                Stop guessing what’s hurting your SEO.
+              </h2>
 
-              <Card className="bg-card border-2 border-blue-600">
-                <CardContent className="p-3.5">
-                  <div className="text-sm font-semibold mb-2.5 flex items-center justify-between">
-                    SEOaxe
-                    <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">you're here</span>
-                  </div>
-                  <div className="space-y-0.75">
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground py-0.75">
-                      <span className="text-green-600">✓</span>
-                      From $3/month
-                    </div>
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground py-0.75">
-                      <span className="text-green-600">✓</span>
-                      Deployable code output
-                    </div>
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground py-0.75">
-                      <span className="text-green-600">✓</span>
-                      Cancel anytime
-                    </div>
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground py-0.75">
-                      <span className="text-green-600">✓</span>
-                      Results in 30 seconds
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <p className="mt-6 text-lg leading-8 text-slate-300">
+                SEOaxe gives you instant SEO analysis, AI-generated fixes, and optimization tools built for modern websites.
+              </p>
 
-              <Card className="bg-card">
-                <CardContent className="p-3.5">
-                  <div className="text-sm font-semibold mb-2.5">Semrush / Ahrefs</div>
-                  <div className="space-y-0.75">
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground py-0.75">
-                      <span className="text-red-500">✕</span>
-                      $140+/month in USD
-                    </div>
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground py-0.75">
-                      <span className="text-red-500">✕</span>
-                      Diagnoses, doesn't fix
-                    </div>
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground py-0.75">
-                      <span className="text-red-500">✕</span>
-                      Months to learn
-                    </div>
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground py-0.75">
-                      <span className="text-red-500">✕</span>
-                      No AEO support
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="mt-10 flex flex-wrap gap-4">
+                <Link href={workspaceHref}>
+                  <button className="rounded-2xl bg-white px-8 py-4 text-base font-bold text-slate-900 transition hover:bg-slate-100">
+                    Run Free Audit
+                  </button>
+                </Link>
+
+                <Link href="/pricing">
+                  <button className="rounded-2xl border border-white/20 bg-white/10 px-8 py-4 text-base font-bold text-white backdrop-blur-xl transition hover:bg-white/20">
+                    View Demo
+                  </button>
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
-        <div className="h-px bg-border mx-8" />
+        {/* FOOTER */}
+        <footer className="border-t border-slate-100 py-10">
+          <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
+            <div>© 2026 SEOaxe. All rights reserved.</div>
 
-        {/* Testimonials Section */}
-        <section className="py-10 px-8">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground mb-5">
-              what people say
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-2.5">
-              {testimonials.map((testimonial, i) => (
-                <Card key={i} className="bg-card">
-                  <CardContent className="p-3.5">
-                    <p className="text-sm leading-relaxed text-muted-foreground mb-2.5">
-                      "{testimonial.text}"
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold ${testimonial.color}`}>
-                        {testimonial.initials}
-                      </div>
-                      <div>
-                        <div className="text-xs font-semibold">{testimonial.author}</div>
-                        <div className="text-xs text-muted-foreground">{testimonial.role}</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="flex items-center gap-6">
+              <Link href="/privacy" className="hover:text-slate-900">
+                Privacy
+              </Link>
+              <Link href="/terms" className="hover:text-slate-900">
+                Terms
+              </Link>
+              <Link href="/contact" className="hover:text-slate-900">
+                Contact
+              </Link>
             </div>
           </div>
-        </section>
-
-        {/* Final CTA Section */}
-        <section className="px-8 pb-10">
-          <div className="max-w-4xl mx-auto bg-[#042C53] rounded-xl p-7 text-center">
-            <h2 className="text-xl font-semibold text-blue-100 mb-2">
-              Your competitors are already fixing this.
-            </h2>
-            <p className="text-sm text-blue-300 mb-5 leading-relaxed">
-              Audit your first page in 30 seconds.<br />
-              No credit card. No setup. Just paste your URL.
-            </p>
-            <Link href={workspaceHref}>
-              <Button className="h-10 px-6 text-sm font-semibold bg-blue-600 hover:bg-blue-700">
-                <ArrowRight className="w-4 h-4 mr-1.5" />
-                Start free audit now
-              </Button>
-            </Link>
-            <div className="text-xs text-blue-400 mt-2.5 opacity-70">
-              Free tier available · Paid plans from $3/month
-            </div>
-          </div>
-        </section>
+        </footer>
       </main>
-
-      <Footer />
     </div>
   );
 }
