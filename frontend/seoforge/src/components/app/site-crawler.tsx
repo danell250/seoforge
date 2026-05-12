@@ -26,6 +26,7 @@ import {
   Globe,
   CheckCircle2,
   AlertTriangle,
+  AlertCircle,
   RefreshCw,
   Search,
   Sparkles,
