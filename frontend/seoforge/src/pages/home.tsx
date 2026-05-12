@@ -3,13 +3,17 @@ import { Footer } from "@/components/layout/footer";
 import { Link } from "wouter";
 import { Helmet } from "react-helmet-async";
 import { useAuth } from "@/hooks/use-auth";
+import { useAgencySettings } from "@/hooks/use-agency-settings";
 import { FAQPageSchema } from "@/components/seo";
 import { generateAfricanHreflang, DEFAULT_SUPPORTED_LANGUAGES } from "@/lib/hreflang";
 import { SITE_URL } from "@/lib/brand-metadata";
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
+  const { settings } = useAgencySettings();
   const workspaceHref = isAuthenticated ? "/app" : "/login?redirect=%2Fapp";
+  const brandName = settings.brandName ?? "SEOaxe";
+  const tagline = settings.tagline ?? "SEO Repair Engine for Existing Website Pages";
 
   const features = [
     {
@@ -57,24 +61,24 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
-        <title>SEOaxe — Live SEO Audit & AEO Optimization | Fix Your Website Rankings</title>
-        <meta name="description" content="SEOaxe is a live SEO audit engine that scores existing website pages and produces reviewable SEO, AEO, schema, sitemap, and content recommendations. Optimize your website for Google search and AI overviews." />
+        <title>{brandName} — {tagline}</title>
+        <meta name="description" content={`${brandName} is a live SEO audit engine that scores existing website pages and produces reviewable SEO, AEO, schema, sitemap, and content recommendations. Optimize your website for Google search and AI overviews.`} />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href={SITE_URL} />
         {generateAfricanHreflang(SITE_URL, DEFAULT_SUPPORTED_LANGUAGES).map((tag, idx) => (
           <link key={idx} rel="alternate" hrefLang={tag.hreflang} href={tag.href} />
         ))}
-        <meta property="og:title" content="SEOaxe — Live SEO Audit & AEO Optimization | Fix Your Website Rankings" />
-        <meta property="og:description" content="SEOaxe is a live SEO audit engine that scores existing website pages and produces reviewable SEO, AEO, schema, sitemap, and content recommendations. Optimize your website for Google search and AI overviews." />
+        <meta property="og:title" content={`${brandName} — ${tagline}`} />
+        <meta property="og:description" content={`${brandName} is a live SEO audit engine that scores existing website pages and produces reviewable SEO, AEO, schema, sitemap, and content recommendations. Optimize your website for Google search and AI overviews.`} />
         <meta property="og:url" content={SITE_URL} />
         <meta property="og:type" content="website" />
         <meta property="og:image" content={`${SITE_URL}/opengraph.jpg`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:site_name" content="SEOaxe" />
+        <meta property="og:site_name" content={brandName} />
         <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:title" content="SEOaxe — Live SEO Audit & AEO Optimization | Fix Your Website Rankings" />
-        <meta property="twitter:description" content="SEOaxe is a live SEO audit engine that scores existing website pages and produces reviewable SEO, AEO, schema, sitemap, and content recommendations. Optimize your website for Google search and AI overviews." />
+        <meta property="twitter:title" content={`${brandName} — ${tagline}`} />
+        <meta property="twitter:description" content={`${brandName} is a live SEO audit engine that scores existing website pages and produces reviewable SEO, AEO, schema, sitemap, and content recommendations. Optimize your website for Google search and AI overviews.`} />
         <meta property="twitter:url" content={SITE_URL} />
         <meta property="twitter:image" content={`${SITE_URL}/opengraph.jpg`} />
       </Helmet>
@@ -95,7 +99,7 @@ export default function Home() {
               <h1 className="max-w-2xl text-4xl font-black leading-tight tracking-tight md:text-5xl">
                 Your website already tells Google what’s wrong.
                 <span className="block bg-gradient-to-r from-blue-600 to-cyan-400 bg-clip-text text-transparent">
-                  SEOaxe shows you how to fix it.
+                  {brandName} shows you how to fix it.
                 </span>
               </h1>
 

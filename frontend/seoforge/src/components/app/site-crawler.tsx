@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/table";
 import { useCrawlSite, useOptimizeHtml, useDetectContentGaps } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAgencySettings } from "@/hooks/use-agency-settings";
 import {
   Globe,
   CheckCircle2,
@@ -62,6 +63,13 @@ export function SiteCrawler() {
   const [gapsDone, setGapsDone] = useState(false);
 
   const { toast } = useToast();
+  const { settings } = useAgencySettings();
+
+  useEffect(() => {
+    if (settings.websiteUrl && !url) {
+      setUrl(settings.websiteUrl);
+    }
+  }, [settings.websiteUrl, url]);
   const crawlMutation = useCrawlSite();
   const optimizeMutation = useOptimizeHtml();
   const gapMutation = useDetectContentGaps();

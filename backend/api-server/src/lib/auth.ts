@@ -3,6 +3,7 @@ import { promisify } from "node:util";
 import { and, eq, gt } from "drizzle-orm";
 import { db, usersTable, sessionsTable } from "@workspace/db";
 import { logger } from "./logger";
+import { ensureAgencySettingsRow } from "./agency-settings";
 
 const scrypt = promisify(scryptCallback);
 
@@ -227,6 +228,7 @@ export async function createSessionForGoogleLogin(input: {
       })
       .returning();
     user = created;
+    await ensureAgencySettingsRow(user.id);
   }
 
   const rawToken = randomBytes(32).toString("base64url");
@@ -267,6 +269,8 @@ export async function registerUserAccount(email: string, password: string) {
       plan: "free",
     })
     .returning();
+
+  await ensureAgencySettingsRow(user.id);
 
   const rawToken = randomBytes(32).toString("base64url");
   const hashedToken = hashSessionToken(rawToken);
