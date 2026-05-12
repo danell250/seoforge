@@ -8,7 +8,7 @@
 2. Connect your GitHub repo
 3. Configure:
    - **Runtime:** Node
-   - **Build Command:** `npm install -g pnpm@10.33.0 && pnpm install --frozen-lockfile && pnpm --filter @workspace/api-server run build:prod`
+   - **Build Command:** `npx pnpm@10.33.0 install --frozen-lockfile && npx pnpm@10.33.0 --filter @workspace/api-server run build:prod`
    - **Start Command:** `cd backend/api-server && node --enable-source-maps ./dist/index.mjs`
    - **Plan:** Standard ($7/month minimum for always-on)
 
