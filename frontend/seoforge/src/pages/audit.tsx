@@ -105,6 +105,7 @@ export default function AuditPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AuditResult | null>(null);
   const [error, setError] = useState("");
+  const [limitExceeded, setLimitExceeded] = useState(false);
 
   async function handleAudit(e: React.FormEvent) {
     e.preventDefault();
@@ -113,6 +114,7 @@ export default function AuditPage() {
     setLoading(true);
     setError("");
     setResult(null);
+    setLimitExceeded(false);
 
     try {
       const res = await customFetch<AuditResult>("/api/audit", {
@@ -122,9 +124,13 @@ export default function AuditPage() {
       });
       setResult(res);
     } catch (err: any) {
-      const msg =
-        err?.data?.message || err?.message || "Could not audit the page. Please check the URL and try again.";
-      setError(msg);
+      if (err?.data?.code === "AUDIT_LIMIT_EXCEEDED") {
+        setLimitExceeded(true);
+      } else {
+        const msg =
+          err?.data?.message || err?.message || "Could not audit the page. Please check the URL and try again.";
+        setError(msg);
+      }
     } finally {
       setLoading(false);
     }
@@ -181,6 +187,48 @@ export default function AuditPage() {
             {error && (
               <div className="mt-4 p-3 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm max-w-lg mx-auto">
                 {error}
+              </div>
+            )}
+
+            {limitExceeded && (
+              <div className="mt-6 max-w-lg mx-auto">
+                <Card className="border-2 border-amber-200 bg-amber-50">
+                  <CardHeader>
+                    <CardTitle className="text-xl flex items-center gap-2">
+                      <AlertTriangle className="h-5 w-5 text-amber-600" />
+                      You've reached your monthly limit!
+                    </CardTitle>
+                    <CardDescription>
+                      Upgrade to audit more pages and unlock premium features.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="p-3 rounded-lg bg-white border border-amber-100">
+                        <div className="text-xs text-muted-foreground mb-1">Starter</div>
+                        <div className="font-bold">$3/month</div>
+                        <div className="text-xs text-muted-foreground">3 audits/month</div>
+                      </div>
+                      <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
+                        <div className="text-xs text-primary mb-1">Professional</div>
+                        <div className="font-bold text-primary">$37/month</div>
+                        <div className="text-xs text-primary/80">50 audits/month</div>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      <Link href="/pricing">
+                        <Button className="w-full sm:w-auto">
+                          View All Plans
+                        </Button>
+                      </Link>
+                      <Link href="/signup">
+                        <Button variant="outline" className="w-full sm:w-auto">
+                          Get Started Free
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             )}
           </div>

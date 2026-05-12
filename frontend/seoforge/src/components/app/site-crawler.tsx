@@ -21,10 +21,11 @@ import {
 import { useCrawlSite, useOptimizeHtml, useDetectContentGaps } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAgencySettings } from "@/hooks/use-agency-settings";
+import { Link } from "wouter";
 import {
   Globe,
   CheckCircle2,
-  AlertCircle,
+  AlertTriangle,
   RefreshCw,
   Search,
   Sparkles,
@@ -61,6 +62,7 @@ export function SiteCrawler() {
   const [gapsProgress, setGapsProgress] = useState(0);
   const [gapsCurrent, setGapsCurrent] = useState("");
   const [gapsDone, setGapsDone] = useState(false);
+  const [limitExceeded, setLimitExceeded] = useState(false);
 
   const { toast } = useToast();
   const { settings } = useAgencySettings();
@@ -129,6 +131,7 @@ export function SiteCrawler() {
   const runOptimization = async (initial: CrawlPage[]) => {
     setIsOptimizing(true);
     setProgress(0);
+    setLimitExceeded(false);
     const updated = [...initial];
 
     for (let i = 0; i < updated.length; i++) {
@@ -148,7 +151,12 @@ export function SiteCrawler() {
           score: result.score,
           status: "success",
         };
-      } catch {
+      } catch (err: any) {
+        if (err?.data?.code === "PLAN_LIMIT_EXCEEDED") {
+          updated[i] = { ...page, status: "error" };
+          setLimitExceeded(true);
+          break;
+        }
         updated[i] = { ...page, status: "error" };
       }
 
@@ -159,11 +167,13 @@ export function SiteCrawler() {
     setIsOptimizing(false);
     setCurrentFile("");
     setDone(true);
-    const successCount = updated.filter((p) => p.status === "success").length;
-    toast({
-      title: "Site audit complete",
-      description: `Reviewed ${successCount} of ${updated.length} pages.`,
-    });
+    if (!limitExceeded) {
+      const successCount = updated.filter((p) => p.status === "success").length;
+      toast({
+        title: "Site audit complete",
+        description: `Reviewed ${successCount} of ${updated.length} pages.`,
+      });
+    }
   };
 
   const fillGapsForAll = async () => {
@@ -343,6 +353,43 @@ export function SiteCrawler() {
                 <p className="text-xs text-muted-foreground truncate">
                   Current: {currentFile}
                 </p>
+              </div>
+            )}
+
+            {limitExceeded && (
+              <div className="mb-6">
+                <Card className="border-2 border-amber-200 bg-amber-50">
+                  <CardHeader>
+                    <CardTitle className="text-xl flex items-center gap-2">
+                      <AlertTriangle className="h-5 w-5 text-amber-600" />
+                      You've reached your monthly limit!
+                    </CardTitle>
+                    <CardDescription>
+                      Upgrade to optimize more pages and unlock premium features.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="p-3 rounded-lg bg-white border border-amber-100">
+                        <div className="text-xs text-muted-foreground mb-1">Starter</div>
+                        <div className="font-bold">$3/month</div>
+                        <div className="text-xs text-muted-foreground">20 optimizations/month</div>
+                      </div>
+                      <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
+                        <div className="text-xs text-primary mb-1">Professional</div>
+                        <div className="font-bold text-primary">$37/month</div>
+                        <div className="text-xs text-primary/80">50 optimizations/month</div>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      <Link href="/pricing">
+                        <Button className="w-full sm:w-auto">
+                          View All Plans
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             )}
 
