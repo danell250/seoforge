@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { useAgencySettings } from "@/hooks/use-agency-settings";
 import { useAuth } from "@/hooks/use-auth";
-import { SEOaxeLogo } from "./logo";
+import logoUrl from "@/assets/logo.png";
 
 export function Footer() {
   const { settings } = useAgencySettings();
@@ -55,15 +55,13 @@ export function Footer() {
               {settings?.logoUrl ? (
                 <img src={logo} alt={brandName} className="h-7 w-auto" />
               ) : usingDefaultBrand ? (
-                <SEOaxeLogo />
+                <img src={logoUrl} alt={brandName} className="h-7 w-7" />
               ) : (
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <span className="text-sm font-bold">{brandName.slice(0, 1)}</span>
                 </div>
               )}
-              {!usingDefaultBrand && (
-                <span className="font-semibold tracking-tight text-white text-lg">{brandName}</span>
-              )}
+              <span className="font-semibold tracking-tight text-white text-lg">{brandName}</span>
             </Link>
             
             {/* Tagline */}
