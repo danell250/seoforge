@@ -141,72 +141,17 @@ export default function Home() {
               </div>
             </div>
 
-            {/* DASHBOARD MOCKUP */}
+            {/* HERO IMAGE */}
             <div className="relative">
               <div className="absolute -left-10 top-10 h-40 w-40 rounded-full bg-blue-500/20 blur-3xl" />
               <div className="absolute -bottom-10 right-0 h-52 w-52 rounded-full bg-cyan-400/20 blur-3xl" />
 
               <div className="relative overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
-                <div className="border-b border-slate-100 bg-slate-50 px-6 py-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-lg font-bold">SEOaxe Audit</div>
-                      <div className="text-sm text-slate-500">seoaxe.site</div>
-                    </div>
-
-                    <div className="rounded-2xl bg-emerald-100 px-4 py-2 text-sm font-bold text-emerald-700">
-                      SEO Score 89/100
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid gap-6 p-6">
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <div className="rounded-2xl border border-red-100 bg-red-50 p-5">
-                      <div className="text-sm font-semibold text-red-500">Issues Found</div>
-                      <div className="mt-2 text-3xl font-black text-red-600">12</div>
-                    </div>
-
-                    <div className="rounded-2xl border border-yellow-100 bg-yellow-50 p-5">
-                      <div className="text-sm font-semibold text-yellow-600">Warnings</div>
-                      <div className="mt-2 text-3xl font-black text-yellow-600">7</div>
-                    </div>
-
-                    <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-5">
-                      <div className="text-sm font-semibold text-emerald-600">Passed Checks</div>
-                      <div className="mt-2 text-3xl font-black text-emerald-600">48</div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-3xl border border-slate-100 bg-slate-50 p-6">
-                    <div className="mb-5 flex items-center justify-between">
-                      <h3 className="text-lg font-black">Suggested Fixes</h3>
-                      <div className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
-                        AI Generated
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      {dashboardIssues.map((issue) => (
-                        <div
-                          key={issue}
-                          className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-4"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="h-3 w-3 rounded-full bg-red-500" />
-                            <span className="font-medium text-slate-700 text-sm">{issue}</span>
-                          </div>
-
-                          <Link href={workspaceHref}>
-                            <button className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white transition hover:bg-black">
-                              View Fix
-                            </button>
-                          </Link>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                <img 
+                  src="/hero-image.jpg" 
+                  alt="SEOaxe Hero Image" 
+                  className="w-full h-auto object-cover"
+                />
               </div>
             </div>
           </div>
