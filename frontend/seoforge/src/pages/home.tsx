@@ -141,17 +141,26 @@ export default function Home() {
               </div>
             </div>
 
-            {/* HERO IMAGE */}
+            {/* HERO IMAGES */}
             <div className="relative">
               <div className="absolute -left-10 top-10 h-40 w-40 rounded-full bg-blue-500/20 blur-3xl" />
               <div className="absolute -bottom-10 right-0 h-52 w-52 rounded-full bg-cyan-400/20 blur-3xl" />
 
-              <div className="relative overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
-                <img 
-                  src="/hero-image.jpg" 
-                  alt="SEOaxe Hero Image" 
-                  className="w-full h-auto object-cover"
-                />
+              <div className="flex flex-col gap-6">
+                <div className="relative overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
+                  <img 
+                    src="/hero-image-top.jpg" 
+                    alt="SEOaxe Hero Image Top" 
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+                <div className="relative overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_30px_80px_rgba(15,23,42,0.12)]">
+                  <img 
+                    src="/hero-image.jpg" 
+                    alt="SEOaxe Hero Image Bottom" 
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
               </div>
             </div>
           </div>
