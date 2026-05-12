@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { useAgencySettings } from "@/hooks/use-agency-settings";
 import { useAuth } from "@/hooks/use-auth";
 import { BarChart3, Settings2, Sparkles } from "lucide-react";
-import logoUrl from "@/assets/logo.png";
 
 export function Navbar() {
   const { settings } = useAgencySettings();
@@ -39,7 +38,7 @@ export function Navbar() {
             {settings.logoUrl ? (
               <img src={logo} alt={brandName} className="h-7 w-auto" />
             ) : usingDefaultBrand ? (
-              <img src={logoUrl} alt={brandName} className="h-7 w-7" />
+              <img src="/seoaxe_logo_hd.png" alt={brandName} className="h-7 w-auto" />
             ) : (
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <span className="text-sm font-bold">{brandName.slice(0, 1)}</span>

@@ -16,7 +16,7 @@ export function OrganizationSchema() {
     "@type": "Organization",
     "name": BRAND_NAME,
     "url": SITE_URL,
-    "logo": `${SITE_URL}/android-chrome-512x512.png`,
+    "logo": `${SITE_URL}/seoaxe_logo_hd.png`,
     "description": PRODUCT_AUTOMATION_DESCRIPTION,
     "sameAs": [
       "https://twitter.com/seoforge",
@@ -117,7 +117,7 @@ export function SoftwareApplicationSchema() {
     "@type": "SoftwareApplication",
     "name": BRAND_NAME,
     "url": SITE_URL,
-    "image": `${SITE_URL}/android-chrome-512x512.png`,
+    "image": `${SITE_URL}/seoaxe_logo_hd.png`,
     "applicationCategory": "WebApplication",
     "operatingSystem": "Web Browser",
     "offers": {

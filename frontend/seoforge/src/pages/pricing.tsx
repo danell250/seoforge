@@ -45,7 +45,7 @@ function buildProductSchema() {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": BRAND_NAME,
-    "image": `${SITE_URL}/android-chrome-512x512.png`,
+    "image": `${SITE_URL}/seoaxe_logo_hd.png`,
     "url": `${SITE_URL}/pricing`,
     "description": "SEOaxe - The all-in-one SEO and AEO optimization platform for live page audits, schema markup generation, Answer Engine Optimization, and technical SEO fixes. Free, Starter, Professional, and Agency plans available.",
     "brand": {

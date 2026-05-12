@@ -7,6 +7,10 @@ import { SITE_URL, BRAND_NAME } from "@/lib/brand-metadata";
 export default function MediaKit() {
   const images = [
     {
+      src: "/seoaxe_logo_hd.png",
+      alt: "SEOaxe Official Logo",
+    },
+    {
       src: "/Image 2026-05-11 at 10.13.jpeg",
       alt: "SEOaxe Dashboard Preview",
     },
