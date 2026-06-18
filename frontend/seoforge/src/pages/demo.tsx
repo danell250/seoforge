@@ -126,7 +126,19 @@ export default function Demo() {
         <meta name="description" content="Run a free SEO audit on any live URL. Get a real SEO health score, critical issues, and AI-powered fix previews — no account needed." />
         <link rel="canonical" href={`${SITE_URL}/demo`} />
         <meta property="og:title" content="Free SEO Audit Demo — SEOaxe" />
-        <meta property="og:description" content="Instant SEO health score for any URL. See exactly what's hurting your rankings." />
+        <meta property="og:description" content="Instant SEO health score for any URL. See exactly what's hurting your rankings — free, no account needed." />
+        <meta property="og:url" content={`${SITE_URL}/demo`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="SEOaxe" />
+        <meta property="og:image" content={`${SITE_URL}/opengraph.png`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Free SEO Audit Demo — SEOaxe" />
+        <meta name="twitter:description" content="Instant SEO health score for any URL. See exactly what's hurting your rankings — free, no account needed." />
+        <meta name="twitter:image" content={`${SITE_URL}/opengraph.png`} />
+        <meta name="twitter:site" content="@seoaxe" />
+        <meta name="robots" content="index, follow" />
       </Helmet>
       <Navbar />
 

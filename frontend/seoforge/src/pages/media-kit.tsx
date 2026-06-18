@@ -42,13 +42,13 @@ export default function MediaKit() {
         <meta property="og:description" content="Download the official SEOaxe media kit including logos, screenshots, and brand assets for press, partners, and affiliates." />
         <meta property="og:url" content={`${SITE_URL}/media-kit`} />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content={`${SITE_URL}/opengraph.jpg`} />
+        <meta property="og:image" content={`${SITE_URL}/opengraph.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="twitter:title" content={`${BRAND_NAME} Media Kit — Logos, Screenshots, and Brand Assets`} />
         <meta property="twitter:description" content="Download the official SEOaxe media kit including logos, screenshots, and brand assets for press, partners, and affiliates." />
         <meta property="twitter:url" content={`${SITE_URL}/media-kit`} />
-        <meta property="twitter:image" content={`${SITE_URL}/opengraph.jpg`} />
+        <meta property="twitter:image" content={`${SITE_URL}/opengraph.png`} />
       </Helmet>
       <Navbar />
 

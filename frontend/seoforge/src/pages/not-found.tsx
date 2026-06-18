@@ -18,13 +18,13 @@ export default function NotFound() {
         <meta property="og:title" content="404 — Page Not Found | SEOaxe" />
         <meta property="og:description" content="The page you're looking for doesn't exist. Return to SEOaxe's homepage to audit live website pages and optimize your SEO." />
         <meta property="og:url" content={SITE_URL} />
-        <meta property="og:image" content={`${SITE_URL}/opengraph.jpg`} />
+        <meta property="og:image" content={`${SITE_URL}/opengraph.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="twitter:title" content="404 — Page Not Found | SEOaxe" />
         <meta property="twitter:description" content="The page you're looking for doesn't exist. Return to SEOaxe's homepage to audit live website pages and optimize your SEO." />
         <meta property="twitter:url" content={SITE_URL} />
-        <meta property="twitter:image" content={`${SITE_URL}/opengraph.jpg`} />
+        <meta property="twitter:image" content={`${SITE_URL}/opengraph.png`} />
       </Helmet>
       <Navbar />
       <main className="flex-1 w-full flex items-center justify-center bg-gray-50">

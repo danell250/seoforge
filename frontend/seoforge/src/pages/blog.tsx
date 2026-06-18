@@ -1852,7 +1852,7 @@ export default function Blog() {
           <meta property="og:description" content={articleDescription} />
           <meta property="og:url" content={articleUrl} />
           <meta property="og:type" content="article" />
-          <meta property="og:image" content={`${SITE_URL}/opengraph.jpg`} />
+          <meta property="og:image" content={`${SITE_URL}/opengraph.png`} />
           <meta property="og:image:width" content="1200" />
           <meta property="og:image:height" content="630" />
           <meta property="article:author" content={author.name} />
@@ -1861,7 +1861,7 @@ export default function Blog() {
           <meta property="twitter:title" content={articleTitle} />
           <meta property="twitter:description" content={articleDescription} />
           <meta property="twitter:url" content={articleUrl} />
-          <meta property="twitter:image" content={`${SITE_URL}/opengraph.jpg`} />
+          <meta property="twitter:image" content={`${SITE_URL}/opengraph.png`} />
           <script type="application/ld+json">
             {JSON.stringify({
               "@context": "https://schema.org",
@@ -1936,13 +1936,13 @@ export default function Blog() {
         <meta property="og:title" content="SEOaxe Blog | SEO & AEO Repair Guides" />
         <meta property="og:description" content="SEOaxe blog articles on SEO repair, AEO, schema, technical SEO, Search Console, and page-level optimization." />
         <meta property="og:url" content={`${SITE_URL}/blog`} />
-        <meta property="og:image" content={`${SITE_URL}/opengraph.jpg`} />
+        <meta property="og:image" content={`${SITE_URL}/opengraph.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="twitter:title" content="SEOaxe Blog | SEO & AEO Repair Guides" />
         <meta property="twitter:description" content="SEOaxe blog articles on SEO repair, AEO, schema, technical SEO, Search Console, and page-level optimization." />
         <meta property="twitter:url" content={`${SITE_URL}/blog`} />
-        <meta property="twitter:image" content={`${SITE_URL}/opengraph.jpg`} />
+        <meta property="twitter:image" content={`${SITE_URL}/opengraph.png`} />
       </Helmet>
       <Navbar />
       

@@ -128,8 +128,22 @@ export default function Changelog() {
     <div className="min-h-screen flex flex-col bg-white">
       <Helmet>
         <title>Changelog — SEOaxe</title>
-        <meta name="description" content="See what's new in SEOaxe — new features, improvements, fixes, and security updates." />
+        <meta name="description" content="See what's new in SEOaxe — new features, improvements, bug fixes, and security updates shipped every week." />
         <link rel="canonical" href={`${SITE_URL}/changelog`} />
+        <meta property="og:title" content="Changelog — SEOaxe" />
+        <meta property="og:description" content="See what's new in SEOaxe — new features, improvements, bug fixes, and security updates shipped every week." />
+        <meta property="og:url" content={`${SITE_URL}/changelog`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="SEOaxe" />
+        <meta property="og:image" content={`${SITE_URL}/opengraph.png`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Changelog — SEOaxe" />
+        <meta name="twitter:description" content="See what's new in SEOaxe — features, improvements, and fixes shipped every week." />
+        <meta name="twitter:image" content={`${SITE_URL}/opengraph.png`} />
+        <meta name="twitter:site" content="@seoaxe" />
+        <meta name="robots" content="index, follow" />
       </Helmet>
       <Navbar />
 

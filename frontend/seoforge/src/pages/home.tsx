@@ -14,7 +14,6 @@ import {
   Globe,
   Wrench,
   BarChart2,
-  ChevronDown,
   ArrowRight,
   Menu,
   X,
@@ -130,11 +129,11 @@ const TESTIMONIALS = [
 
 // ─── Nav links ────────────────────────────────────────────────────────────────
 const NAV_LINKS = [
-  { label: "Product", href: "#" },
   { label: "Features", href: "#features" },
   { label: "Pricing", href: "/pricing" },
-  { label: "Resources", href: "#" },
-  { label: "Company", href: "#" },
+  { label: "Blog", href: "/blog" },
+  { label: "Demo", href: "/demo" },
+  { label: "Changelog", href: "/changelog" },
 ];
 
 // ─── Footer columns ───────────────────────────────────────────────────────────
@@ -145,10 +144,10 @@ const FOOTER_PRODUCT = [
   { label: "Changelog", href: "/changelog" },
 ];
 const FOOTER_RESOURCES = [
-  { label: "Blog", href: "#" },
-  { label: "Twitter", href: "#" },
-  { label: "Help Center", href: "#" },
-  { label: "Templates", href: "#" },
+  { label: "Blog", href: "/blog" },
+  { label: "Changelog", href: "/changelog" },
+  { label: "Help Center", href: "/contact" },
+  { label: "Compare Tools", href: "/compare" },
 ];
 const FOOTER_COMPANY = [
   { label: "About Us", href: "#" },
@@ -181,11 +180,21 @@ export default function Home() {
         {generateAfricanHreflang(SITE_URL, DEFAULT_SUPPORTED_LANGUAGES).map((tag, idx) => (
           <link key={idx} rel="alternate" hrefLang={tag.hreflang} href={tag.href} />
         ))}
+        {/* Open Graph */}
         <meta property="og:title" content={`${brandName} — Find SEO Issues. Get Fixes. Rank Higher.`} />
+        <meta property="og:description" content={`${brandName} scans your live website, detects critical SEO issues, and delivers actionable, copy-ready fixes that help you rank higher on Google and AI search.`} />
         <meta property="og:url" content={SITE_URL} />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content={`${SITE_URL}/opengraph.jpg`} />
-        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="og:site_name" content={brandName} />
+        <meta property="og:image" content={`${SITE_URL}/opengraph.png`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        {/* Twitter / X */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${brandName} — Find SEO Issues. Get Fixes. Rank Higher.`} />
+        <meta name="twitter:description" content={`${brandName} scans your live website, detects critical SEO issues, and delivers actionable, copy-ready fixes that help you rank higher on Google and AI search.`} />
+        <meta name="twitter:image" content={`${SITE_URL}/opengraph.png`} />
+        <meta name="twitter:site" content="@seoaxe" />
       </Helmet>
       <FAQPageSchema />
 
@@ -203,14 +212,9 @@ export default function Home() {
               <Link
                 key={item.label}
                 href={item.href}
-                className="flex items-center gap-0.5 px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+                className="px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
               >
                 {item.label}
-                {(item.label === "Product" ||
-                  item.label === "Resources" ||
-                  item.label === "Company") && (
-                  <ChevronDown className="w-3.5 h-3.5 opacity-50" />
-                )}
               </Link>
             ))}
           </nav>
@@ -567,7 +571,7 @@ export default function Home() {
                     value={ctaEmail}
                     onChange={(e) => setCtaEmail(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && ctaCapture.submit(ctaEmail)}
-                    placeholder="Enter your website URL..."
+                    placeholder="Enter your email for SEO tips..."
                     className="h-11 px-4 text-sm rounded-lg border-0 outline-none focus:ring-2 focus:ring-white/40 bg-white/90 text-slate-900 placeholder-slate-400 min-w-[220px]"
                   />
                   <button

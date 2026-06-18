@@ -211,13 +211,13 @@ export default function Pricing() {
         <meta property="og:description" content="SEOaxe pricing plans for 2026: Free, Starter, Professional, and Agency options for live page audits, schema markup, AEO optimization, technical SEO fixes, and South African website optimization." />
         <meta property="og:url" content={`${SITE_URL}/pricing`} />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content={`${SITE_URL}/opengraph.jpg`} />
+        <meta property="og:image" content={`${SITE_URL}/opengraph.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="twitter:title" content="SEOaxe Pricing | SEO & AEO Optimization Plans 2026" />
         <meta property="twitter:description" content="SEOaxe pricing plans for 2026: Free, Starter, Professional, and Agency options for live page audits, schema markup, AEO optimization, technical SEO fixes, and South African website optimization." />
         <meta property="twitter:url" content={`${SITE_URL}/pricing`} />
-        <meta property="twitter:image" content={`${SITE_URL}/opengraph.jpg`} />
+        <meta property="twitter:image" content={`${SITE_URL}/opengraph.png`} />
       </Helmet>
       <Navbar />
       <script
