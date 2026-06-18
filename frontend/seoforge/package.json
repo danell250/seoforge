@@ -84,7 +84,7 @@
     "@paypal/react-paypal-js": "^9.2.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
-    "posthog-js": "^1.257.0",
+    "posthog-js": "1.257.0",
     "react-helmet-async": "^3.0.0"
   }
 }
