@@ -1,91 +1,102 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { X, Check, ArrowRight, Zap, Code2, Bot, BarChart3 } from "lucide-react";
+import { X, Check, ArrowRight, Zap, Globe, Bot, BarChart3 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Analytics } from "@/lib/analytics";
 
-export function OnboardingWalkthrough() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
+const STORAGE_KEY = "seoaxe-onboarding-complete";
+
+const STEPS = [
+  {
+    title: "Welcome to SEOaxe 🎉",
+    description:
+      "You're 3 steps away from your first SEO score. Let's get your site ranked higher.",
+    icon: Zap,
+    detail: "SEOaxe audits live pages, finds issues, and gives you copy-ready AI fixes in seconds.",
+  },
+  {
+    title: "Step 1: Enter your URL",
+    description: "Paste any live page URL into the Website Audit tool.",
+    icon: Globe,
+    detail:
+      "Any public URL works — your homepage, a blog post, a product page. We fetch it in real-time.",
+  },
+  {
+    title: "Step 2: Get your SEO score",
+    description: "SEOaxe scans metadata, headings, schema, and AEO signals instantly.",
+    icon: BarChart3,
+    detail:
+      "You'll see Technical, Content, and AEO scores — each with a prioritised list of what to fix first.",
+  },
+  {
+    title: "Step 3: Apply the fixes",
+    description: "Copy the AI-generated fixes and deploy them directly to your site.",
+    icon: Bot,
+    detail:
+      "Every fix is copy-paste ready. No developer needed. Most pages improve 15–30 points after one pass.",
+  },
+];
+
+interface Props {
+  /** Called when the user completes or skips onboarding. */
+  onComplete?: () => void;
+}
+
+export function OnboardingWalkthrough({ onComplete }: Props) {
+  const [visible, setVisible] = useState(false);
+  const [step, setStep] = useState(0);
 
   useEffect(() => {
-    const hasSeenOnboarding = localStorage.getItem("seoaxe-onboarding-complete");
-    if (!hasSeenOnboarding) {
-      setIsVisible(true);
+    if (!localStorage.getItem(STORAGE_KEY)) {
+      setVisible(true);
     }
   }, []);
 
-  const steps = [
-    {
-      title: "Welcome to SEOaxe! 🎉",
-      description: "Let's get you started with your first audit in 3 simple steps.",
-      icon: Zap,
-    },
-    {
-      title: "Step 1: Enter Your URL",
-      description: "Paste any live website URL into the Website audit tool.",
-      icon: Code2,
-    },
-    {
-      title: "Step 2: Get Your Score",
-      description: "SEOaxe will scan your page and give you an SEO health score.",
-      icon: BarChart3,
-    },
-    {
-      title: "Step 3: Apply the Fixes",
-      description: "Copy the deployable fixes and improve your rankings!",
-      icon: Bot,
-    },
-  ];
-
-  const handleClose = () => {
-    setIsVisible(false);
-    localStorage.setItem("seoaxe-onboarding-complete", "true");
-  };
-
-  const handleNext = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      handleClose();
+  const close = (completed: boolean) => {
+    setVisible(false);
+    localStorage.setItem(STORAGE_KEY, "true");
+    if (completed) {
+      Analytics.firstAuditRun("onboarding_completed");
     }
+    onComplete?.();
   };
 
-  const handleSkip = () => {
-    handleClose();
-  };
+  if (!visible) return null;
 
-  if (!isVisible) return null;
-
-  const currentStepData = steps[currentStep];
-  const IconComponent = currentStepData.icon;
+  const current = STEPS[step]!;
+  const Icon = current.icon;
+  const isLast = step === STEPS.length - 1;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <Card className="w-full max-w-lg mx-4 relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <Card className="w-full max-w-md relative shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+        {/* Close */}
         <button
-          onClick={handleSkip}
-          className="absolute right-4 top-4 p-1 rounded-full hover:bg-slate-100"
+          onClick={() => close(false)}
+          className="absolute right-4 top-4 p-1.5 rounded-full hover:bg-slate-100 transition-colors"
+          aria-label="Close onboarding"
         >
-          <X className="h-5 w-5 text-slate-500" />
+          <X className="h-4 w-4 text-slate-500" />
         </button>
 
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center">
-              <IconComponent className="h-6 w-6 text-blue-700" />
+        <CardHeader className="pb-4">
+          <div className="flex items-start gap-4 mb-4">
+            <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center shrink-0">
+              <Icon className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <CardTitle className="text-xl">{currentStepData.title}</CardTitle>
-              <CardDescription>{currentStepData.description}</CardDescription>
+              <CardTitle className="text-lg leading-snug">{current.title}</CardTitle>
+              <CardDescription className="mt-1">{current.description}</CardDescription>
             </div>
           </div>
 
-          <div className="flex gap-2 mt-4">
-            {steps.map((_, index) => (
+          {/* Progress dots */}
+          <div className="flex gap-1.5">
+            {STEPS.map((_, i) => (
               <div
-                key={index}
-                className={`h-2 flex-1 rounded-full ${
-                  index <= currentStep ? "bg-blue-600" : "bg-slate-200"
+                key={i}
+                className={`h-1.5 flex-1 rounded-full transition-colors ${
+                  i <= step ? "bg-blue-600" : "bg-slate-200"
                 }`}
               />
             ))}
@@ -93,20 +104,38 @@ export function OnboardingWalkthrough() {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          <div className="flex gap-3 justify-between">
-            <Button variant="outline" onClick={handleSkip}>
+          {/* Detail callout */}
+          <div className="rounded-xl bg-blue-50 border border-blue-100 px-4 py-3 text-sm text-blue-800">
+            {current.detail}
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center justify-between pt-1">
+            <button
+              onClick={() => close(false)}
+              className="text-sm text-slate-400 hover:text-slate-600 transition-colors"
+            >
               Skip for now
-            </Button>
-            <Button onClick={handleNext} className="bg-blue-600 hover:bg-blue-700">
-              {currentStep < steps.length - 1 ? (
+            </button>
+            <Button
+              onClick={() => {
+                if (isLast) {
+                  close(true);
+                } else {
+                  setStep((s) => s + 1);
+                }
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+            >
+              {isLast ? (
                 <>
-                  Next
-                  <ArrowRight className="h-4 w-4 ml-1.5" />
+                  <Check className="h-4 w-4" />
+                  Run My First Audit
                 </>
               ) : (
                 <>
-                  <Check className="h-4 w-4 mr-1.5" />
-                  Get Started!
+                  Next
+                  <ArrowRight className="h-4 w-4" />
                 </>
               )}
             </Button>

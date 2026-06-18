@@ -1,11 +1,13 @@
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
-import { useEffect, useState, type ComponentType } from "react";
+import { useEffect, type ComponentType } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
+import Demo from "@/pages/demo";
+import Changelog from "@/pages/changelog";
 import Pricing from "@/pages/pricing";
 import MediaKit from "@/pages/media-kit";
 import Checkout from "@/pages/checkout";
@@ -84,6 +86,8 @@ function Router() {
       <ScrollToTop />
       <Switch>
         <Route path="/" component={Home} />
+        <Route path="/demo" component={Demo} />
+        <Route path="/changelog" component={Changelog} />
         <Route path="/pricing" component={Pricing} />
         <Route path="/media-kit" component={MediaKit} />
         <Route path="/checkout" component={() => <ProtectedRoute component={Checkout} />} />
@@ -120,11 +124,6 @@ function Router() {
 }
 
 function App() {
-  const [paypalLoaded, setPaypalLoaded] = useState(false);
-  
-  // Debug PayPal configuration
-
-  
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>

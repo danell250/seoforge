@@ -9,6 +9,7 @@ import { Link, useLocation } from "wouter";
 import { AlertCircle, LoaderCircle, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { getGoogleCredentialEventName, renderGoogleButton } from "@/lib/google-identity";
+import { Analytics } from "@/lib/analytics";
 
 export default function Login() {
   const { login, loginWithGoogle, isAuthenticated, isLoading, isLoginPending, errorMessage } = useAuth();
@@ -74,6 +75,7 @@ export default function Login() {
 
     try {
       const response = await login({ email, password });
+      if (response.authenticated) Analytics.loggedIn(email);
       const params = new URLSearchParams(window.location.search);
       const redirect = params.get("redirect");
       const next = redirect && redirect.startsWith("/") ? redirect : "/app";
