@@ -28,7 +28,7 @@ Code-Optimizer-Pro/
 - **Frontend**: React + Vite + Tailwind v4 + wouter + shadcn/ui
 - **Backend**: Express 5 calling Google Gemini (`@google/generative-ai`)
 - **API contracts**: OpenAPI in `lib/api-spec/openapi.yaml`, codegen via Orval
-- **AI**: Google Gemini (model: `gemini-1.5-flash`)
+- **AI**: Google Gemini (model: `gemini-2.0-flash`)
 
 ## Getting Started
 

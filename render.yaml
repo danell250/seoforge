@@ -3,7 +3,7 @@ services:
     name: seoaxe-api
     env: node
     plan: standard
-    buildCommand: npx pnpm@10.33.0 install --frozen-lockfile && npx pnpm@10.33.0 --filter @workspace/api-server run build:prod
+    buildCommand: npx pnpm@11.0.9 install --frozen-lockfile && npx pnpm@11.0.9 --filter @workspace/api-server run build:prod
     startCommand: cd backend/api-server && node --enable-source-maps ./dist/index.mjs
     envVars:
       - key: NODE_ENV
