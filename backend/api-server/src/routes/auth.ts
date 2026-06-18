@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import { z } from "zod";
 import {
   bootstrapAuth,
   buildClearedSessionCookie,
@@ -13,12 +14,30 @@ import { createRateLimit } from "../middleware/rate-limit";
 import { getAuthenticatedUser } from "../middleware/auth";
 
 const router: IRouter = Router();
+
+// ---------- Validation schemas ----------
+const LoginSchema = z.object({
+  email: z.string().email("Enter a valid email address.").max(254),
+  password: z.string().min(1, "Password is required.").max(1024),
+});
+
+const RegisterSchema = z.object({
+  email: z.string().email("Enter a valid email address.").max(254),
+  password: z.string().min(8, "Password must be at least 8 characters.").max(1024),
+});
+
+const GoogleLoginSchema = z.object({
+  idToken: z.string().min(1, "Google ID token is required.").max(4096),
+});
+
+// ---------- Rate limiters ----------
 const loginRateLimit = createRateLimit({
   key: "auth-login",
   max: 10,
   windowMs: 1000 * 60 * 15,
   failOpen: false,
 });
+
 const registerRateLimit = createRateLimit({
   key: "auth-register",
   max: 10,
@@ -26,35 +45,7 @@ const registerRateLimit = createRateLimit({
   failOpen: false,
 });
 
-function parseLoginBody(body: unknown) {
-  if (!body || typeof body !== "object") return null;
-  const email = typeof (body as Record<string, unknown>).email === "string"
-    ? (body as Record<string, string>).email.trim()
-    : "";
-  const password = typeof (body as Record<string, unknown>).password === "string"
-    ? (body as Record<string, string>).password
-    : "";
-
-  if (!email || !password) return null;
-  return { email, password };
-}
-
-function validateRegistrationInput(input: { email: string; password: string }) {
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email);
-  if (!emailOk) return "Enter a valid email address.";
-  if (input.password.length < 8) return "Password must be at least 8 characters.";
-  return null;
-}
-
-function parseGoogleLoginBody(body: unknown) {
-  if (!body || typeof body !== "object") return null;
-  const idToken = typeof (body as Record<string, unknown>).idToken === "string"
-    ? (body as Record<string, string>).idToken.trim()
-    : "";
-  if (!idToken) return null;
-  return { idToken };
-}
-
+// ---------- Helpers ----------
 function resolveGoogleClientIds(): string[] {
   const raw = process.env.GOOGLE_CLIENT_ID?.trim() || "";
   return raw
@@ -72,6 +63,7 @@ type GoogleTokenInfo = {
   family_name?: string;
 };
 
+// ---------- Routes ----------
 router.get("/auth/session", async (req, res) => {
   try {
     await bootstrapAuth();
@@ -89,14 +81,15 @@ router.get("/auth/session", async (req, res) => {
 });
 
 router.post("/auth/login", loginRateLimit, async (req, res) => {
-  const body = parseLoginBody(req.body);
-  if (!body) {
-    return res.status(400).json({ message: "Email and password are required." });
+  const parsed = LoginSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ message: parsed.error.errors[0]?.message ?? "Email and password are required." });
   }
+  const { email, password } = parsed.data;
 
   let session;
   try {
-    session = await createSessionForLogin(body.email, body.password);
+    session = await createSessionForLogin(email, password);
   } catch (err) {
     req.log.error({ err }, "auth bootstrap/login failed");
     return res.status(503).json({ message: "Authentication is not configured yet." });
@@ -115,19 +108,15 @@ router.post("/auth/login", loginRateLimit, async (req, res) => {
 });
 
 router.post("/auth/register", registerRateLimit, async (req, res) => {
-  const body = parseLoginBody(req.body);
-  if (!body) {
-    return res.status(400).json({ message: "Email and password are required." });
+  const parsed = RegisterSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ message: parsed.error.errors[0]?.message ?? "Email and password are required." });
   }
-
-  const validationError = validateRegistrationInput(body);
-  if (validationError) {
-    return res.status(400).json({ message: validationError });
-  }
+  const { email, password } = parsed.data;
 
   let result;
   try {
-    result = await registerUserAccount(body.email, body.password);
+    result = await registerUserAccount(email, password);
   } catch (err) {
     req.log.error({ err }, "auth register failed");
     return res.status(503).json({ message: "Authentication is not configured yet." });
@@ -146,10 +135,11 @@ router.post("/auth/register", registerRateLimit, async (req, res) => {
 });
 
 router.post("/auth/google", loginRateLimit, async (req, res) => {
-  const body = parseGoogleLoginBody(req.body);
-  if (!body) {
+  const parsed = GoogleLoginSchema.safeParse(req.body);
+  if (!parsed.success) {
     return res.status(400).json({ message: "Google ID token is required." });
   }
+  const { idToken } = parsed.data;
 
   const configuredClientIds = resolveGoogleClientIds();
   if (configuredClientIds.length === 0) {
@@ -160,7 +150,7 @@ router.post("/auth/google", loginRateLimit, async (req, res) => {
 
   try {
     const response = await fetch(
-      `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(body.idToken)}`,
+      `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(idToken)}`,
     );
     if (!response.ok) {
       return res.status(401).json({ message: "Google token verification failed." });
@@ -181,9 +171,10 @@ router.post("/auth/google", loginRateLimit, async (req, res) => {
     return res.status(401).json({ message: "Google account email is not verified." });
   }
 
-  const displayName = tokenInfo?.name?.trim()
-    || [tokenInfo?.given_name, tokenInfo?.family_name].filter(Boolean).join(" ").trim()
-    || null;
+  const displayName =
+    tokenInfo?.name?.trim() ||
+    [tokenInfo?.given_name, tokenInfo?.family_name].filter(Boolean).join(" ").trim() ||
+    null;
 
   try {
     const session = await createSessionForGoogleLogin({ email, displayName });

@@ -33,18 +33,45 @@ const paymentWriteRateLimit = createRateLimit({
   failOpen: false,
 });
 
-function downloadCertificate(url: string): Promise<string> {
+function downloadCertificate(url: string, timeoutMs = 5_000): Promise<string> {
   return new Promise((resolve, reject) => {
+    // Validate cert URL is from a trusted PayPal domain to prevent SSRF
+    let parsed: URL;
+    try {
+      parsed = new URL(url);
+    } catch {
+      return reject(new Error(`Invalid cert URL: ${url}`));
+    }
+    if (!parsed.hostname.endsWith(".paypal.com")) {
+      return reject(new Error(`Untrusted cert URL hostname: ${parsed.hostname}`));
+    }
+
+    const timer = setTimeout(() => {
+      reject(new Error(`Certificate download timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+
     https
       .get(url, (res) => {
         const chunks: Buffer[] = [];
         res.on("data", (chunk) => chunks.push(chunk));
-        res.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+        res.on("end", () => {
+          clearTimeout(timer);
+          resolve(Buffer.concat(chunks).toString("utf8"));
+        });
+        res.on("error", (err) => {
+          clearTimeout(timer);
+          reject(err);
+        });
       })
-      .on("error", reject);
+      .on("error", (err) => {
+        clearTimeout(timer);
+        reject(err);
+      });
   });
 }
 
+// Bounded LRU-style cert cache — prevents unbounded memory growth from adversarial URLs
+const CERT_CACHE_MAX_SIZE = 50;
 const certCache = new Map<string, { cert: string; expiresAt: number }>();
 
 async function verifyPayPalSignature({
@@ -74,6 +101,11 @@ async function verifyPayPalSignature({
     certificate = cached.cert;
   } else {
     certificate = await downloadCertificate(certUrl);
+    // Evict oldest entry if the cache is at capacity
+    if (certCache.size >= CERT_CACHE_MAX_SIZE) {
+      const oldestKey = certCache.keys().next().value;
+      if (oldestKey) certCache.delete(oldestKey);
+    }
     certCache.set(certUrl, { cert: certificate, expiresAt: Date.now() + 60 * 60 * 1000 });
   }
 
@@ -131,17 +163,17 @@ router.post("/payments/paypal/webhook", async (req, res) => {
   const description = purchaseUnits[0].description;
   const customId = purchaseUnits[0].custom_id;
 
-  // Parse plan from description or custom_id
+  // Prefer custom_id (set explicitly when creating the order) over description string matching.
+  // Description matching is intentionally kept as a last-resort fallback only.
   let planSlug: string | null = null;
-  if (description) {
-    if (description.includes("Free")) planSlug = "free";
-    else if (description.includes("Starter")) planSlug = "starter";
-    else if (description.includes("Professional")) planSlug = "professional";
-    else if (description.includes("Agency")) planSlug = "agency";
-  }
-
-  if (!planSlug && customId) {
+  if (customId && isPaidPlanSlug(customId)) {
     planSlug = customId;
+  } else if (description) {
+    const lower = (description as string).toLowerCase();
+    if (lower.includes("agency")) planSlug = "agency";
+    else if (lower.includes("professional")) planSlug = "professional";
+    else if (lower.includes("starter")) planSlug = "starter";
+    else if (lower.includes("free")) planSlug = "free";
   }
 
   if (!planSlug || !isPaidPlanSlug(planSlug)) {

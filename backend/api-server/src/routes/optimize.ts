@@ -29,7 +29,7 @@ const PLAN_LIMITS = {
   agency: Number.POSITIVE_INFINITY,
 };
 
-async function checkPlanLimit(userId: number, userEmail?: string, log?: any): Promise<{ allowed: boolean; limit: number; current: number; plan: string; notifySent?: boolean }> {
+async function checkPlanLimit(userId: number, userEmail?: string, log?: AiLogger): Promise<{ allowed: boolean; limit: number; current: number; plan: string; notifySent?: boolean }> {
   try {
     const [user] = await db.select({ plan: usersTable.plan, email: usersTable.email }).from(usersTable).where(eq(usersTable.id, userId));
     const plan = user?.plan || "free";
@@ -78,7 +78,7 @@ async function checkPlanLimit(userId: number, userEmail?: string, log?: any): Pr
       plan,
     };
   } catch (err) {
-    console.error("Plan limit check failed, defaulting to allowed:", err);
+    log?.warn?.({ err, userId }, "Plan limit check failed due to DB error — defaulting to allowed to avoid blocking user, but this should be investigated");
     return { allowed: true, limit: 1, current: 0, plan: "free" };
   }
 }

@@ -4,33 +4,12 @@ import cookieParser from "cookie-parser";
 import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
+import { getAllowedOrigins } from "./lib/allowed-origins";
 import { attachRequestAuth } from "./middleware/auth";
 import { csrfProtection } from "./middleware/csrf";
 import { createRateLimit, startRateLimitCleanupLoop } from "./middleware/rate-limit";
 
 const app: Express = express();
-
-function allowedOrigins(): string[] {
-  const raw =
-    process.env.FRONTEND_URLS ||
-    process.env.FRONTEND_URL ||
-    process.env.CORS_ORIGIN ||
-    "http://localhost:5173";
-  const origins = raw
-    .split(",")
-    .map((value) => value.trim())
-    .filter(Boolean);
-  
-  // Always include the production domain for SEOaxe
-  if (!origins.includes("https://www.seoaxe.site")) {
-    origins.push("https://www.seoaxe.site");
-  }
-  if (!origins.includes("https://seoaxe.site")) {
-    origins.push("https://seoaxe.site");
-  }
-  
-  return origins;
-}
 
 function setSecurityHeaders(req: express.Request, res: express.Response, next: express.NextFunction) {
   res.setHeader("X-Content-Type-Options", "nosniff");
@@ -50,7 +29,7 @@ function setSecurityHeaders(req: express.Request, res: express.Response, next: e
 
 const corsOptions: CorsOptions = {
   origin(origin, callback) {
-    const allowed = allowedOrigins();
+    const allowed = getAllowedOrigins();
     if (!origin || allowed.includes(origin)) {
       callback(null, true);
       return;
@@ -113,7 +92,7 @@ const notFoundHandler: RequestHandler = (req, res) => {
 const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
   req.log.error({ err }, "Unhandled API error");
   if (res.headersSent) return;
-  res.status(500).json({ message: "Internal server error" });
+  res.status(500).json({ message: "Internal server error", requestId: req.id });
 };
 
 app.use(notFoundHandler);

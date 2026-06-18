@@ -8,7 +8,7 @@ const router: IRouter = Router();
 // Audit limits per month
 const AUDIT_LIMITS = {
   free: 1,
-  starter: 3,
+  starter: 20,
   professional: 50,
   agency: Number.POSITIVE_INFINITY,
 };
@@ -386,6 +386,74 @@ function runAudit(url: string, html: string, origin: string): AuditResult {
     findings,
   };
 }
+
+// ── Public demo endpoint (no auth, limited output) ────────────────────────────
+// Rate limited to 10 req/15min per IP via the global API rate limit.
+// Returns scores + first 5 issues + 3 fix previews. Full report requires signup.
+router.post("/audit/demo", async (req, res) => {
+  const url = typeof req.body?.url === "string" ? normalizeUrl(req.body.url) : "";
+  if (!url) {
+    return res.status(400).json({ message: "URL is required" });
+  }
+
+  let origin: string;
+  try {
+    origin = new URL(url).origin;
+  } catch {
+    return res.status(400).json({ message: "Invalid URL" });
+  }
+
+  const html = await fetchHtml(url);
+  if (!html) {
+    return res.status(422).json({
+      message: "Could not fetch that page. Make sure it's publicly accessible and try again.",
+    });
+  }
+
+  const full = runAudit(url, html, origin);
+
+  // Map findings → issues for the demo payload
+  const severityMap: Record<string, "critical" | "warning" | "info"> = {
+    critical: "critical",
+    warning: "warning",
+    good: "info",
+  };
+
+  const issues = full.findings
+    .filter((f) => f.severity !== "good")
+    .slice(0, 6)
+    .map((f) => ({
+      severity: severityMap[f.severity] ?? "info",
+      message: `${f.title}: ${f.detail}`,
+    }));
+
+  // Generate fix preview copy based on findings
+  const fixPreviews: string[] = [];
+  for (const f of full.findings) {
+    if (f.severity === "critical" && fixPreviews.length < 3) {
+      fixPreviews.push(`Fix: ${f.title} — ${f.detail.split(".")[0]}.`);
+    }
+  }
+  if (fixPreviews.length < 3) {
+    for (const f of full.findings) {
+      if (f.severity === "warning" && fixPreviews.length < 3) {
+        fixPreviews.push(`Improve: ${f.title} — ${f.detail.split(".")[0]}.`);
+      }
+    }
+  }
+
+  return res.json({
+    url: full.url,
+    score: {
+      technical: full.technicalScore,
+      content: full.contentScore,
+      aeo: Math.max(20, full.technicalScore - 15), // AEO proxy until we add real AEO audit
+      overall: full.overallScore,
+    },
+    issues,
+    preview: fixPreviews.slice(0, 3),
+  });
+});
 
 router.post("/audit", requireAuthenticatedUser, async (req, res) => {
   const user = getAuthenticatedUser(req);

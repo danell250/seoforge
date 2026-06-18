@@ -101,7 +101,7 @@ export async function runSeoaxeJsonTask<T>({
           }
         }
     } catch (groqErr) {
-      (log as any)?.warn?.({ err: groqErr, taskName }, `${taskName} Groq failed entirely, falling back to Gemini`);
+      log?.warn({ err: groqErr, taskName }, `${taskName} Groq failed entirely, falling back to Gemini`);
       usedGroq = false;
     }
   }

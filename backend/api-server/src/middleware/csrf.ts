@@ -1,27 +1,9 @@
 import type { RequestHandler } from "express";
 import { getSessionCookieName } from "../lib/auth";
+import { getAllowedOrigins } from "../lib/allowed-origins";
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
-function allowedOrigins(): string[] {
-  const raw =
-    process.env.FRONTEND_URLS ||
-    process.env.FRONTEND_URL ||
-    process.env.CORS_ORIGIN ||
-    "http://localhost:5173";
-  const origins = raw
-    .split(",")
-    .map((value) => value.trim())
-    .filter(Boolean);
-
-  if (!origins.includes("https://www.seoaxe.site")) {
-    origins.push("https://www.seoaxe.site");
-  }
-  if (!origins.includes("https://seoaxe.site")) {
-    origins.push("https://seoaxe.site");
-  }
-  return origins;
-}
 
 function readOriginFromHeaders(headers: Record<string, unknown>): string | null {
   const origin = headers.origin;
@@ -78,7 +60,7 @@ export const csrfProtection: RequestHandler = (req, res, next) => {
     return;
   }
 
-  const allowed = allowedOrigins();
+  const allowed = getAllowedOrigins();
   if (!allowed.includes(origin)) {
     res.status(403).json({ message: "Origin not allowed for this action." });
     return;
